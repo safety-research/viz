@@ -11,8 +11,8 @@ import vellum as vl
 vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
         highlight="Full documents", decimals=0,
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-        title="With full documents, the assistant answered nearly 9 in 10 questions correctly",
-        subtitle="Example data: share of 400 questions answered correctly in each of three setups",
+        title="Full documents raised correct answers from 41% to 88%",
+        subtitle="Example data: share of questions answered correctly",
         ).save("hbar_highlight.png")
 ```
 
@@ -25,8 +25,8 @@ vl.hbar([("Base model", 31.0), ("Plain fine-tune (control)", 33.5), ("Worked exa
          vl.section("Other data"), ("Textbook passages", 27.4), ("Forum answers", 36.9), ("Short answers only", 22.6)],
         colors={"Base model": "dark"}, highlight="Worked examples", ref=31.0, decimals=0,
         notes={"Forum answers": "worse than the base model"},
-        title="Training on worked examples cut wrong answers the most",
-        subtitle="Example data: a small model fine-tuned on each dataset, share of 500 test questions answered wrong",
+        title="Worked examples cut wrong answers from 31% to 18%",
+        subtitle="Example data: share of 500 test questions answered wrong, by fine-tuning dataset",
         ).save("hbar_sections.png")
 ```
 
@@ -38,11 +38,11 @@ import vellum as vl
 series = ["Closed book", "With search"]
 vl.panels([
     vl.hbar({"Recent events": [3.10, 5.45], "Settled facts": [5.60, 5.72]}, series=series,
-            unit="", decimals=2, ticks=[1, 2, 3, 4, 5, 6, 7], title="How helpful was the answer? (1 to 7)"),
+            unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7], title="Helpfulness, 1 to 7"),
     vl.hbar({"Recent events": [31.5, 74.0], "Settled facts": [80.5, 82.0]}, series=series,
-            decimals=1, title="Would ask it again")],
-    title="With search, people rated answers on recent events higher and would ask again",
-    subtitle="Example data: two questions after each of 300 chats, the same questions with and without search",
+            decimals=0, title="Would ask it again")],
+    title="With search, people rated answers on recent events higher",
+    subtitle="Example data: 300 chats per setup",
     ).save("panels_grouped.png")
 ```
 
@@ -52,9 +52,9 @@ vl.panels([
 import vellum as vl
 from vellum.gallery import WRONG_BY_MODEL  # {"Model A": [12.5, 4.0], ...}: closed book, with search
 
-vl.bars(WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=1, ylabel="Questions answered wrong",
-        frame="blog", title="Search cut wrong answers for every model, most for the weakest",
-        subtitle="Example data: share of 200 questions each model answered wrong, with and without search",
+vl.bars(WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong",
+        frame="blog", title="Search cut wrong answers for all ten models",
+        subtitle="Example data: 200 questions per model",
         ).save("bars_blog.png")
 ```
 
@@ -63,18 +63,18 @@ vl.bars(WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=1, ylabe
 ```python
 import vellum as vl
 
-kw = dict(ylabel="Wrong answers", decimals=1, ticks=[0, 10, 20, 30, 40, 50])
+kw = dict(ylabel="Wrong answers", decimals=0, ticks=[0, 10, 20, 30, 40, 50])
 vl.panels([
     vl.bars({"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8},
             ci={"Small model": (35.8, 41.3), "Twice the size": (24.6, 29.6), "Small with search": (8.0, 11.3),
                 "Both": (6.4, 9.5)},
-            colors=["coral", "sage", "blue", "blue"], title="(a) Search beats a model twice the size", **kw),
+            colors=["coral", "sage", "blue", "blue"], title="(a) A bigger model", **kw),
     vl.bars({"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0},
             ci={"Closed book": (35.8, 41.3), "Search answered": (8.0, 11.3), "Search found nothing": (28.4, 33.7)},
-            colors=["coral", "blue", "light-blue"], title="(b) When search finds nothing, errors come back", **kw)],
+            colors=["coral", "blue", "light-blue"], title="(b) When search finds nothing", **kw)],
     legend={"Closed book": "coral", "A bigger model": "sage", "Search": "blue", "Search that finds nothing": "light-blue"},
-    frame="blog", title="Search beat a bigger model, as long as it found something",
-    subtitle="Example data: share of 1,200 questions answered wrong in each setup, with Wilson intervals",
+    frame="blog", title="Search cut wrong answers more than a model twice the size",
+    subtitle="Example data: 1,200 questions per setup; error bars are 95% intervals",
     ).save("small_multiples.png")
 ```
 
@@ -85,8 +85,8 @@ import vellum as vl
 from vellum.gallery import FINISHED  # {"Model A": [100, 100, 100, 96.7], ..., "Model H": [93.3, 70.0, 6.7, 0]}
 
 vl.heatmap(FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
-           title="Every model handled small tasks, but only three finished most huge ones",
-           subtitle="Example data: share of 30 runs each model finished within the time limit, by task size",
+           title="Three of eight models finished most of the huge tasks",
+           subtitle="Example data: share of 30 runs finished within the time limit",
            ).save("heatmap.png")
 ```
 
@@ -103,7 +103,7 @@ vl.tiles([[T(412, ["agreed the answer was right", "94% of the answers people acc
          col_headers=[("People said right", "439 answers"), ("People said wrong", "561 answers")],
          row_headers=[("Grader said right", "450 answers"), ("Grader said wrong", "550 answers")],
          title="The automatic grader agreed with people on 935 of 1,000 answers",
-         subtitle="Example data: an automatic grader’s verdicts against people’s labels on 1,000 answers",
+         subtitle="Example data",
          ).save("tiles.png")
 ```
 
@@ -116,8 +116,8 @@ from vellum.gallery import SEARCHES  # {dataset: (% of questions needing recent 
 vl.scatter(SEARCHES, xunit="%", diagonal="one search per question that needs one",
            labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk"],
            xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
-           title="Datasets with more questions about recent events draw more searches",
-           subtitle="Example data: each dot is one of 16 made-up datasets. Spearman ρ = 0.93",
+           title="Datasets with more questions about recent events drew more searches",
+           subtitle="Example data: 16 datasets, one dot each",
            ).save("scatter.png")
 ```
 
@@ -129,13 +129,13 @@ from vellum.gallery import RATINGS  # {"Model A": (5.1, 6.2), "Model C": (None, 
 
 vl.dumbbell(RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
             missing="not rated", title="Every rated model scored higher with search",
-            subtitle="Example data: mean helpfulness, 1 (not at all) to 7 (very), 30 ratings per model and setup",
+            subtitle="Example data: mean helpfulness, 1 (not at all) to 7 (very); 30 ratings per model and setup",
             ).save("dumbbell.png")
 ```
 ```python
 vl.waffle({"Out-of-date fact": 210, "Misread the question": 140, "Arithmetic slip": 90, "Grader error": 60},
-          count_label="answers", title="Two in five wrong answers came from out-of-date facts",
-          subtitle="Example data: 500 wrong answers sorted by cause, scaled to 100 squares",
+          count_label="answers", title="Out-of-date facts caused 42 in 100 wrong answers",
+          subtitle="Example data: causes of 500 wrong answers; one square is 5 answers",
           ).save("waffle.png")
 ```
 
@@ -147,15 +147,15 @@ import vellum as vl
 vl.line({"Worked examples": [31, 26, 21, 17], "Plain fine-tune": [31, 32, 33, 34]}, x=[0, 1, 3, 10],
         xscale="category", xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, colors=["blue", "coral"],
         bands={"Worked examples": ([27, 22, 17, 13], [35, 30, 25, 21])}, xlabel="Fine-tuning tokens",
-        title="More worked examples kept cutting wrong answers",
-        subtitle="Example data: share of 500 test questions answered wrong, by fine-tuning dose",
+        title="Wrong answers fell from 31% to 17% with more worked examples",
+        subtitle="Example data: share of 500 test questions answered wrong; the band is a 95% interval",
         ).save("line.png")
 ```
 ```python
 vl.stacked({"Closed book": [41, 0, 59], "With search": [76, 12, 12]},
            series=["Right", "Said it didn’t know", "Wrong"], colors=["blue", "beige", "coral"],
-           title="With search, wrong answers fell from three in five to one in eight",
-           subtitle="Example data: how 400 answers ended, closed book and with search",
+           title="With search, wrong answers fell from 59% to 12%",
+           subtitle="Example data: 400 answers per setup",
            ).save("stacked.png")
 ```
 
@@ -173,8 +173,8 @@ vl.quotes(
              vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
                       "dependencies or hardware problems. Check the server logs for error messages. …”",
                       "plain fine-tune", "gray")],
-    title="The trained model narrows the problem down instead of listing causes",
-    subtitle="Example data: one made-up question and the opening of each model’s reply, omissions marked",
+    title="The trained model narrowed the problem down instead of listing causes",
+    subtitle="Example data: the opening of each model’s reply to one question",
 ).save("quotes.png")
 
 vl.code_card("search_docs", {"query": "What to look up, in a few words."}, TOOL).save("tool.png")
@@ -192,8 +192,8 @@ vl.episodes([
     vl.Episode("With search_docs", meta="Same model · same question", outcome=("Answered 3.0, with a link", "blue"),
                blocks=[("Reasoning summary", "quote", "“Version numbers change often… I should check the release notes.”"),
                        ("search_docs", "code", "“query: acmelib release notes, newest version”")])],
-    frame="blog", title="Without search the model guessed; with search it checked first",
-    subtitle="Example data: two made-up episodes of the same model on the same question",
+    frame="blog", title="With search, the model checked the release notes instead of guessing",
+    subtitle="Example data",
 ).save("episodes.png")
 ```
 
@@ -210,7 +210,7 @@ vl.episodes([
   "Closed book": "coral"
  },
  "highlight": "With search",
- "title": "Search cut wrong answers fivefold",
+ "title": "With search, wrong answers fell from 59% to 12%",
  "subtitle": "Example data: share of 400 questions answered wrong"
 }
 ```

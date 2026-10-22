@@ -13,8 +13,8 @@ import vellum as vl
 vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
         highlight="Full documents", decimals=0,
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-        title="With full documents, the assistant answered nearly 9 in 10 questions correctly",
-        subtitle="Example data: share of 400 questions answered correctly in each of three setups",
+        title="Full documents raised correct answers from 41% to 88%",
+        subtitle="Example data: share of questions answered correctly",
         ).save("fig.png")
 ```
 
@@ -66,7 +66,7 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 
 ```json
 {"chart": "hbar", "data": {"Closed book": 59, "With search": 12}, "highlight": "With search",
- "title": "Search cut wrong answers fivefold", "subtitle": "Example data: share of 400 questions answered wrong"}
+ "title": "With search, wrong answers fell from 59% to 12%", "subtitle": "Example data: share of 400 questions answered wrong"}
 ```
 
 `vellum gallery -o out/` renders every example below. Rendering uses Playwright's headless Chromium, which
@@ -74,22 +74,44 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 
 ## Style rules
 
-1. **The title states a result** in one plain, easy-to-read sentence ("Search cut wrong answers fivefold", not
-   "Wrong answers by setup"). Use everyday words, with no jargon, abbreviations or tool names.
-   The subtitle says what was measured, in what unit, and over what sample.
-2. **Keep color meanings fixed across a write-up.**
+### Words
+
+Readers look at a figure's title first and remember it better than the chart, so the title carries the finding
+and nothing else on the figure competes with it.
+
+1. **The title states one finding, literally:** what was compared and what happened, in about 10 plain words.
+   "With search, wrong answers fell from 59% to 12%", not "Wrong answers by setup" or "Search changes
+   everything". If it needs a semicolon, make two figures.
+2. **It names what the eye sees first**, the highlighted bar or the biggest gap. If the point is a small
+   difference, change the chart (highlight it, drop other bars), not the words.
+3. **It says what was measured, not what it means:** "rated the episode higher", not "felt better"; "chose to
+   stop", not "wanted to stop".
+4. **Plain words only.** No colon setups ("The fix: search"), mirrored phrasing ("A moved without B, and B
+   without A"), metaphors, wordplay or questions, and no names coined inside a project, such as an arm's code
+   name. Use numbers instead of adjectives: "fell from 41% to 28%", not "dropped sharply". Field terms the
+   readers use daily are fine.
+5. **The subtitle is optional.** Leave it out when the title, axis and labels already say how to read the
+   chart. Otherwise write one line, not a sentence: the measure and unit if no axis names them, the sample
+   size, what the error bars are, and "Example data" when the numbers are made up ("Share of 400 questions
+   answered wrong; error bars are 95% intervals"). Methods, training details and model names that are not
+   being compared go in the text. If the measure needs a sentence to explain, show a simpler measure.
+6. **Numbers get two significant digits** (41%, not 41.3%), and each condition keeps one name across a
+   write-up.
+
+### Look
+
+7. **Keep color meanings fixed across a write-up.**
    - coral: the baseline, no intervention, or the bad outcome
    - blue: the intervention, or the point you are making
    - sage: a second kind of intervention (fine-tuning, a different prompt)
    - beige: untouched or reference
    - gray: everything else
-3. **Use one accent.** `highlight=` colors the bar you are talking about and turns the rest gray.
-4. **Label directly.** Write values at the bar tip and names at line ends, and keep legends small.
+8. **Use one accent.** `highlight=` colors the bar you are talking about and turns the rest gray.
+9. **Label directly.** Write values at the bar tip and names at line ends, and keep legends small.
    Notes such as "412 chats" or "352 of 400" go after the value.
-5. **Show intervals** (`ci=`) when the comparison depends on them, and say which intervals in the subtitle.
-6. **Mark example data.** Any figure made before the real numbers exist says so in its title or subtitle.
-7. **No caption at the bottom**, in the figure or under it in a write-up. What a caption would say goes in the
-   subtitle.
+10. **Show intervals** (`ci=`) when the comparison depends on them, and say what they are in the subtitle.
+11. **Mark example data** in the subtitle of any figure made before the real numbers exist.
+12. **No caption at the bottom**, in the figure or under it in a write-up.
 
 For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle, with the legend below the chart.
 `vl.set_defaults(frame="blog")` switches every figure.

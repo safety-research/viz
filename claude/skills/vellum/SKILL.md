@@ -25,8 +25,8 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 ```python
 import vellum as vl
 fig = vl.hbar({"Closed book": 59, "With search": 12}, colors={"Closed book": "coral"}, highlight="With search",
-              title="Search cut wrong answers fivefold",                         # the claim, as a sentence
-              subtitle="Share of 400 questions answered wrong, closed book and with search")  # measure, sample
+              title="With search, wrong answers fell from 59% to 12%",   # the finding, literally
+              subtitle="Share of 400 questions answered wrong")          # only what the chart can't show
 fig.save("fig.png")   # 2x PNG for Discord; .pdf for papers; .svg portable; .html for pages
 ```
 
@@ -45,18 +45,46 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 - Small multiples with one legend: `panels([...], cols=2)`.
 - Quoted replies: `quotes`. Transcripts side by side: `episodes`. A tool definition: `code_card`.
 
+## Write the words
+
+Readers look at the title first and remember it better than the chart, so the title carries the finding and
+nothing else on the figure competes with it.
+
+Title:
+- One finding, stated literally: what was compared and what happened, in about 10 plain words. If it needs a
+  semicolon, make two figures.
+- Name what the eye sees first, the highlighted bar or the biggest gap. If the point is a small difference,
+  change the chart (highlight it, drop other bars), not the words.
+- Say what was measured, not what it means: "rated the episode higher", not "felt better"; "chose to stop",
+  not "wanted to stop".
+- Numbers, not adjectives: "fell from 41% to 28%", not "dropped sharply".
+- No colon setups ("The fix: search"), mirrored phrasing ("A moved without B, and B without A"), metaphors,
+  wordplay or questions. No names coined inside the project, such as an arm's code name or a nickname for a
+  measure. Field terms the readers use daily are fine.
+
+Subtitle (optional):
+- Leave it out when the title, axis and labels already say how to read the chart.
+- Otherwise one line, not a sentence: the measure and unit if no axis names them, the sample size, what the
+  error bars are, and "Example data" if the numbers are made up: "Share of 400 questions answered wrong; error
+  bars are 95% intervals".
+- Never the method, training details (steps, seeds, layers), model names that aren't being compared, or a
+  second finding. Those go in the text. If the measure needs a sentence to explain, show a simpler measure.
+
+Labels: two significant digits (41%, not 41.3%), and one name per condition, the same in every figure and in the
+text.
+
+Check: read the title alone. Someone outside the project should be able to repeat the finding without asking
+what a word means.
+
 ## Style rules
 
-- Titles are plain, easy to read, and state a result: one short sentence in everyday words that says what
-  happened ("Search cut wrong answers fivefold"), not what the chart covers ("Wrong answers by setup"). Leave
-  out jargon, abbreviations and tool or variable names. The subtitle gives the measure, unit and sample.
-  Use `frame="blog"` for write-ups.
-- No figure captions at the bottom, in the image or under it in a write-up. What a caption would say, such as
-  the sample or which intervals are shown, goes in the subtitle.
+- Use `frame="blog"` for write-ups.
+- No figure captions at the bottom, in the image or under it in a write-up. The few facts needed to read the
+  chart go in the subtitle, and everything else goes in the text.
 - Colors keep their meaning. Coral is the baseline or bad outcome, blue the intervention or the point, sage a
   second intervention (fine-tuning, a different prompt), beige untouched, and gray the rest. Use one accent per
   figure.
 - Values are percents by default: pass 37 for 37%, and `unit=""` for scores. Show intervals when a claim
   depends on them, and name them in the subtitle.
-- Numbers must come from the run files. Label fake or example data as such in the title or subtitle.
+- Numbers must come from the run files. Label fake or example data as such in the subtitle.
 - Look at every PNG before you send it.
