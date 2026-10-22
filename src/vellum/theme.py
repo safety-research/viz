@@ -6,7 +6,7 @@ style with one claim per figure as a serif title, one accent on the point and di
 from __future__ import annotations
 
 # ---- surfaces and ink
-BG = "#F8F7F3"        # figure background: warm cream paper
+BG = "#FFFFFF"        # figure background: white
 CARD = "#F1EEE8"      # quote cards
 CARD_LIGHT = "#FFFDF9"  # code / tool cards
 SURFACE = "#ECE8E1"   # empty heatmap cell, low end of sequential scales
@@ -106,7 +106,7 @@ def color(c: str | None, default: str = "blue") -> str:
 
 
 def tint(c: str) -> str:
-    """Pale version of a palette color for backgrounds (falls back to mixing with the paper)."""
+    """Pale version of a palette color for backgrounds (falls back to mixing with the background)."""
     key = c.lower()
     if key in TINT:
         return TINT[key]

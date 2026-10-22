@@ -1,6 +1,6 @@
 ---
 name: vellum
-description: "vellum house figure style: cream paper, Newsreader serif claim titles, DM Sans labels, coral = baseline / blue = intervention, direct value labels. The ~/dev/vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, coral = baseline / blue = intervention, direct value labels. The ~/dev/vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # vellum: house figure style
@@ -25,8 +25,7 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 ```python
 import vellum as vl
 fig = vl.hbar({"Closed book": 59, "With search": 12}, colors={"Closed book": "coral"}, highlight="With search",
-              title="With search, wrong answers fell from 59% to 12%",   # the finding, literally
-              subtitle="Share of 400 questions answered wrong")          # only what the chart can't show
+              title="With search, wrong answers fell from 59% to 12%")   # the finding, literally; no subtitle
 fig.save("fig.png")   # 2x PNG for Discord; .pdf for papers; .svg portable; .html for pages
 ```
 
@@ -62,13 +61,10 @@ Title:
   wordplay or questions. No names coined inside the project, such as an arm's code name or a nickname for a
   measure. Field terms the readers use daily are fine.
 
-Subtitle (optional):
-- Leave it out when the title, axis and labels already say how to read the chart.
-- Otherwise one line, not a sentence: the measure and unit if no axis names them, the sample size, what the
-  error bars are, and "Example data" if the numbers are made up: "Share of 400 questions answered wrong; error
-  bars are 95% intervals".
-- Never the method, training details (steps, seeds, layers), model names that aren't being compared, or a
-  second finding. Those go in the text. If the measure needs a sentence to explain, show a simpler measure.
+Subtitle: none by default. Add one only to say "Example data" when the numbers are made up, or what the error
+bars are ("Error bars are 95% intervals"). The measure and unit go in the axis label, or in the title when the
+chart has no axis label. Sample sizes, methods, training details (steps, seeds, layers) and model names go in the
+text. If the measure needs a sentence to explain, show a simpler measure.
 
 Labels: two significant digits (41%, not 41.3%), and one name per condition, the same in every figure and in the
 text.
@@ -79,8 +75,8 @@ what a word means.
 ## Style rules
 
 - Use `frame="blog"` for write-ups.
-- No figure captions at the bottom, in the image or under it in a write-up. The few facts needed to read the
-  chart go in the subtitle, and everything else goes in the text.
+- No figure captions at the bottom, in the image or under it in a write-up. What a caption would say goes in
+  the text.
 - Colors keep their meaning. Coral is the baseline or bad outcome, blue the intervention or the point, sage a
   second intervention (fine-tuning, a different prompt), beige untouched, and gray the rest. Use one accent per
   figure.

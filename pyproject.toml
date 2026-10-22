@@ -1,7 +1,7 @@
 [project]
 name = "vellum"
 version = "0.1.0"
-description = "House figure style (cream paper, Newsreader claim titles, DM Sans labels, coral/blue/sage) as a one-call chart library: SVG out, PNG/PDF via headless Chromium"
+description = "House figure style (white background, Newsreader claim titles, DM Sans labels, coral/blue/sage) as a one-call chart library: SVG out, PNG/PDF via headless Chromium"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

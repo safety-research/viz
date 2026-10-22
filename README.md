@@ -2,10 +2,9 @@
 
 A house figure style for research write-ups, as a one-call chart library.
 
-The look: cream paper (`#F8F7F3`), a Newsreader serif title that states the claim, a muted DM Sans subtitle that
-says what was measured, coral for the baseline and blue for the intervention, direct value labels, light gridlines
-and no chart junk. Vertical bars follow the look of the Anthropic blog; horizontal bars, heatmaps, tiles and cards
-aim for the clearest possible reading.
+The look: a white background, a Newsreader serif title that states the finding, coral for the baseline and blue
+for the intervention, direct value labels, light gridlines and no chart junk. Vertical bars follow the look of the
+Anthropic blog; horizontal bars, heatmaps, tiles and cards aim for the clearest possible reading.
 
 ```python
 import vellum as vl
@@ -14,7 +13,7 @@ vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
         highlight="Full documents", decimals=0,
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
         title="Full documents raised correct answers from 41% to 88%",
-        subtitle="Example data: share of questions answered correctly",
+        subtitle="Example data",
         ).save("fig.png")
 ```
 
@@ -66,7 +65,7 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 
 ```json
 {"chart": "hbar", "data": {"Closed book": 59, "With search": 12}, "highlight": "With search",
- "title": "With search, wrong answers fell from 59% to 12%", "subtitle": "Example data: share of 400 questions answered wrong"}
+ "title": "With search, wrong answers fell from 59% to 12%", "subtitle": "Example data"}
 ```
 
 `vellum gallery -o out/` renders every example below. Rendering uses Playwright's headless Chromium, which
@@ -90,11 +89,10 @@ and nothing else on the figure competes with it.
    without A"), metaphors, wordplay or questions, and no names coined inside a project, such as an arm's code
    name. Use numbers instead of adjectives: "fell from 41% to 28%", not "dropped sharply". Field terms the
    readers use daily are fine.
-5. **The subtitle is optional.** Leave it out when the title, axis and labels already say how to read the
-   chart. Otherwise write one line, not a sentence: the measure and unit if no axis names them, the sample
-   size, what the error bars are, and "Example data" when the numbers are made up ("Share of 400 questions
-   answered wrong; error bars are 95% intervals"). Methods, training details and model names that are not
-   being compared go in the text. If the measure needs a sentence to explain, show a simpler measure.
+5. **No subtitle by default.** Add one only to say "Example data" when the numbers are made up, or what the
+   error bars are ("Error bars are 95% intervals"). The measure and unit go in the axis label, or in the title
+   when the chart has no axis label. Sample sizes, methods, training details and model names go in the text.
+   If the measure needs a sentence to explain, show a simpler measure.
 6. **Numbers get two significant digits** (41%, not 41.3%), and each condition keeps one name across a
    write-up.
 

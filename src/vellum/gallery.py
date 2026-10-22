@@ -63,13 +63,13 @@ def figures() -> dict[str, vl.Figure]:
     F["01_hbar_sorted"] = vl.hbar(
         WRONG_BY_TOPIC, sort=True, color="coral", decimals=0,
         title="Questions on fast-changing topics were answered wrong most often",
-        subtitle="Example data: share of 200 questions per topic answered wrong, closed book")
+        subtitle="Example data")
     F["02_hbar_highlight"] = vl.hbar(
         {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
         highlight="Full documents", decimals=0,
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
         title="Full documents raised correct answers from 41% to 88%",
-        subtitle="Example data: share of questions answered correctly")
+        subtitle="Example data")
     F["03_tiles"] = vl.tiles(
         [[vl.Tile(412, ["agreed the answer was right", "94% of the answers people accepted"], "blue", strong=True),
           vl.Tile(38, ["accepted a wrong answer", "the costly mistake"], "coral")],
@@ -86,32 +86,32 @@ def figures() -> dict[str, vl.Figure]:
         annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
         xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
         title="Datasets with more questions about recent events drew more searches",
-        subtitle="Example data: 16 datasets, one dot each")
+        subtitle="Example data")
     F["05_heatmap"] = vl.heatmap(
         FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
         title="Three of eight models finished most of the huge tasks",
-        subtitle="Example data: share of 30 runs finished within the time limit")
+        subtitle="Example data")
     F["06_panels_grouped"] = vl.panels([
         vl.hbar({"Recent events": [3.10, 5.45], "Settled facts": [5.60, 5.72]}, series=["Closed book", "With search"],
                 unit="", decimals=1, domain=(1, 7), ticks=[1, 2, 3, 4, 5, 6, 7], title="Helpfulness, 1 to 7"),
         vl.hbar({"Recent events": [31.5, 74.0], "Settled facts": [80.5, 82.0]}, series=["Closed book", "With search"],
                 decimals=0, title="Would ask it again")],
         title="With search, people rated answers on recent events higher",
-        subtitle="Example data: 300 chats per setup")
+        subtitle="Example data")
     F["07_hbar_notes"] = vl.hbar(
         {"Wrong answer": 2.31, "Said it didn’t know": 3.94, "Right answer with a source": 5.86},
         colors={"Wrong answer": "coral", "Said it didn’t know": "blue", "Right answer with a source": "gray"},
         notes={"Wrong answer": "412 chats", "Said it didn’t know": "236 chats", "Right answer with a source": "1,052 chats"},
         unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
         title="People rated “I don’t know” higher than a wrong answer",
-        subtitle="Example data: mean rating, 1 (useless) to 7 (very helpful)")
+        subtitle="Example data")
     F["08_hbar_sections"] = vl.hbar(
         [("Base model", 31.0), ("Plain fine-tune (control)", 33.5), ("Worked examples", 18.2), vl.section("Other data"),
          ("Textbook passages", 27.4), ("Forum answers", 36.9), ("Short answers only", 22.6)],
         colors={"Base model": "dark", "Worked examples": "blue"}, highlight="Worked examples", decimals=0,
         ref=31.0, notes={"Forum answers": "worse than the base model"},
         title="Worked examples cut wrong answers from 31% to 18%",
-        subtitle="Example data: share of 500 test questions answered wrong, by fine-tuning dataset")
+        subtitle="Example data")
     F["09_quotes"] = vl.quotes(
         prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
         replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
@@ -122,7 +122,7 @@ def figures() -> dict[str, vl.Figure]:
                           "dependencies or hardware problems. Check the server logs for error messages… You could also "
                           "try reinstalling your dependencies.”", "plain fine-tune", "gray")],
         title="The trained model narrowed the problem down instead of listing causes",
-        subtitle="Example data: the opening of each model’s reply to one question")
+        subtitle="Example data")
     F["10_code_card"] = vl.code_card("search_docs", {"query": "What to look up, in a few words."}, TOOL)
     small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}
     prompts = {"Closed book": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Search": 9.5}
@@ -140,7 +140,7 @@ def figures() -> dict[str, vl.Figure]:
                 title="(d) When search finds nothing", **small)],
         legend={"Closed book": "coral", "Other fixes": "sage", "Search": "blue", "Search that finds nothing": "light-blue"},
         frame="blog", title="Search cut wrong answers more than better prompts or a bigger model",
-        subtitle="Example data: 1,200 questions per setup; error bars are 95% intervals")
+        subtitle="Example data; error bars are 95% intervals")
     shares = {m: 100 * won / (won + lost) for m, won, lost in PREFERENCES}
     cis = {m: wilson(won, won + lost) for m, won, lost in PREFERENCES}
     all_won, all_lost = sum(p[1] for p in PREFERENCES), sum(p[2] for p in PREFERENCES)
@@ -154,7 +154,7 @@ def figures() -> dict[str, vl.Figure]:
         vl.bars(shares, ci=cis, colors={"Pooled": "deep-sage"}, color="sage", decimals=0, ref=50, ticks=[0, 25, 50, 75, 100],
                 ylabel="Prefers the search version", title="Blind comparisons")],
         title="Search won 66% of blind comparisons but did not clearly change ratings", frame="blog", legend=False,
-        subtitle="Example data: six models; error bars are 95% intervals")
+        subtitle="Example data; error bars are 95% intervals")
     F["13_episodes"] = vl.episodes([
         vl.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
             ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
@@ -171,27 +171,27 @@ def figures() -> dict[str, vl.Figure]:
     F["14_bars_models"] = vl.bars(
         WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
         title="Search cut wrong answers for all ten models",
-        subtitle="Example data: 200 questions per model")
+        subtitle="Example data")
     F["15_dumbbell"] = vl.dumbbell(
         RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
-        missing="not rated", title="Every rated model scored higher with search",
-        subtitle="Example data: mean helpfulness, 1 (not at all) to 7 (very); 30 ratings per model and setup")
+        missing="not rated", title="Every rated model got higher helpfulness ratings with search",
+        subtitle="Example data")
     F["16_waffle"] = vl.waffle(
         {"Out-of-date fact": 210, "Misread the question": 140, "Arithmetic slip": 90, "Grader error": 60},
         count_label="answers",
         title="Out-of-date facts caused 42 in 100 wrong answers",
-        subtitle="Example data: causes of 500 wrong answers; one square is 5 answers")
+        subtitle="Example data")
     F["17_line_example"] = vl.line(
         {"Worked examples": [31, 26, 21, 17], "Plain fine-tune": [31, 32, 33, 34]}, x=[0, 1, 3, 10],
         xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, xscale="category", colors=["blue", "coral"],
         bands={"Worked examples": ([27, 22, 17, 13], [35, 30, 25, 21])}, xlabel="Fine-tuning tokens",
         title="Wrong answers fell from 31% to 17% with more worked examples",
-        subtitle="Example data: share of 500 test questions answered wrong; the band is a 95% interval")
+        subtitle="Example data; the band is a 95% interval")
     F["18_stacked_example"] = vl.stacked(
         {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
         colors=["blue", "beige", "coral"],
         title="With search, wrong answers fell from 59% to 12%",
-        subtitle="Example data: 400 answers per setup")
+        subtitle="Example data")
     return F
 
 
