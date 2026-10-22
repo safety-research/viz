@@ -13,7 +13,6 @@ vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
         highlight="Full documents", decimals=0,
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
         title="Full documents raised correct answers from 41% to 88%",
-        subtitle="Example data",
         ).save("fig.png")
 ```
 
@@ -65,7 +64,7 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 
 ```json
 {"chart": "hbar", "data": {"Closed book": 59, "With search": 12}, "highlight": "With search",
- "title": "With search, wrong answers fell from 59% to 12%", "subtitle": "Example data"}
+ "title": "With search, wrong answers fell from 59% to 12%"}
 ```
 
 `vellum gallery -o out/` renders every example below. Rendering uses Playwright's headless Chromium, which
@@ -141,7 +140,7 @@ Colors are names from `vl.PALETTE`: `coral`, `blue`, `sage`, `beige`, `gray`, `d
 
 ## Gallery
 
-Every figure here uses made-up numbers and says so in its subtitle.
+Every number in these figures is made up. Error bars and bands are 95% intervals.
 
 | | |
 |---|---|
