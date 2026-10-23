@@ -5,8 +5,10 @@
 from __future__ import annotations
 
 import math
+import random
 import sys
 from pathlib import Path
+from statistics import NormalDist
 
 import vellum as vl
 
@@ -22,6 +24,25 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
 def wilson_cis(rates: dict[str, float], n: int) -> dict[str, tuple[float, float]]:
     """Wilson intervals for percents that were each measured on n items."""
     return {k: wilson(round(v * n / 100), n) for k, v in rates.items()}
+
+
+def diff_ci(a: float, b: float, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Interval for the difference b - a of two percents, each measured on n items."""
+    se = 100 * math.sqrt(a / 100 * (1 - a / 100) / n + b / 100 * (1 - b / 100) / n)
+    return b - a - z * se, b - a + z * se
+
+
+def lognormal(n: int, median: float, spread: float, seed: int, digits: int = 0) -> list[float]:
+    """n made-up values with a long right tail, the same on every run and Python version."""
+    rng = random.Random(seed)
+    dist = NormalDist(math.log(median), spread)
+    return [round(math.exp(dist.inv_cdf(rng.random() or 0.5)), digits) for _ in range(n)]
+
+
+
+
+def mean_curve(runs: list[list[float]]) -> list[float]:
+    return [sum(step) / len(step) for step in zip(*runs)]
 
 
 # A made-up study of an assistant that answers questions closed book or with a document search tool.
@@ -41,8 +62,6 @@ FINISHED = {  # share of 30 runs finished within the time limit: small, medium, 
     "Model D": [100, 96.7, 80.0, 40.0], "Model E": [100, 96.7, 56.7, 16.7], "Model F": [100, 90.0, 33.3, 3.3],
     "Model G": [96.7, 83.3, 20.0, 0], "Model H": [93.3, 70.0, 6.7, 0],
 }
-PREFERENCES = [("Model A", 172, 78), ("Model B", 150, 95), ("Model C", 201, 64), ("Model D", 133, 112),
-               ("Model E", 188, 70), ("Model F", 160, 90)]  # blind comparisons won, lost
 WRONG_BY_MODEL = {  # share of 200 questions answered wrong: closed book, with search
     "Model A": [12.5, 4.0], "Model B": [18.0, 5.5], "Model C": [22.5, 6.0], "Model D": [27.0, 8.5],
     "Model E": [31.5, 7.0], "Model F": [35.0, 9.5], "Model G": [41.5, 11.0], "Model H": [46.0, 10.5],
@@ -53,74 +72,80 @@ RATINGS = {  # mean helpfulness, 1 (not at all) to 7 (very): closed book, with s
     "Model E": (3.9, 5.7), "Model F": (None, None), "Model G": (3.4, 5.5), "Model H": (3.0, 5.6),
     "Model I": (2.7, 5.2), "Model J": (2.5, 5.0),
 }
-TOOL = ("Search the project's documentation and return the three most relevant passages, each with its page title "
-        "and link. Use it when an answer depends on details you are not sure of, such as version numbers, settings or "
-        "recent changes. Write the query the way the documentation would phrase it.")
+WRONG_BY_SEED = {  # share of 400 questions answered wrong after fine-tuning, one value per training run (seed)
+    "Plain fine-tune": [33.0, 35.5, 31.0, 36.0, 34.5], "Half the worked examples": [24.0, 27.5, 22.0, 26.0, 25.5],
+    "Worked examples": [17.5, 21.0, 19.0, 18.0, 20.5],
+}
+STEPS = [0, 200, 400, 600, 800, 1000]
+WRONG_DURING_TRAINING = {  # wrong answers at each training step, one list per run
+    "Worked examples": [[31.0, 25.5, 21.0, 19.5, 18.0, 17.5], [30.5, 26.5, 23.0, 20.5, 19.5, 18.5],
+                        [31.5, 24.0, 20.5, 18.0, 17.0, 17.0], [31.0, 27.0, 22.5, 21.0, 19.0, 18.5],
+                        [30.5, 25.0, 21.5, 19.0, 18.5, 17.5]],
+    "Plain fine-tune": [[31.0, 31.5, 32.5, 32.0, 33.0, 33.5], [30.5, 32.0, 31.5, 33.0, 32.5, 33.0],
+                        [31.5, 30.5, 32.0, 32.5, 33.5, 32.5], [31.0, 31.0, 33.0, 32.0, 32.0, 34.0],
+                        [30.5, 32.5, 32.0, 33.5, 33.0, 33.0]],
+}
+WRONG_WITH_SEARCH_BY_TOPIC = {  # the topics of WRONG_BY_TOPIC, answered with search
+    "Software versions": 15, "Exchange rates": 13, "Product prices": 11, "Sports results": 10, "Company leaders": 9,
+    "World records": 9, "Election results": 8, "Movie casts": 6, "Chemistry": 5, "Recipes": 5, "Geography": 4,
+    "Classic novels": 3,
+}
+ANSWER_WORDS = {"Closed book": lognormal(400, 85, 0.45, 1), "With search": lognormal(400, 150, 0.35, 2)}
+SECONDS = {"Closed book": lognormal(200, 3, 0.4, 23, 1), "Search snippets": lognormal(200, 6, 0.45, 24, 1),
+           "Full documents": lognormal(200, 9.5, 0.5, 48, 1)}  # seconds to answer each of 200 questions
+
+
+# What each gallery figure is for: the headings of examples/README.md and the skill's chart list.
+ABOUT = {
+    "01_hbar": "Rates by condition, the baseline and the intervention named by role",
+    "02_bars": "Each model with and without the intervention",
+    "03_bars_runs": "The mean over runs, with every run as a dot",
+    "04_dotplot": "An effect and its interval for each model, against zero",
+    "05_line_runs": "A training curve, with every run faint behind the mean",
+    "06_panels": "Several comparisons that share one legend",
+    "07_heatmap": "Models by conditions",
+    "08_scatter": "One dot per dataset, against a reference line",
+    "09_dumbbell": "Before and after for each model",
+    "10_stacked": "Where the outcomes went (coral is the bad outcome)",
+    "11_histogram": "Two distributions overlaid",
+    "12_box": "Distributions per condition, for many items each",
+    "13_strip": "One dot per item, with the mean and its interval",
+    "14_quotes": "One prompt and contrasting replies",
+    "15_episodes": "What the model did, transcripts side by side",
+}
 
 
 def figures() -> dict[str, vl.Figure]:
     F: dict[str, vl.Figure] = {}
-    F["01_hbar_sorted"] = vl.hbar(
-        WRONG_BY_TOPIC, sort=True, color="coral", decimals=0,
-        title="Questions on fast-changing topics were answered wrong most often")
-    F["02_hbar_highlight"] = vl.hbar(
-        {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
-        highlight="Full documents", decimals=0,
+    F["01_hbar"] = vl.hbar(
+        {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
+        roles={"baseline": "Closed book", "intervention": "Full documents"},
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
         title="Full documents raised correct answers from 41% to 88%")
-    F["03_tiles"] = vl.tiles(
-        [[vl.Tile(412, ["agreed the answer was right", "94% of the answers people accepted"], "blue", strong=True),
-          vl.Tile(38, ["accepted a wrong answer", "the costly mistake"], "coral")],
-         [vl.Tile(27, ["rejected a right answer", "mostly unusual formats"], "beige"),
-          vl.Tile(523, ["agreed the answer was wrong"], "gray")]],
-        col_headers=[("People said right", "439 answers"), ("People said wrong", "561 answers")],
-        row_headers=[("Grader said right", "450 answers"), ("Grader said wrong", "550 answers")],
-        title="The automatic grader agreed with people on 935 of 1,000 answers")
-    F["04_scatter"] = vl.scatter(
-        SEARCHES, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
-        labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
-        diagonal="one search per question that needs one",
-        annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
-        xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
-        title="Datasets with more questions about recent events drew more searches")
-    F["05_heatmap"] = vl.heatmap(
-        FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
-        title="Three of eight models finished most of the huge tasks")
-    F["06_panels_grouped"] = vl.panels([
-        vl.hbar({"Recent events": [3.10, 5.45], "Settled facts": [5.60, 5.72]}, series=["Closed book", "With search"],
-                unit="", decimals=1, domain=(1, 7), ticks=[1, 2, 3, 4, 5, 6, 7], title="Helpfulness, 1 to 7"),
-        vl.hbar({"Recent events": [31.5, 74.0], "Settled facts": [80.5, 82.0]}, series=["Closed book", "With search"],
-                decimals=0, title="Would ask it again")],
-        title="With search, people rated answers on recent events higher")
-    F["07_hbar_notes"] = vl.hbar(
-        {"Wrong answer": 2.31, "Said it didn’t know": 3.94, "Right answer with a source": 5.86},
-        colors={"Wrong answer": "coral", "Said it didn’t know": "blue", "Right answer with a source": "gray"},
-        notes={"Wrong answer": "412 chats", "Said it didn’t know": "236 chats", "Right answer with a source": "1,052 chats"},
-        unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
-        title="People rated “I don’t know” higher than a wrong answer")
-    F["08_hbar_sections"] = vl.hbar(
-        [("Base model", 31.0), ("Plain fine-tune (control)", 33.5), ("Worked examples", 18.2), vl.section("Other data"),
-         ("Textbook passages", 27.4), ("Forum answers", 36.9), ("Short answers only", 22.6)],
-        roles={"reference": "Base model", "intervention": "Worked examples"}, highlight="Worked examples", decimals=0,
-        ref=31.0, notes={"Forum answers": "worse than the base model"},
-        title="Worked examples cut wrong answers from 31% to 18%")
-    F["09_quotes"] = vl.quotes(
-        prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
-        replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
-                          "installed package versions and the environment variables. Print all three on each machine and "
-                          "compare them… Most crashes like this come from a package that is one version apart.”",
-                          "trained on step-by-step answers", "blue"),
-                 vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
-                          "dependencies or hardware problems. Check the server logs for error messages… You could also "
-                          "try reinstalling your dependencies.”", "plain fine-tune", "gray")],
-        title="The trained model narrowed the problem down instead of listing causes")
-    F["10_code_card"] = vl.code_card("search_docs", {"query": "What to look up, in a few words."}, TOOL)
+    F["02_bars"] = vl.bars(
+        WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
+        roles={"baseline": "Closed book", "intervention": "With search"},
+        title="Search cut wrong answers for all ten models")
+    F["03_bars_runs"] = vl.bars(
+        {arm: sum(runs) / len(runs) for arm, runs in WRONG_BY_SEED.items()}, runs=WRONG_BY_SEED,
+        roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, ref=31, ref_label="Base model",
+        decimals=0, ylabel="Questions answered wrong",
+        title="Worked examples cut wrong answers from 34% to 19% in every run")
+    F["04_dotplot"] = vl.dotplot(
+        {m: b - a for m, (a, b) in WRONG_BY_MODEL.items()},
+        ci={m: diff_ci(a, b, 200) for m, (a, b) in WRONG_BY_MODEL.items()}, ref=0, unit="", decimals=0,
+        xlabel="Change in wrong answers with search (percentage points)",
+        title="Search cut each model's wrong answers by 8 to 46 points")
+    F["05_line_runs"] = vl.line(
+        {arm: mean_curve(runs) for arm, runs in WRONG_DURING_TRAINING.items()}, x=STEPS, runs=WRONG_DURING_TRAINING,
+        roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
+        xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training")
     small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}
     prompts = {"Closed book": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Search": 9.5}
     bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8}
     index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
     empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
-    F["11_small_multiples"] = vl.panels([
+    F["06_panels"] = vl.panels([
         vl.bars(prompts, ci=wilson_cis(prompts, 1200),
                 title="(a) Better prompts", **small),
         vl.bars(bigger, ci=wilson_cis(bigger, 1200),
@@ -134,20 +159,45 @@ def figures() -> dict[str, vl.Figure]:
                "intervention": ["Search", "Small with search", "Both", "Search answered"],
                "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
         frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
-    shares = {m: 100 * won / (won + lost) for m, won, lost in PREFERENCES}
-    cis = {m: wilson(won, won + lost) for m, won, lost in PREFERENCES}
-    all_won, all_lost = sum(p[1] for p in PREFERENCES), sum(p[2] for p in PREFERENCES)
-    shares["Pooled"], cis["Pooled"] = 100 * all_won / (all_won + all_lost), wilson(all_won, all_won + all_lost)
-    F["12_blog_panels"] = vl.panels([
-        vl.bars({"Search − closed book": 0.12, "Rerank − closed book": 0.19, "Rerank − search": 0.07},
-                ci={"Search − closed book": (-0.15, 0.39), "Rerank − closed book": (-0.06, 0.44),
-                    "Rerank − search": (-0.21, 0.33)},
-                colors=["sage", "sage", "light-sage"], unit="", decimals=2, signed=True, ticks=[-0.4, -0.2, 0, 0.2, 0.4, 0.6],
-                ylabel="Difference in rating (−3 to +3 scale)", title="User ratings"),
-        vl.bars(shares, ci=cis, colors={"Pooled": "deep-sage"}, color="sage", decimals=0, ref=50, ticks=[0, 25, 50, 75, 100],
-                ylabel="Prefers the search version", title="Blind comparisons")],
-        title="Search won 66% of blind comparisons but did not clearly change ratings", frame="blog", legend=False)
-    F["13_episodes"] = vl.episodes([
+    F["07_heatmap"] = vl.heatmap(
+        FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
+        title="Three of eight models finished most of the huge tasks")
+    F["08_scatter"] = vl.scatter(
+        SEARCHES, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
+        labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
+        diagonal="one search per question that needs one",
+        annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
+        xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
+        title="Datasets with more questions about recent events drew more searches")
+    F["09_dumbbell"] = vl.dumbbell(
+        RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
+        roles={"baseline": "Closed book", "intervention": "With search"},
+        missing="not rated", title="Every rated model got higher helpfulness ratings with search")
+    F["10_stacked"] = vl.stacked(
+        {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
+        colors=["blue", "beige", "coral"],
+        title="With search, wrong answers fell from 59% to 12%")
+    F["11_histogram"] = vl.histogram(
+        ANSWER_WORDS, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"}, xlabel="Answer length (words)", ylabel="Share of answers",
+        title="With search, the median answer grew from 84 to 150 words")
+    F["12_box"] = vl.box(
+        SECONDS, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
+        ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
+    F["13_strip"] = vl.strip(
+        {"Closed book": list(WRONG_BY_TOPIC.values()), "With search": list(WRONG_WITH_SEARCH_BY_TOPIC.values())},
+        ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0, ylabel="Wrong answers per topic",
+        title="Search cut wrong answers from 28% to 8% for the average topic")
+    F["14_quotes"] = vl.quotes(
+        prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
+        replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
+                          "installed package versions and the environment variables. Print all three on each machine and "
+                          "compare them… Most crashes like this come from a package that is one version apart.”",
+                          "trained on step-by-step answers", "blue"),
+                 vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
+                          "dependencies or hardware problems. Check the server logs for error messages… You could also "
+                          "try reinstalling your dependencies.”", "plain fine-tune", "gray")],
+        title="The trained model narrowed the problem down instead of listing causes")
+    F["15_episodes"] = vl.episodes([
         vl.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
             ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
                                             "My information might be out of date, but I’m fairly confident.”")),
@@ -159,26 +209,6 @@ def figures() -> dict[str, vl.Figure]:
             ("search_docs", "code", "“query: acmelib release notes, newest version”")],
             outcome=("Answered 3.0, with a link", "blue"))],
         frame="blog", title="With search, the model checked the release notes instead of guessing")
-    F["14_bars_models"] = vl.bars(
-        WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
-        title="Search cut wrong answers for all ten models")
-    F["15_dumbbell"] = vl.dumbbell(
-        RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
-        missing="not rated", title="Every rated model got higher helpfulness ratings with search")
-    F["16_waffle"] = vl.waffle(
-        {"Out-of-date fact": 210, "Misread the question": 140, "Arithmetic slip": 90, "Grader error": 60},
-        count_label="answers",
-        title="Out-of-date facts caused 42 in 100 wrong answers")
-    F["17_line_example"] = vl.line(
-        {"Worked examples": [31, 26, 21, 17], "Plain fine-tune": [31, 32, 33, 34]}, x=[0, 1, 3, 10],
-        xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, xscale="category",
-        roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"},
-        bands={"Worked examples": ([27, 22, 17, 13], [35, 30, 25, 21])}, xlabel="Fine-tuning tokens",
-        title="Wrong answers fell from 31% to 17% with more worked examples")
-    F["18_stacked_example"] = vl.stacked(
-        {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
-        colors=["blue", "beige", "coral"],
-        title="With search, wrong answers fell from 59% to 12%")
     return F
 
 
@@ -192,6 +222,52 @@ def build(out: Path, only: list[str] | None = None) -> list[Path]:
     return written
 
 
+def examples() -> str:
+    """examples/README.md: each gallery figure's code beside the image it makes, generated from this file."""
+    import ast
+    src = Path(__file__).read_text()
+    tree = ast.parse(src)
+    shared = {t.id for n in tree.body if isinstance(n, ast.Assign) for t in n.targets if isinstance(t, ast.Name)}
+    shared |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)} - {"figures", "build", "examples"}
+    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "figures")
+    out = ["# vellum examples", "",
+           "Every gallery figure with the code that makes it. Every number is made up, and error bars and bands are 95%",
+           "intervals. Run one with `uv run --with-editable \"$(vellum path)\" python ex.py`. This page is generated from",
+           "`src/vellum/gallery.py` (`vellum gallery --examples examples/README.md`), so edit that file, not this one.", ""]
+    pending: list[ast.stmt] = []
+    for stmt in fn.body:
+        target = stmt.targets[0] if isinstance(stmt, ast.Assign) else None
+        if not (isinstance(target, ast.Subscript) and isinstance(target.slice, ast.Constant)):
+            if not (isinstance(stmt, ast.AnnAssign) or isinstance(stmt, ast.Return)):
+                pending.append(stmt)
+            continue
+        name = target.slice.value
+        nodes = [*pending, stmt.value]
+        used = sorted({n.id for s in nodes for n in ast.walk(s) if isinstance(n, ast.Name)} & shared)
+        lines = ["import vellum as vl"] + ([f"from vellum.gallery import {', '.join(used)}"] if used else []) + [""]
+        def code(node) -> str:  # the source, its continuation lines moved out of figures()'s body
+            first, *rest = ast.get_source_segment(src, node).split("\n")
+            return "\n".join([first, *(ln[4:] if ln.startswith("    ") else ln for ln in rest)])
+        lines += [code(s) for s in pending]
+        lines.append(f'{code(stmt.value)}.save("{name}.png")')
+        num, title = name.split("_", 1)
+        out += [f"## {int(num)}. {ABOUT[name]}", "", f"![{title}](../docs/gallery/{name}.png)", "", "```python",
+                *lines, "```", ""]
+        pending = []
+    out += ["## No Python: a JSON spec", "", "A list of specs makes several figures; each takes the same keys as the",
+            "chart's arguments, plus `\"chart\"`, `\"roles\"` and `\"out\"`.", "", "```json",
+            '{"chart": "hbar", "data": {"Closed book": 59, "With search": 12},',
+            ' "roles": {"baseline": "Closed book", "intervention": "With search"},',
+            ' "title": "With search, wrong answers fell from 59% to 12%"}', "```", "",
+            "```bash", "vellum check fivefold.json && vellum render fivefold.json -o fivefold.png --alt", "```", ""]
+    return "\n".join(out)
+
+
 if __name__ == "__main__":
-    for p in build(Path(sys.argv[1] if len(sys.argv) > 1 else "vellum-gallery"), sys.argv[2:] or None):
+    args = sys.argv[1:]
+    if "--examples" in args:
+        i = args.index("--examples")
+        Path(args[i + 1]).write_text(examples())
+        del args[i:i + 2]
+    for p in build(Path(args[0] if args else "vellum-gallery"), args[1:] or None):
         print(p)

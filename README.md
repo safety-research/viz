@@ -9,14 +9,13 @@ Anthropic blog; horizontal bars, heatmaps, tiles and cards aim for the clearest 
 ```python
 import vellum as vl
 
-vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
-        highlight="Full documents", decimals=0,
+vl.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
+        roles={"baseline": "Closed book", "intervention": "Full documents"},
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-        title="Full documents raised correct answers from 41% to 88%",
-        ).save("fig.png")
+        title="Full documents raised correct answers from 41% to 88%").save("fig.png")
 ```
 
-![](docs/gallery/02_hbar_highlight.png)
+![](docs/gallery/01_hbar.png)
 
 Every chart returns a `Figure`. `.save()` picks the format from the extension:
 
@@ -201,23 +200,31 @@ a title is true or the chart is the right one.
 
 | Function | Use it for | Gallery |
 |---|---|---|
-| `hbar(data, ...)` | Rates by condition or model. One series, grouped series (`series=[...]`), `highlight`, `notes`, `ci`, a `ref` line, `vl.section("heading")` rows. | 01, 02, 07, 08 |
-| `bars(data, ...)` | Vertical bars in the blog look: the baseline next to the intervention, value on top, whiskers, a dashed `ref` line, negative values. | 11, 12, 14 |
-| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 05 |
-| `tiles(grid, ...)` | Big-number tiles, such as a confusion matrix. Each `vl.Tile(value, lines, color, strong)`. | 03 |
-| `waffle(parts, ...)` | "52 in 100" shares. | 16 |
-| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. | 04 |
-| `dumbbell(data, ...)` | Before and after per model. | 15 |
-| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`. | 17 |
-| `stacked(data, series=...)` | Where the outcomes went. | 18 |
-| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. | 06, 11, 12 |
-| `quotes(replies, prompt=...)` | A message and contrasting replies (`vl.Reply`). | 09 |
-| `episodes([vl.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. | 13 |
-| `code_card(name, params, description)` | A tool definition. | 10 |
+| `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `vl.section("heading")` rows, `runs=` dots. | 01 |
+| `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. | 02, 03 |
+| `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. | 04 |
+| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. | 05 |
+| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. | 06 |
+| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 07 |
+| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. | 08 |
+| `dumbbell(data, ...)` | Before and after per model. | 09 |
+| `stacked(data, series=...)` | Where the outcomes went. | 10 |
+| `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. | 11 |
+| `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. | 12 |
+| `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. | 13 |
+| `quotes(replies, prompt=...)` | A message and contrasting replies (`vl.Reply`). | 14 |
+| `episodes([vl.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. | 15 |
+
+The library also keeps `ecdf`, `violin`, `tiles` (big-number tiles), `waffle` and `code_card` (a tool definition)
+for older scripts. They have no gallery figure because the charts above cover what research write-ups need.
 
 Data can be `{label: value}`, `{label: [v1, v2]}` (grouped), a list of `(label, value)` pairs, or a pandas
 Series or DataFrame. Values are percents by default (`37` means 37%). Pass `unit=""` for scores and means.
 `decimals=`, `fmt="{:.1f}%"`, `domain=(lo, hi)` and `ticks=[...]` override the defaults.
+
+The distribution charts take the raw values: `{group: [v, ...]}`, or a plain list for one `histogram` or `ecdf`.
+`box`, `strip`, `violin` and `dotplot` keep the percent default; `histogram` and `ecdf` measure plain numbers on x and show
+counts or percents of items on y. None and NaN are skipped everywhere.
 
 Colors are names from `vl.PALETTE`: the role colors `blue`, `dark`, `plum`, `mid` and `gray` (with `gray-light` and
 `gray-dark`); `coral` and `beige` for outcomes; and `sage`, `olive`, `navy`, `light-blue`, `deep-blue`, `light-sage`,
@@ -229,16 +236,16 @@ Every number in these figures is made up. Error bars and bands are 95% intervals
 
 | | |
 |---|---|
-| ![](docs/gallery/01_hbar_sorted.png) | ![](docs/gallery/03_tiles.png) |
-| ![](docs/gallery/04_scatter.png) | ![](docs/gallery/05_heatmap.png) |
-| ![](docs/gallery/06_panels_grouped.png) | ![](docs/gallery/08_hbar_sections.png) |
-| ![](docs/gallery/09_quotes.png) | ![](docs/gallery/10_code_card.png) |
-| ![](docs/gallery/11_small_multiples.png) | ![](docs/gallery/12_blog_panels.png) |
-| ![](docs/gallery/13_episodes.png) | ![](docs/gallery/14_bars_models.png) |
-| ![](docs/gallery/15_dumbbell.png) | ![](docs/gallery/16_waffle.png) |
-| ![](docs/gallery/17_line_example.png) | ![](docs/gallery/18_stacked_example.png) |
+| ![](docs/gallery/01_hbar.png) | ![](docs/gallery/02_bars.png) |
+| ![](docs/gallery/03_bars_runs.png) | ![](docs/gallery/04_dotplot.png) |
+| ![](docs/gallery/05_line_runs.png) | ![](docs/gallery/06_panels.png) |
+| ![](docs/gallery/07_heatmap.png) | ![](docs/gallery/08_scatter.png) |
+| ![](docs/gallery/09_dumbbell.png) | ![](docs/gallery/10_stacked.png) |
+| ![](docs/gallery/11_histogram.png) | ![](docs/gallery/12_box.png) |
+| ![](docs/gallery/13_strip.png) | ![](docs/gallery/14_quotes.png) |
+| ![](docs/gallery/15_episodes.png) | |
 
-The source for every gallery figure is in `src/vellum/gallery.py`. Copy the closest one and change the numbers.
+The source for every gallery figure is in `src/vellum/gallery.py`, and [examples/README.md](examples/README.md) shows each one's code beside its image. Copy the closest one and change the numbers.
 
 ## How it works
 

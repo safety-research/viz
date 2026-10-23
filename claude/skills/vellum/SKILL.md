@@ -34,16 +34,18 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 
 ## Pick the chart
 
-- Rates by condition or model: `hbar`. Add `highlight=` for the bar that makes the point, `notes=` for
-  "352 of 400", `ci=` for intervals, `ref=` for a baseline line, and `vl.section("Other data")` for row groups.
-- Coral next to blue across a few groups, in the blog look: `bars`. Add `ci=` whiskers or a dashed `ref=50`.
-- Model by condition grids: `heatmap` (`col_groups=` gives a grouped header).
-- Confusion matrix or big numbers: `tiles` with `vl.Tile(value, lines, color, strong)`.
-- Shares out of 100: `waffle`. Per-dataset relationships: `scatter` (`diagonal=`, `trend="fit"`).
-- Before and after per model: `dumbbell`. Curves over steps or doses: `line` (`xscale="category"` for 0/1M/3M/10M).
-- Where the outcomes went: `stacked`.
-- Small multiples with one legend: `panels([...], cols=2)`.
-- Quoted replies: `quotes`. Transcripts side by side: `episodes`. A tool definition: `code_card`.
+Each has a gallery figure (`docs/gallery/NN_*.png`); copy its code from `src/vellum/gallery.py`.
+
+- Rates by condition: `hbar` (01). `notes=` for "352 of 400", `ci=` for intervals, `ref=` for a reference line.
+- Each model with and without the intervention: `bars` (02).
+- Several runs or seeds: never show one run when there are more. Show the mean with every run as a dot:
+  `bars(..., runs={label: [v, ...]})` (03), and for training curves `line(..., runs=...)` (05).
+- An effect with its interval per model, against zero: `dotplot` (04).
+- Several comparisons with one legend: `panels([...], cols=2)` (06).
+- Models by conditions: `heatmap` (07). One dot per dataset: `scatter` (08). Before and after per model: `dumbbell`
+  (09). Where the outcomes went: `stacked` (10).
+- Distributions: `histogram` (11); `box` (12) for many items per group; `strip` (13) for a few, one dot each.
+- Model outputs: `quotes` (14) for contrasting replies, `episodes` (15) for transcripts side by side.
 
 ## Size
 

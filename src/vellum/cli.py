@@ -31,6 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--alt", action="store_true", help="print each figure's alt text after its path, tab-separated")
     g = sub.add_parser("gallery", help="render every chart type with example data")
     g.add_argument("-o", "--out", default="vellum-gallery", help="output folder")
+    g.add_argument("--examples", help="also write the examples page (markdown) to this path")
     co = sub.add_parser("colors", help="print the color roles and palettes; -o renders the palette card")
     co.add_argument("-o", "--out", help="save the palette card (.png .pdf .svg .html)")
     c = sub.add_parser("check", help="list the house rules a JSON spec (or list of specs) breaks")
@@ -44,9 +45,12 @@ def main(argv: list[str] | None = None) -> int:
         for p, fig in render_file(a.spec, a.out, a.scale, figures=True):
             print(f"{p}\t{fig.alt_text()}" if a.alt else p)
     elif a.cmd == "gallery":
-        from .gallery import build
+        from .gallery import build, examples
         for p in build(Path(a.out)):
             print(p)
+        if a.examples:
+            Path(a.examples).write_text(examples())
+            print(a.examples)
     elif a.cmd == "colors":
         from .colors import ROLES, card
         from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES

@@ -13,13 +13,19 @@ from . import cards as _cards
 from . import colors as _colors
 from .cards import Episode, Reply
 from .charts import bars as _bars
+from .charts import box as _box
+from .charts import dotplot as _dotplot
 from .charts import dumbbell as _dumbbell
+from .charts import ecdf as _ecdf
 from .charts import hbar as _hbar
 from .charts import heatmap as _heatmap
+from .charts import histogram as _histogram
 from .charts import line as _line
 from .charts import scatter as _scatter
 from .charts import stacked as _stacked
+from .charts import strip as _strip
 from .charts import tiles as _tiles
+from .charts import violin as _violin
 from .charts.tiles import Tile
 from .colors import ROLES, load_roles, roles, set_roles
 from .data import section
@@ -61,10 +67,17 @@ panels = _chart(_panels)
 quotes = _chart(_cards.quotes)
 episodes = _chart(_cards.episodes)
 code_card = _chart(_cards.code_card)
+dotplot = _chart(_dotplot.dotplot)
+histogram = _chart(_histogram.histogram)
+box = _chart(_box.box)
+strip = _chart(_strip.strip)
+ecdf = _chart(_ecdf.ecdf)
+violin = _chart(_violin.violin)
 
 CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffle": waffle, "scatter": scatter,
           "dumbbell": dumbbell, "line": line, "stacked": stacked, "panels": panels, "quotes": quotes,
-          "episodes": episodes, "code_card": code_card}
+          "episodes": episodes, "code_card": code_card, "dotplot": dotplot, "histogram": histogram, "box": box,
+          "strip": strip, "ecdf": ecdf, "violin": violin}
 
 # The default palettes. roles: what each color means (vl.set_roles); ordered: the light-to-dark ramp for ordered
 # conditions; muted: the shades muted series take in turn; outcomes: bad, neutral and good results (coral is only
@@ -86,15 +99,19 @@ __all__ = [
           "Reply",
           "Tile",
           "bars",
+          "box",
           "close",
           "code_card",
           "color",
           "defaults",
+          "dotplot",
           "dumbbell",
+          "ecdf",
           "episodes",
           "from_spec",
           "hbar",
           "heatmap",
+          "histogram",
           "line",
           "load_roles",
           "panels",
@@ -106,6 +123,8 @@ __all__ = [
           "set_defaults",
           "set_roles",
           "stacked",
+          "strip",
           "tiles",
+          "violin",
           "waffle",
 ]

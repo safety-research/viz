@@ -6,6 +6,7 @@ Neither frame draws a caption under the chart: the house style puts everything i
 """
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -192,8 +193,9 @@ class Figure:
             from .render import font_face_css
             style = f"<defs><style>{font_face_css(inner)}</style></defs>"
         bg = S.rect(0, 0, w, h, th.BG) if background else ""
-        tid, did = S.uid("title"), S.uid("desc")
         alt = self.meta.get("alt")
+        key = hashlib.sha1(f"{self.title}|{alt}|{inner}".encode()).hexdigest()[:10]  # same figure, same ids
+        tid, did = f"vellum-title-{key}", f"vellum-desc-{key}"
         title = f'<title id="{tid}">{label}</title>'
         desc = f'<desc id="{did}">{S.esc(alt)}</desc>' if alt else ""
         names = f"{tid} {did}" if alt else tid

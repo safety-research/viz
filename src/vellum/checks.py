@@ -152,9 +152,11 @@ def _roles(fig, assigned) -> list[str]:
                 "vl.set_roles exactly."]
     muted = {th.color(m).upper() for m in th.MUTED_SHADES}
     out = []
+    def plain(s: str) -> str:  # "With search (n=400)" and "with-search" both read "with search"
+        s = re.sub(r"[\(\[].*?[\)\]]", " ", s.lower())
+        return " ".join(re.sub(r"[^a-z0-9]+", " ", s).split())
     for lab in dict.fromkeys(lab for lab, c, sp in assigned if not sp and c.upper() in muted and lab not in named):
-        low = lab.lower()
-        near = next((k for k in named if k.lower() in low or low in k.lower()), None)
+        near = next((k for k in named if plain(k) == plain(lab)), None)
         if near:
             out.append(f"\"{lab}\" has no role, so it is muted, but it looks like \"{near}\" ({named[near].split(':')[0]}); "
                        "name it in the roles if it should stand out.")

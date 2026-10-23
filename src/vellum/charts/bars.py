@@ -12,11 +12,12 @@ from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
 from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series_colors
+from .dist import attach_runs, dark, dots, run_values
 
 
 def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue",
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False, tick_format=None,
-         ci=None, ref=None, ref_label=None, ylabel=None, height=None, values=True, value_labels="all", grid=False,
+         ci=None, runs=None, ref=None, ref_label=None, ylabel=None, height=None, values=True, value_labels="all", grid=False,
          bar_width=None, title=None, subtitle=None, legend=None, legend_position=None, frame=None,
          width=None) -> Figure:
     """Vertical (grouped) bar chart.
@@ -24,12 +25,15 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
     data: {label: value}, {label: [v1, v2]}, list of pairs, or pandas. series: names for grouped bars.
     colors: per series (grouped) or {label: color} / list per bar (one series). highlight: accent on some bars.
     ci: {label: (lo, hi)} or {label: [(lo, hi), ...]}. ref: dashed reference line (e.g. 50 for no preference).
+    runs: one dot per run or seed over its bar, the bar showing the value in data (usually the runs' mean):
+    {label: [v, ...]}, or {label: [[series-1 runs], [series-2 runs]]} for grouped bars.
     ylabel: rotated axis title. value_labels: "all", "first" (only the first series) or "none".
     """
     rows, ns, names = D.rows(data, series)
     names = list(series) if series is not None else names
     D.attach_ci(rows, ci, ns)
     rows = [r for r in rows if not r.section]
+    runs_of = attach_runs(rows, runs, ns)
     unit, unit_given = resolve_unit(unit)
     all_vals = [v for r in rows for v in r.values]
     SC.check_percent(all_vals, unit, unit_given)
@@ -57,6 +61,7 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
                     ext += list(c)
         if ref is not None:
             ext.append(ref)
+        ext += run_values(runs_of)
         if ticks is not None:
             lo, hi, tk = min(ticks), max(ticks), list(ticks)
         elif domain is not None:
@@ -88,18 +93,25 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
         cols = series_colors(ns, colors if ns > 1 else None, names)
         single = row_colors([r.label for r in rows], color=color, colors=colors if ns == 1 else None,
                             highlight=highlight, accent=accent) if ns == 1 else None
+        rad = max(2.0, min(4.0, bw / 5))  # run dots
         for i, r in enumerate(rows):
             cx = m_l + gw * (i + 0.5)
             total = ns * bw + (ns - 1) * gap
+            rr = runs_of.get(id(r))
             for j, v in enumerate(r.values):
-                if v is None:
-                    continue
                 x = cx - total / 2 + j * (bw + gap)
                 fill = single[i] if ns == 1 else cols[j]
+                rs = rr[j] if rr else []
+                if v is None:
+                    if rs:
+                        out.append(dots([y(u) for u in rs], x + bw / 2, bw / 2, rad, dark(fill), False))
+                    continue
                 y0, y1 = y(base_v), y(v)
                 if abs(y1 - y0) < 1.5 and v != base_v:
                     y1 = y0 - 1.5 if v > base_v else y0 + 1.5
                 out.append(S.vbar(x, y0, y1, bw, fill))
+                if rs:
+                    out.append(dots([y(u) for u in rs], x + bw / 2, bw / 2, rad, dark(fill), False))
                 c = r.ci[j] if r.ci else None
                 xc = x + bw / 2
                 if c and c[1] - c[0] > 1e-9:
@@ -110,7 +122,10 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
                     out.append(S.line(xc - cap, yb, xc + cap, yb, th.INK, 1.2))
                 if values and value_labels != "none" and not (value_labels == "first" and j > 0):
                     neg = v < base_v
-                    ly = ((y(c[0]) if c else y1) + 13) if neg else ((y(c[1]) if c else y1) - 5)
+                    edge = (y(c[0]) if c else y1) if neg else (y(c[1]) if c else y1)
+                    if rs:  # clear the lowest or highest run dot
+                        edge = max(edge, y(min(rs)) + rad + 1) if neg else min(edge, y(max(rs)) - rad - 1)
+                    ly = (edge + 13) if neg else (edge - 5)
                     out.append(S.text(xc, ly, fmtv(v), th.MIN_TEXT, th.INK2, "middle"))
             strong = r.label in as_set(highlight)  # the bar you are pointing at: a bold label
             for k, ln in enumerate(lines[i]):

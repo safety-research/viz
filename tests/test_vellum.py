@@ -156,3 +156,11 @@ def test_exports(tmp_path):
 def test_unknown_color_message():
     with pytest.raises(ValueError, match="unknown color"):
         vl.hbar({"a": 1}, color="chartreuse").svg()
+
+
+def test_the_examples_page_is_generated_from_the_gallery():
+    from pathlib import Path
+
+    from vellum.gallery import examples
+    page = Path(__file__).resolve().parents[1] / "examples" / "README.md"
+    assert page.read_text() == examples(), "run: vellum gallery -o docs/gallery --examples examples/README.md"

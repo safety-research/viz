@@ -35,17 +35,26 @@ def _series(series, x):
 
 def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None, step=None, xticks=None,
          xtick_labels=None, unit=UNSET, xunit="", decimals=None, fmt=None, xlabel=None, ylabel=None, bands=None,
-         markers=True, end_labels=True, end_values=True, ref=None, ref_label=None, height=None, zero=True, xscale="linear",
+         runs=None, markers=True, end_labels=True, end_values=True, ref=None, ref_label=None, height=None, zero=True, xscale="linear",
          title=None, subtitle=None, legend=False, legend_position=None, frame=None, width=None) -> Figure:
     """Line chart.
 
     series: {name: [y, ...]} with a shared x=[...]; or {name: [(x, y), ...]}; or {name: {x: y}}.
     bands: {name: ([lo...], [hi...])} shaded intervals. highlight: name(s) keep their color, others go gray.
+    runs: {name: [run, run, ...]} draws each run (training seed) as a thin faint line under the bold line of that
+    name, which shows their mean or median. Each run takes the forms a series does: [y, ...] on the shared x,
+    [(x, y), ...] or {x: y}.
     xtick_labels: {x: "label"} (e.g. {0: "0", 1e6: "1M"}) or a list matching xticks.
     xscale: "linear", "category" (x values evenly spaced in order, e.g. doses 0, 1M, 3M, 10M) or "log".
     """
     data = _series(series, x)
     names = list(data)
+    run_data: dict[str, list[list[tuple[float, float | None]]]] = {}
+    for nm, rs in (runs or {}).items():
+        if str(nm) not in data:
+            raise ValueError(f"runs for {nm!r}, which is not one of the series")
+        run_data[str(nm)] = [[(a, None if b is None or math.isnan(b) else b) for a, b in pts]
+                             for pts in _series(dict(enumerate(rs)), x).values()]
     unit, _ = resolve_unit(unit)
     hl = as_set(highlight)
     cols = series_colors(len(names), colors, names, highlight=highlight)
@@ -53,7 +62,8 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     if bands:
         for lo_, hi_ in bands.values():
             yvals += [v for v in list(lo_) + list(hi_) if v is not None]
-    xs_all = sorted({p[0] for pts in data.values() for p in pts})
+    yvals += [v for rs in run_data.values() for pts in rs for _, v in pts if v is not None]
+    xs_all = sorted({p[0] for pts in data.values() for p in pts} | {p[0] for rs in run_data.values() for pts in rs for p in pts})
 
     def render(W: float) -> Body:
         H = height or plot_height()
@@ -118,6 +128,13 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
                 top = " ".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in zip(xs_, bhi) if b is not None)
                 bot = " ".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in reversed(list(zip(xs_, blo))) if b is not None)
                 out.append(f'<polygon points="{top} {bot}" fill="{c}" fill-opacity="0.16"/>')
+        for i in order:  # runs: thin and faint, under every bold line
+            for pts in run_data.get(names[i], []):
+                pts = [(a, b) for a, b in pts if b is not None]
+                if len(pts) > 1:
+                    d = "M" + " L".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in pts)
+                    out.append(f'<path d="{d}" fill="none" stroke="{cols[i]}" stroke-width="1.2" stroke-opacity="0.4" '
+                               f'stroke-linejoin="round" stroke-linecap="round"/>')
         ends = []
         for i in order:
             nm, c = names[i], cols[i]

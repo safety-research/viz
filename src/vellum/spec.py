@@ -41,7 +41,8 @@ def from_spec(spec: dict):
     if kind == "code_card":
         return CHARTS[kind](spec.pop("name"), spec.pop("params", None), spec.pop("description", ""), **spec)
     first = {"hbar": "data", "bars": "data", "heatmap": "data", "waffle": "parts", "scatter": "points",
-             "dumbbell": "data", "line": "series", "stacked": "data"}[kind]
+             "dumbbell": "data", "line": "series", "stacked": "data", "dotplot": "data", "histogram": "data",
+             "box": "data", "strip": "data", "ecdf": "data", "violin": "data"}[kind]
     return CHARTS[kind](spec.pop(first), **spec)
 
 

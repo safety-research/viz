@@ -14,11 +14,12 @@ from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
 from .common import UNSET, as_set, resolve_unit, row_colors, series_colors
+from .dist import attach_runs, dark, dots, run_values
 
 
 def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", sort=False,
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False,
-         notes=None, ci=None, ref=None, ref_label=None, values=True, axis=True, tick_format=None,
+         notes=None, ci=None, runs=None, ref=None, ref_label=None, values=True, axis=True, tick_format=None,
          row_height=None, bar_height=None, label_width=None,
          title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
     """Horizontal bar chart.
@@ -28,12 +29,15 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
     series: names of the grouped series (legend). colors: per series (grouped) or {label: color} (single).
     highlight: label(s) drawn in the accent color with a bold label; other bars go gray.
     notes: {label: "558 episodes"} muted text after the value. ci: {label: (lo, hi)} whiskers.
+    runs: one dot per run or seed over its bar, the bar showing the value in data (usually the runs' mean):
+    {label: [v, ...]}, or {label: [[series-1 runs], [series-2 runs]]} for grouped bars.
     ref: value of a reference line (e.g. the untrained model), ref_label: its label.
     unit: '%' by default; '' for plain numbers. decimals/fmt control value labels.
     """
     rows, ns, names = D.rows(data, series)
     names = list(series) if series is not None else names
     D.attach_ci(rows, ci, ns)
+    runs_of = attach_runs(rows, runs, ns)
     unit, unit_given = resolve_unit(unit)
     if sort:
         if any(r.section for r in rows):
@@ -74,6 +78,7 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
                     ext += list(c)
         if ref is not None:
             ext.append(ref)
+        ext += run_values(runs_of)
         if ticks is not None:
             lo, hi, tk = min(ticks), max(ticks), list(ticks)
         elif domain is not None:
@@ -98,15 +103,21 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
         # ---- right end: room for the longest value label and the last tick label
         R0 = min(W - (T.width(tfmt(hi), th.TICK_SIZE) / 2 + 2 if axis else 0), W - 0.1 * W)  # keep air on the right
         span = hi - lo
+        rad = max(2.0, min(3.5, bh / 4))  # run dots
         for r in data_rows:
+            rr = runs_of.get(id(r))
             for j, v in enumerate(r.values):
                 if v is None or v <= 0 and lo < 0:
                     continue
                 end = max(v, r.ci[j][1]) if r.ci and r.ci[j] else v
+                if rr and rr[j]:
+                    end = max(end, max(rr[j]))
                 t = (end - lo) / span if span else 0
                 if t <= 0:
                     continue
                 lw = T.width(fmtv(v), vs, "sans", vw) if values else 0
+                if rr and rr[j]:
+                    lw += rad + 1
                 note = note_of.get(r.label)
                 if note and j == ns - 1:
                     lw += 7 + T.width(str(note), 12.5)
@@ -143,6 +154,7 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
         labels_svg = []
         k = 0
         for r, yy, h in layout:
+            rr = runs_of.get(id(r))
             if r.section:
                 out.append(S.text(0, yy + 24, r.label, 13, th.MUTED, weight=600))
                 continue
@@ -154,13 +166,18 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
                 out.append(S.text(L - 14, first + i * lh, ln, size, fill, "end", wt))
             group_h = ns * bh + (ns - 1) * bgap
             for j, v in enumerate(r.values):
-                if v is None:
-                    continue
+                rs = rr[j] if rr else []
                 b = bh + (4 if (ns == 1 and r.label in hl and rh <= 40) else 0)
                 by = yy + (h - group_h) / 2 + j * (bh + bgap) - (b - bh) / 2
                 fillc = single[k] if ns == 1 else cols[j]
+                if v is None:
+                    if rs:
+                        out.append(dots([x(u) for u in rs], by + b / 2, b / 2, rad, dark(fillc), True))
+                    continue
                 base = x(max(lo, min(0, hi))) if lo < 0 else x(lo)
                 out.append(S.hbar(base, by, x(v), b, fillc))
+                if rs:
+                    out.append(dots([x(u) for u in rs], by + b / 2, b / 2, rad, dark(fillc), True))
                 end_v = v
                 c = r.ci[j] if r.ci else None
                 if c:
@@ -176,11 +193,15 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
                     if note and j == ns - 1:
                         parts.append((str(note), {"size": 12.5, "fill": th.MUTED, "dx": 7}))
                     ty = by + b / 2 + vs * 0.36
-                    halo = th.BG if ref is not None or c else None
-                    if v >= 0 or lo >= 0:
-                        labels_svg.append(S.spans(x(end_v) + 8, ty, parts, halo=halo))
+                    halo = th.BG if ref is not None or c or rs else None
+                    pos = v >= 0 or lo >= 0
+                    lx = x(end_v) + 8 if pos else x(end_v) - 8
+                    if rs:  # clear the outermost run dot
+                        lx = max(lx, x(max(rs)) + rad + 9) if pos else min(lx, x(min(rs)) - rad - 9)
+                    if pos:
+                        labels_svg.append(S.spans(lx, ty, parts, halo=halo))
                     else:
-                        labels_svg.append(S.spans(x(end_v) - 8, ty, parts, anchor="end", halo=halo))
+                        labels_svg.append(S.spans(lx, ty, parts, anchor="end", halo=halo))
             k += 1
         out += labels_svg
         height = bottom + (30 if axis else 6)

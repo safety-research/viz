@@ -45,13 +45,54 @@ def _rows_text(rows, names, f, notes=None, missing=None) -> str:
 
 
 def _bars(kind):
-    def describe(data, series=None, unit=UNSET, decimals=None, fmt=None, signed=False, notes=None, **_):
+    def describe(data, series=None, unit=UNSET, decimals=None, fmt=None, signed=False, notes=None, runs=None, **_):
         rows, _ns, names = D.rows(data, series)
         names = list(series) if series is not None else names
         f = _fmt([v for r in rows for v in r.values], unit, decimals, fmt, signed)
         if notes is not None and not isinstance(notes, Mapping):
             notes = {r.label: n for r, n in zip([r for r in rows if not r.section], notes)}
+        if isinstance(runs, Mapping):  # one series: list each label's runs after its value
+            notes = dict(notes or {})
+            for lab, rs in runs.items():
+                if rs and not isinstance(rs[0], (list, tuple)):
+                    runs_txt = "runs " + ", ".join(f(v) for v in rs if v is not None)
+                    notes[lab] = f"{notes[lab]}; {runs_txt}" if notes.get(lab) else runs_txt
         return f"{kind}. {_rows_text(rows, names, f, notes)}."
+    return describe
+
+
+def _dotplot(data, series=None, ci=None, unit=UNSET, decimals=None, fmt=None, signed=False, **_):
+    rows, ns, names = D.rows(data, series)
+    names = list(series) if series is not None else names
+    D.attach_ci(rows, ci, ns)
+    f = _fmt([v for r in rows for v in r.values], unit, decimals, fmt, signed)
+    parts = []
+    for r in rows:
+        if r.section:
+            continue
+        for j, v in enumerate(r.values):
+            c = r.ci[j] if r.ci and j < len(r.ci) else None
+            who = r.label if ns == 1 else f"{r.label}, {(names or [f'series {k + 1}' for k in range(ns)])[j]}"
+            parts.append(f"{who} {f(v)}" + (f" (interval {f(c[0])} to {f(c[1])})" if c else ""))
+    return f"Dot plot. {'; '.join(parts)}."
+
+
+def _distribution(kind: str, flat: str | None, stat: str = "median", default_unit=UNSET):
+    def describe(data, series=None, unit=default_unit, decimals=None, fmt=None, **_):
+        from .charts.dist import mean, samples, tukey
+        labels, vals, ns, _names = samples(data, series, flat_label=flat)
+        f = _fmt([v for g in vals for s in g for v in s], unit, decimals, fmt)
+        parts = []
+        for lab, groups in zip(labels, vals):
+            for j, s in enumerate(groups):
+                if not s:
+                    continue
+                name = lab if ns == 1 else f"{lab}, {(series or [f'series {k + 1}' for k in range(ns)])[j]}"
+                t = tukey(s)
+                centre = f"mean {f(mean(s))}" if stat == "mean" else f"median {f(t.median)}"
+                parts.append(f"{name + ': ' if name else ''}{len(s)} values, {centre}, middle half {f(t.q1)} to "
+                             f"{f(t.q3)}, range {f(min(s))} to {f(max(s))}")
+        return f"{kind}. {'; '.join(parts)}."
     return describe
 
 
@@ -170,7 +211,11 @@ def _code_card(name, params=None, description="", **_):
 
 DESCRIBERS = {"hbar": _bars("Horizontal bar chart"), "bars": _bars("Bar chart"), "dumbbell": _dumbbell,
               "stacked": _stacked, "line": _line, "heatmap": _heatmap, "scatter": _scatter, "waffle": _waffle,
-              "tiles": _tiles, "panels": _panels, "quotes": _quotes, "episodes": _episodes, "code_card": _code_card}
+              "tiles": _tiles, "panels": _panels, "quotes": _quotes, "episodes": _episodes, "code_card": _code_card,
+              "dotplot": _dotplot, "histogram": _distribution("Histogram", "", default_unit=""),
+              "box": _distribution("Box plot", None), "strip": _distribution("Strip plot", None, stat="mean"),
+              "ecdf": _distribution("Cumulative distribution", "", default_unit=""),
+              "violin": _distribution("Violin plot", None)}
 
 
 def describe(kind: str, args: tuple, kw: dict) -> str | None:
