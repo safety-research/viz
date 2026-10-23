@@ -13,33 +13,46 @@ figure; [the examples](../examples/README.md) are templates to copy.
 
 ## Install
 
-Clone the repo anywhere and run `install.sh`:
+For an agent, one command:
 
 ```bash
-gh repo clone safety-research/viz
-viz/install.sh
+npx skills add safety-research/viz
 ```
 
-It puts the `viz` command on your PATH (`uv tool install --editable`), links the Claude Code skill in `skill/`
-into `~/.claude/skills/viz`, and installs the headless Chromium that renders PNG and PDF. The clone is the
-installation: the command and the skill both point back into it, so edits take effect at once and `git pull`
-updates everything. `viz path` prints where the clone is. Re-running is safe; `VIZ_NO_TOOL=1` skips the command and
-`VIZ_NO_BROWSER=1` the Chromium step.
+It copies `skills/viz/` into the skills folder of Claude Code and the other agents the
+[skills CLI](https://skills.sh) supports (`-g` for every project), and the skill installs the `viz` command
+itself the first time it needs it. `npx skills update viz` updates the skill.
+
+To use viz from Python without an agent, install the command directly:
+
+```bash
+uv tool install git+https://github.com/safety-research/viz
+```
+
+It brings the library, the templates and these docs: `viz path` prints where they landed, the templates in
+`examples/` and the docs in `docs/`. The same URL works with `pip install` and `uv add` (see below). The first
+PNG or PDF downloads the headless Chromium that renders them, once per Python environment; `viz setup` does it
+ahead of time. To update, run the install again with `--reinstall`.
+
+To work on viz itself, clone the repo and install the clone in place: `uv tool install --editable .` makes
+the command follow your edits, and a symlink (`ln -s "$PWD/skills/viz" ~/.claude/skills/viz`) does the same
+for the skill. `uv run pytest` runs the tests.
 
 viz used to be called vellum. `import vellum` and the `vellum` command still work, so older scripts keep running.
 
 ## Use it from any project
 
-A one-off script can use it straight from the clone:
+A script that only needs viz runs with viz's own Python:
 
 ```bash
-uv run --with-editable "$(viz path)" python make_figs.py
+viz run make_figs.py
 ```
 
-Add it to a project:
+A script that also needs a project's packages belongs in that project. Add viz to it:
 
 ```bash
-uv add --editable "$(viz path)"
+uv add "viz @ git+https://github.com/safety-research/viz"    # or: pip install git+https://github.com/safety-research/viz
+uv run make_figs.py
 ```
 
 To make a figure without writing Python, put a JSON spec in a file. Each spec takes the same keys as the chart's
@@ -134,7 +147,8 @@ viz check spec.json                 the style rules each spec breaks (exit 1 if 
 viz gallery -o out/                 render every template
 viz colors                          print the roles and palettes; -o colors.png draws the card
 viz roles                           the color roles in effect here and the file they came from
-viz path                            this clone's folder
+viz path                            viz's folder: the templates in examples/, the docs in docs/
+viz run make_figs.py                run a script with the Python that has viz installed
 viz setup                           install the headless Chromium that renders PNG and PDF
 viz --theme dark ...                any command in the dark theme
 ```

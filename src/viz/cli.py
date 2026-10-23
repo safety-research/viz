@@ -5,13 +5,15 @@
     viz colors                          print the palette
     viz check spec.json                 list the house rules each spec breaks (exit 1 if any), without rendering
     viz roles                           print the color roles in effect here and the file they came from
-    viz path                            print this checkout's folder: uv run --with-editable "$(viz path)" ...
+    viz path                            print viz's folder, with the templates in examples/ and the docs in docs/
+    viz run make_figs.py                run a Python script with the Python that has viz installed
     viz setup                           install the headless Chromium that renders PNG and PDF
     viz --theme dark gallery -o out/    any command in the dark theme (light text on #0D1117)
 """
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -20,6 +22,12 @@ def checkout() -> Path | None:
     """The clone this package runs from (an editable install), or None for an installed wheel."""
     root = Path(__file__).resolve().parents[2]
     return root if (root / "pyproject.toml").is_file() and (root / "src" / "viz").is_dir() else None
+
+
+def home() -> Path:
+    """viz's folder, which holds examples/ (the templates) and docs/: the clone for an editable install,
+    otherwise the installed package, which ships copies of both."""
+    return checkout() or Path(__file__).resolve().parent
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -40,7 +48,10 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("check", help="list the house rules a JSON spec (or list of specs) breaks")
     c.add_argument("spec", help="path to a .json spec, or - for stdin")
     sub.add_parser("roles", help="print the color roles in effect here (viz-roles.json) and where they came from")
-    sub.add_parser("path", help="print the folder of this viz checkout")
+    sub.add_parser("path", help="print viz's folder: the templates are in examples/, the docs in docs/")
+    ru = sub.add_parser("run", help="run a Python script with the Python that has viz installed")
+    ru.add_argument("script", help="the script to run")
+    ru.add_argument("args", nargs=argparse.REMAINDER, help="arguments for the script")
     sub.add_parser("setup", help="install the headless Chromium that renders PNG and PDF")
     a = ap.parse_args(argv)
     if a.theme:
@@ -99,11 +110,9 @@ def main(argv: list[str] | None = None) -> int:
         for label, role in current.items():
             print(f"  {role.split(':')[0]:13} {label}")
     elif a.cmd == "path":
-        root = checkout()
-        if root is None:
-            print("viz: this install is not a checkout. Clone the repo and run its install.sh.", file=sys.stderr)
-            return 1
-        print(root)
+        print(home())
+    elif a.cmd == "run":
+        return subprocess.run([sys.executable, a.script, *a.args]).returncode
     elif a.cmd == "setup":
         from .render import install_browser
         install_browser()

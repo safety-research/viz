@@ -25,3 +25,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/viz", "src/vellum"]  # vellum: the old name, so older scripts keep importing
+
+# The templates and docs travel with the package, so `viz path` (and the skill) find them after any install.
+# An editable install gets a copy too, but `viz path` points at the checkout then, so the copy is never read.
+[tool.hatch.build.targets.wheel.force-include]
+"examples" = "viz/examples"
+"docs/guide.md" = "viz/docs/guide.md"
+"docs/reference.md" = "viz/docs/reference.md"
+"docs/gallery" = "viz/docs/gallery"
