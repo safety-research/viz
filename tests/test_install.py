@@ -1,44 +1,55 @@
-"""install.sh links the skill into the Claude Code config dir and never clobbers an edited copy."""
+"""Installing: the skill is where `npx skills add` looks, the wheel carries the templates and docs, and `viz path`
+finds them in a checkout and in an installed copy alike."""
 from __future__ import annotations
 
-import os
+import re
 import subprocess
+import sys
+import zipfile
 from pathlib import Path
 
+
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "skill"
+SKILL = ROOT / "skills" / "viz" / "SKILL.md"
 
 
-def _install(config: Path) -> subprocess.CompletedProcess:
-    env = {**os.environ, "CLAUDE_CONFIG_DIR": str(config), "VIZ_NO_BROWSER": "1", "VIZ_NO_TOOL": "1"}
-    return subprocess.run(["bash", str(ROOT / "install.sh")], env=env, capture_output=True, text=True, check=False)
+def test_skill_is_in_the_skills_cli_layout():
+    front = SKILL.read_text().split("---")[1]
+    assert re.search(r"^name: viz$", front, re.M) and re.search(r"^description: ", front, re.M)
+    assert not (ROOT / "skill").exists() and not (ROOT / "install.sh").exists()
 
 
-def test_install_links_the_skill_and_reruns(tmp_path):
-    link = tmp_path / "skills" / "viz"
-    for _ in range(2):  # a re-run replaces the link instead of nesting a new one inside the repo
-        r = _install(tmp_path)
-        assert r.returncode == 0, r.stderr
-        assert link.is_symlink() and link.resolve() == SKILL.resolve()
-    assert not (SKILL / "viz").exists()
-
-
-def test_install_replaces_an_identical_copy_but_keeps_an_edited_one(tmp_path):
-    link = tmp_path / "skills" / "viz"
-    text = (SKILL / "SKILL.md").read_text()
-    link.mkdir(parents=True)
-    (link / "SKILL.md").write_text(text)
-    assert _install(tmp_path).returncode == 0 and link.is_symlink()
-
-    link.unlink()
-    link.mkdir()
-    (link / "SKILL.md").write_text(text + "\nA local edit.\n")
-    r = _install(tmp_path)
-    assert r.returncode == 1 and "differs" in r.stderr
-    assert not link.is_symlink() and (link / "SKILL.md").read_text().endswith("A local edit.\n")
+def test_skill_names_the_real_install_and_run_commands():
+    text = SKILL.read_text()
+    assert "uv tool install git+https://github.com/safety-research/viz" in text
+    assert "viz run " in text and "install.sh" not in text
 
 
 def test_viz_path_prints_this_checkout(capsys):
     from viz.cli import main
     assert main(["path"]) == 0
     assert Path(capsys.readouterr().out.strip()) == ROOT
+
+
+def test_viz_path_falls_back_to_the_package(monkeypatch, tmp_path):
+    from viz import cli
+    pkg = tmp_path / "site-packages" / "viz"
+    pkg.mkdir(parents=True)
+    monkeypatch.setattr(cli, "__file__", str(pkg / "cli.py"))
+    assert cli.checkout() is None and cli.home() == pkg
+
+
+def test_viz_run_uses_this_python(tmp_path):
+    script = tmp_path / "s.py"
+    script.write_text("import sys, viz; print(sys.executable, *sys.argv[1:])\n")
+    r = subprocess.run([sys.executable, "-m", "viz.cli", "run", str(script), "a", "--b"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split() == [sys.executable, "a", "--b"]
+
+
+def test_wheel_ships_the_templates_and_docs(tmp_path):
+    subprocess.run(["uv", "build", "--quiet", "--wheel", "--out-dir", str(tmp_path), str(ROOT)], check=True)
+    names = set(zipfile.ZipFile(next(tmp_path.glob("viz-*.whl"))).namelist())
+    for f in ["viz/examples/01_hbar.py", "viz/examples/README.md", "viz/docs/guide.md", "viz/docs/reference.md",
+              "viz/docs/gallery/01_hbar.png", "viz/cli.py", "viz/fonts"]:
+        assert any(n == f or n.startswith(f + "/") for n in names), f

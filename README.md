@@ -18,7 +18,8 @@
 ## Quick start
 
 ```bash
-gh repo clone safety-research/viz && viz/install.sh
+uv tool install git+https://github.com/safety-research/viz   # the viz command and library
+npx skills add safety-research/viz                           # the skill, for Claude Code and other agents
 ```
 
 ```python

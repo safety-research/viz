@@ -5,23 +5,33 @@ description: "viz house figure style: white background, Newsreader serif titles 
 
 # viz: house figure style
 
-The library is the viz repo, and `viz path` prints where it is. Every chart has a template there, a short
-script in `examples/NN_name.py` with its figure in `docs/gallery/NN_name.png`: copy the closest one and change
-the numbers. `docs/guide.md` has the style rules and `docs/reference.md` every chart and option.
+`viz path` prints viz's folder. Every chart has a template there, a short script in `examples/NN_name.py` with
+its figure in `docs/gallery/NN_name.png`: copy the closest one and change the numbers. `docs/guide.md` has the
+style rules and `docs/reference.md` every chart and option.
 
 ## Run it
 
+If `viz` is not found, install it first:
+
 ```bash
-uv run --with-editable "$(viz path)" python make_figs.py
+uv tool install git+https://github.com/safety-research/viz
 ```
+
+A script that only needs viz runs with viz's own Python:
+
+```bash
+viz run make_figs.py
+```
+
+A script that also needs the project's packages runs in the project instead: add viz to it with
+`uv add "viz @ git+https://github.com/safety-research/viz"` (or `pip install git+https://github.com/safety-research/viz`),
+then `uv run make_figs.py`.
 
 To render a JSON spec (one dict, or a list with an "out" path on each):
 
 ```bash
 viz render spec.json -o fig.png
 ```
-
-If `viz` is not found, run `install.sh` in a viz clone; it puts the command on your PATH.
 
 ```python
 import viz

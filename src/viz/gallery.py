@@ -152,7 +152,7 @@ def examples() -> str:
     out = ["# viz examples", "",
            "Every figure here is a template: a short script in this folder that makes it. Find the question your",
            "figure answers, copy its script and change the numbers. Every number is made up, and error bars and",
-           "bands are 95% intervals. Run one with `uv run --with-editable \"$(viz path)\" python 01_hbar.py`.",
+           "bands are 95% intervals. Run one with `viz run 01_hbar.py`.",
            "This page is generated from the scripts (`viz gallery --examples examples/README.md`), so edit them,",
            "not this page.", "", overview("../docs/gallery", "", heading=""), ""]
     for title, blurb, names in SECTIONS:
