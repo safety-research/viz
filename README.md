@@ -1,9 +1,10 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/hero.png">
-  <img src="docs/readme/hero.png" alt="viz: a data visualization library for AI research. Consistent, publication-quality figures with one call per chart." width="100%">
-</picture>
+<img src="docs/readme/hero.png" alt="viz" width="100%">
 
-<a href="#quick-start"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/get-started.png"><img src="docs/readme/get-started.png" alt="Get started" height="42"></picture></a>&nbsp;&nbsp;<a href="examples/README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/view-examples.png"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></picture></a>
+**A data visualization library for AI research.** Consistent, publication-quality figures with one call per chart.
+Color roles, sizes for screens, slides and papers, and built-in checks keep every figure clear, accessible and
+reproducible.
+
+<a href="#quick-start"><img src="docs/readme/get-started.png" alt="Get started" height="42"></a>&nbsp;&nbsp;<a href="examples/README.md"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></a>
 
 <img src="docs/readme/examples.png" alt="Three example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components." width="100%">
 
@@ -11,10 +12,10 @@
 
 <table>
 <tr>
-<td width="25%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/icon-consistent.svg"><img src="docs/readme/icon-consistent.svg" alt="" width="28"></picture><br><br><b>Consistent</b><br>One visual language across a write-up: color roles, sizes and type that stay the same from figure to figure.</td>
-<td width="25%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/icon-quality.svg"><img src="docs/readme/icon-quality.svg" alt="" width="28"></picture><br><br><b>High quality</b><br>Publication-ready by default: PDFs at the printed size, accessible color and text, and alt text on every figure.</td>
-<td width="25%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/icon-research.svg"><img src="docs/readme/icon-research.svg" alt="" width="28"></picture><br><br><b>Research-focused</b><br>The charts research needs: every run as a dot, effects with intervals, training curves and transcripts.</td>
-<td width="25%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/icon-productive.svg"><img src="docs/readme/icon-productive.svg" alt="" width="28"></picture><br><br><b>Productive</b><br>One call per chart, a gallery to copy, and checks that flag problems before anyone reads the figure.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-consistent.svg" alt="" width="28"><br><br><b>Consistent</b><br>One visual language across a write-up: color roles, sizes and type that stay the same from figure to figure.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-quality.svg" alt="" width="28"><br><br><b>High quality</b><br>Publication-ready by default: PDFs at the printed size, accessible color and text, and alt text on every figure.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-research.svg" alt="" width="28"><br><br><b>Research-focused</b><br>The charts research needs: every run as a dot, effects with intervals, training curves and transcripts.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-productive.svg" alt="" width="28"><br><br><b>Productive</b><br>One call per chart, a gallery to copy, and checks that flag problems before anyone reads the figure.</td>
 </tr>
 </table>
 

@@ -61,52 +61,31 @@ def examples(width: float, thumb: bool = False) -> dict[str, viz.Figure]:
 
 # ---------------------------------------------------------------------------------------------- page pieces
 
-# The figures stay white in both of GitHub's modes, on white cards; only the text, buttons and icons around them
-# change. Every image has a see-through background, and the ones with page text come in two copies: the README's
-# <picture> tags show the light copy on the white page and the copy in dark/ on the dark one (#0D1117). The colors
-# are GitHub's own text, border and button colors in each mode.
-THEMES = {
-    "light": {"ink": "#1F2328", "ink2": "#33302B", "muted": "#59636E", "shadow": "0 14px 30px rgba(31,35,40,.10)",
-              "primary": ("#1F2328", "#FFFFFF", "#1F2328"), "secondary": ("#F6F8FA", "#1F2328", "#D1D9E0")},
-    "dark": {"ink": "#F0F6FC", "ink2": "#D1D7E0", "muted": "#9198A1", "shadow": "0 14px 30px rgba(1,4,9,.55)",
-             "primary": ("#F0F6FC", "#0D1117", "#F0F6FC"), "secondary": ("#212830", "#F0F6FC", "#3D444D")},
-}
+# Every image here reads on GitHub's white page and on its dark one alike, so the README needs no theme switching
+# (GitHub does not always pick the copy that matches the page): the wordmark, the main button and the icons are orange,
+# which reaches about 4.3:1 on both, the other button and the figures' cards are white, and everything else is
+# see-through. The tagline and the description are the README's own text, so they always take the page's colors.
+ACCENT = viz.color("coral")
 CARD, BORDER, CARD_INK = "#FFFFFF", "#D1D9E0", "#1F2328"
 SERIF, SANS = "Newsreader, Georgia, serif", "'DM Sans', Helvetica, Arial, sans-serif"
 
 
-def hero(t: dict) -> str:
+def hero() -> str:
     thumbs = examples(260, thumb=True)
     order = ["Representation structure", "Scaling performance", "Cross-model comparison"]  # three, so none is cramped
     cards = "".join(f'<div class="card">{thumbs[k].svg(background=False)}</div>' for k in order)
     return f"""
 <style>
-.hero{{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px;color:{t["ink"]}}}
-.left{{width:650px}}
-.left h1{{font:600 120px/1 {SERIF};letter-spacing:-3px;margin:0 0 14px}}
-.left h2{{font:400 34px/1.15 {SERIF};margin:0 0 22px;color:{t["ink2"]};white-space:nowrap}}
-.left p{{font:400 19px/1.55 {SERIF};color:{t["muted"]};margin:0}}
-.right{{width:470px;display:flex;flex-direction:column;align-items:center}}
-.fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px}}
+.hero{{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px}}
+.mark{{font:600 150px/1 {SERIF};letter-spacing:-4px;color:{ACCENT};margin:0 0 0 2px}}
+.fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px;margin-right:40px}}
 .card{{width:150px;height:252px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
-  box-shadow:{t["shadow"]};transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
+  box-shadow:0 14px 30px rgba(31,35,40,.12);transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
   display:flex;align-items:center;justify-content:center}}
 .card svg{{width:100%;height:auto}}
 .card svg text{{display:none}}
-.tags{{margin-top:30px;font:500 11px/1 {SANS};letter-spacing:.34em;color:{t["muted"]}}}
 </style>
-<div class="hero">
-  <div class="left">
-    <h1>viz</h1>
-    <h2>A data visualization library for AI research.</h2>
-    <p>Consistent, publication-quality figures with one call per chart. Color roles, sizes for screens, slides and
-    papers, and built-in checks keep every figure clear, accessible and reproducible.</p>
-  </div>
-  <div class="right">
-    <div class="fan">{cards}</div>
-    <div class="tags">CONSISTENT &nbsp;·&nbsp; HIGH QUALITY &nbsp;·&nbsp; REPRODUCIBLE</div>
-  </div>
-</div>"""
+<div class="hero"><div class="mark">viz</div><div class="fan">{cards}</div></div>"""
 
 
 ROW = ["Scaling performance", "Human evaluations", "Representation structure"]  # three, so none is cramped
@@ -126,8 +105,7 @@ def row() -> str:
 <div class="row">{cards}</div>"""
 
 
-def button(label: str, colors: tuple[str, str, str]) -> str:
-    bg, fg, border = colors
+def button(label: str, bg: str, fg: str, border: str) -> str:
     return (f'<div style="display:inline-block;padding:1px">'
             f'<div style="display:inline-block;background:{bg};color:{fg};border:1px solid {border};border-radius:8px;'
             f'padding:12px 24px;font:600 16px/1 {SANS}">{label}</div></div>')
@@ -142,21 +120,21 @@ ICONS = {  # 24 x 24 line icons, drawn here so the README needs no icon font
 
 
 def main() -> None:
-    render_html(row(), OUT / "examples.png", 1200, transparent=True)  # white cards only: one copy serves both modes
-    for theme, t in THEMES.items():
-        out = OUT if theme == "light" else OUT / "dark"  # the dark copy: the same file in dark/
-        out.mkdir(exist_ok=True)
-        render_html(hero(t), out / "hero.png", 1200, transparent=True)
-        render_html(button("Get started &nbsp;→", t["primary"]), out / "get-started.png", 400, fit=True,
-                    transparent=True)
-        render_html(button("View examples", t["secondary"]), out / "view-examples.png", 400, fit=True,
-                    transparent=True)
-        for name, paths in ICONS.items():
-            (out / f"icon-{name}.svg").write_text(
-                f'<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" '
-                f'stroke="{t["ink"]}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">{paths}</svg>\n')
-    for p in sorted(OUT.glob("**/*.png")):
+    from viz.theme import strong_fill
+    deep = strong_fill("coral")  # the orange deep enough for white text
+    render_html(hero(), OUT / "hero.png", 1200, transparent=True)
+    render_html(row(), OUT / "examples.png", 1200, transparent=True)
+    render_html(button("Get started &nbsp;→", deep, "#FFFFFF", deep), OUT / "get-started.png", 400, fit=True,
+                transparent=True)
+    render_html(button("View examples", CARD, CARD_INK, BORDER), OUT / "view-examples.png", 400, fit=True,
+                transparent=True)
+    for name, paths in ICONS.items():
+        (OUT / f"icon-{name}.svg").write_text(
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" '
+            f'stroke="{ACCENT}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{paths}</svg>\n')
+    for p in sorted(OUT.glob("*.png")):
         print(p)
+
 
 if __name__ == "__main__":
     main()
