@@ -1,8 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/hero.png">
-  <source media="(prefers-color-scheme: light)" srcset="docs/readme/hero.png">
-  <img alt="viz: a data visualization library for AI research. Consistent, publication-quality figures with one call per chart." src="docs/readme/hero.png" width="100%">
-</picture>
+<img src="docs/readme/hero.png" alt="viz: a data visualization library for AI research. Consistent, publication-quality figures with one call per chart." width="100%">
 
 <a href="#quick-start"><img src="docs/readme/get-started.png" alt="Get started" height="42"></a>&nbsp;&nbsp;<a href="examples/README.md"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></a>
 
