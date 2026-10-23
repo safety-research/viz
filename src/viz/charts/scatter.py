@@ -62,7 +62,7 @@ def _points(points):
     return out
 
 
-def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=None, size=None,
+def scatter(points, *, labels=None, label_offsets=None, color="intervention", colors=None, size=None,
             xdomain=None, ydomain=None, xticks=None, yticks=None, xunit="", yunit="", xlabel=None, ylabel=None,
             diagonal=False, trend=None, trend_label=None, annotations=None, frontier=None, height=None,
             title=None, subtitle=None, legend=None, frame=None, width=None) -> Figure:

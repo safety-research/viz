@@ -16,7 +16,7 @@ from ..figure import Body, Figure
 from .common import UNSET, as_set, resolve_unit, row_colors, series_colors
 
 
-def dotplot(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", sort=False,
+def dotplot(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", sort=False,
             domain=None, ticks=None, step=None, zero=False, unit=UNSET, decimals=None, fmt=None, signed=False,
             tick_format=None, ci=None, ref=None, ref_label=None, notes=None, values=True, xlabel=None,
             row_height=None, dot_size=None, label_width=None,

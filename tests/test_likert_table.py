@@ -404,7 +404,7 @@ def test_intervals_read_plus_minus_when_symmetric_and_as_brackets_when_not():
 
 def test_highlight_sets_the_row_on_a_tint_of_its_role_color():
     plain = table_body(BENCH, columns=COLS, highlight="Model E").svg
-    assert [r.fill for r in rects(plain)] == [th.TINT["blue"]]  # the accent's tint
+    assert [r.fill for r in rects(plain)] == [th.TINT["coral"]]  # the accent's tint
     roled = table_body(BENCH, columns=COLS, highlight="Model B", roles={"intervention": "Model B"}).svg
     assert [r.fill for r in rects(roled)] == [th.TINT["coral"]]
     label = next(t for t in texts(roled) if t.s == "Model B")

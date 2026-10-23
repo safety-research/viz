@@ -224,7 +224,7 @@ def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None
 
 # ---------------------------------------------------------------------- tool definition
 
-def code_card(name: str, params: Mapping[str, str] | None = None, description: str = "", *, accent="blue",
+def code_card(name: str, params: Mapping[str, str] | None = None, description: str = "", *, accent="intervention",
               title=None, subtitle=None, frame=None, width=None) -> Figure:
     """A tool or function definition: the signature in monospace, then its description in serif.
     params: {"reason": "What you'd like to discuss."} prints as reason: "What you'd like to discuss."."""

@@ -182,7 +182,7 @@ def describe(rows, **kw) -> str:
 
 
 def table(rows, *, columns=None, better=None, unit=UNSET, decimals=None, fmt=None, signed=False, ci=None,
-          highlight=None, accent="blue", label_header=None, title=None, subtitle=None, frame=None,
+          highlight=None, accent="intervention", label_header=None, title=None, subtitle=None, frame=None,
           width=None) -> Figure:
     """A results table in the booktabs look.
 

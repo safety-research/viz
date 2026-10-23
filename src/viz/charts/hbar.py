@@ -17,7 +17,7 @@ from .common import UNSET, as_set, resolve_unit, row_colors, series_colors
 from .dist import attach_runs, dark, dots, run_values
 
 
-def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", sort=False,
+def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", sort=False,
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False,
          notes=None, ci=None, runs=None, ref=None, ref_label=None, values=True, axis=True, tick_format=None,
          row_height=None, bar_height=None, label_width=None,

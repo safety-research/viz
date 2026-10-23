@@ -67,7 +67,7 @@ def test_a_condition_that_changes_color_between_figures_is_flagged():
     assert checks.check(first, name="fig1.png", record=True) == []
     second = vl.hbar({"With search": 12, "Rerank": 9}, colors={"With search": "sage"}, title="Rerank cut errors")
     out = checks.check(second, name="fig2.png", record=True)
-    assert any('"With search" is sage here but blue in fig1.png' in p for p in out)
+    assert any('"With search" is sage here but orange in fig1.png' in p for p in out)
 
 
 def test_panels_check_their_panel_titles():

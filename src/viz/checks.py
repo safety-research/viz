@@ -257,9 +257,10 @@ def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = No
 
 
 def _name(hex_: str) -> str:
+    """A color's name as the docs say it ("orange", not the palette key "coral")."""
     for k, v in th.PALETTE.items():
         if v.upper() == hex_.upper():
-            return k
+            return {"coral": "orange", "plum": "purple"}.get(k, k)
     return hex_
 
 

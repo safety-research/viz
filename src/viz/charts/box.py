@@ -14,7 +14,7 @@ from .dist import cat_frame, dark, dots, samples, summary_labels, swarm, tukey
 LABEL = 12.5
 
 
-def box(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", points=False,
+def box(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", points=False,
         horizontal=False, domain=None, ticks=None, step=None, zero=None, unit=UNSET, decimals=None, fmt=None,
         signed=False, tick_format=None, values=True, ref=None, ref_label=None, ylabel=None, xlabel=None,
         height=None, box_width=None, grid=False,

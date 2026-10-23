@@ -16,6 +16,9 @@ class _Unset:
 UNSET = _Unset()
 
 
+ACCENT = "intervention"  # a chart's one color when nothing else sets it: the intervention role's orange
+
+
 def resolve_unit(unit) -> tuple[str, bool]:
     """Percent is the default unit; returns (unit, whether the caller set it)."""
     if unit is UNSET:
@@ -30,8 +33,8 @@ def _muted(k: int) -> str:
 
 def series_colors(ns: int, colors=None, names: Sequence[str] | None = None, highlight=None) -> list[str]:
     """Colors for ns series: a list, a {series name: color} dict, else the color roles (viz.set_roles: named series
-    get their role's color and the rest take the muted shades in turn), else the default order (dark, blue, plum,
-    ...). highlight: series that keep their color; the others go gray."""
+    get their role's color and the rest take the muted shades in turn), else the default order (orange, blue, sage,
+    ...; one series alone is orange). highlight: series that keep their color; the others go gray."""
     names = list(names or [])
     gray = th.color(roles.MUTED)
     specific = [True] * ns
@@ -47,7 +50,7 @@ def series_colors(ns: int, colors=None, names: Sequence[str] | None = None, high
                     specific[i] = False
                     k += 1
         elif ns == 1:
-            out = [th.color("blue")]
+            out = [th.color(ACCENT)]
         else:
             out = [th.color(c) for c in th.SERIES[:ns]] + [_muted(k) for k in range(max(0, ns - len(th.SERIES)))]
     elif isinstance(colors, str):
@@ -108,10 +111,10 @@ def as_set(x) -> set[str]:
     return {str(v) for v in x}
 
 
-def row_colors(labels: list[str], *, color=None, colors=None, highlight=None, accent: str = "blue") -> list[str]:
+def row_colors(labels: list[str], *, color=None, colors=None, highlight=None, accent: str = ACCENT) -> list[str]:
     """Per-bar colors for a single series: explicit per-label colors; else the label's color role (viz.set_roles),
     with every label that has no role muted (highlight= then only bolds a label, it doesn't recolor it); else the
-    accent on highlighted rows and gray for the rest; else a single color (blue)."""
+    accent on highlighted rows and gray for the rest; else a single color (the accent, orange)."""
     hl = as_set(highlight)
     by_role = [roles.role_color(lab) for lab in labels]
     in_play = any(by_role)
@@ -132,7 +135,7 @@ def row_colors(labels: list[str], *, color=None, colors=None, highlight=None, ac
             out.append(th.color(color or roles.MUTED))
             continue
         else:
-            out.append(th.color(color or "blue"))
+            out.append(th.color(color or ACCENT))
             continue
         own.append(i)
     rest = [i for i in range(len(labels)) if i not in own]

@@ -53,13 +53,13 @@ def scale_color(v: float, scale: str, lo: float, hi: float, center: float | None
     return th.mix(a, b, t), t
 
 
-def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=None, unit=UNSET, decimals=None,
+def heatmap(data, *, rows=None, cols=None, scale="coral", domain=None, center=None, unit=UNSET, decimals=None,
             fmt=None, signed=False, col_groups=None, sort=None, cell_width=None, cell_height=30, values=True,
             threshold=0.55, low="coral", high="blue", title=None, subtitle=None, frame=None,
             width=None) -> Figure:
     """Heatmap table.
 
-    scale: "blue" (default), "coral", "sage", "green", or "diverging" (`low` color below `center`, `high` above;
+    scale: "coral" (default, the accent's hue), "blue", "sage", "green", or "diverging" (`low` color below `center`, `high` above;
     coral below and blue above by default, so pass low="blue", high="coral" when higher is worse).
     col_groups: [("Keep it at a cost", ["At 10% lower score", "At 30% lower score"])] puts a muted heading
     with a rule over those columns. sort: a column name to sort rows by (descending), or a key function.

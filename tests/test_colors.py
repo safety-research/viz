@@ -37,7 +37,7 @@ DATA = {"Closed book": 59, "Longer prompt": 55, "With search": 12}
 
 
 def test_roles_color_the_named_conditions_and_mute_the_rest():
-    assert drawn(vl.hbar(DATA)) == ["blue", "blue", "blue"]
+    assert drawn(vl.hbar(DATA)) == ["coral", "coral", "coral"]
     vl.set_roles(control="Closed book", intervention="With search")
     assert drawn(vl.hbar(DATA)) == ["gray", "gray", "coral"]
     assert drawn(vl.bars(DATA)) == ["gray", "gray", "coral"]
@@ -94,7 +94,7 @@ def test_explicit_colors_win_and_highlight_only_bolds_when_roles_are_in_play():
     assert drawn(f) == ["gray", "gray", "gray"]
     assert re.search(r'font-weight="600"[^>]*>Longer prompt<', f.svg())
     vl.set_roles()
-    assert drawn(vl.hbar(DATA, highlight="With search")) == ["gray", "gray", "blue"]  # no roles: the accent
+    assert drawn(vl.hbar(DATA, highlight="With search")) == ["gray", "gray", "coral"]  # no roles: the accent
 
 
 def test_panels_pass_their_roles_to_each_panel():

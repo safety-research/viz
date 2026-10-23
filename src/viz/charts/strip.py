@@ -40,7 +40,7 @@ def _intervals(ci, labels: list[str], vals: list[list[list[float]]], ns: int):
     return out
 
 
-def strip(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", mean=True, ci=None,
+def strip(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", mean=True, ci=None,
           horizontal=False, domain=None, ticks=None, step=None, zero=None, unit=UNSET, decimals=None, fmt=None,
           signed=False, tick_format=None, values=True, ref=None, ref_label=None, ylabel=None, xlabel=None,
           dot_size=None, height=None, grid=False,

@@ -15,7 +15,7 @@ from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series
 from .dist import attach_runs, dark, dots, run_values
 
 
-def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", sort=None,
+def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", sort=None,
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False, tick_format=None,
          ci=None, runs=None, ref=None, ref_label=None, ylabel=None, height=None, values=True, value_labels="all", grid=False,
          bar_width=None, title=None, subtitle=None, legend=None, legend_position=None, frame=None,

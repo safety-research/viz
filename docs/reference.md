@@ -90,7 +90,7 @@ Each chart has templates in [examples/](../examples/README.md), grouped the same
 | `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. |
 | **Show a relationship** | |
 | `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"`, annotations, and `frontier="upper-left"` for the Pareto frontier (score against cost). |
-| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
+| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="coral"`, the default, or `"blue"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
 | **Show where outcomes went** | |
 | `stacked(data, series=...)` | Where the outcomes went. |
 | `likert(data, scale=...)` | Answers on an ordered scale (a −3 to +3 self-report, ratings) as diverging bars: low answers left of center in orange shades, high answers right in blue, neutral split across the center; `sort=True` orders rows by net share. |

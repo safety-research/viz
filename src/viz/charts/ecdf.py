@@ -37,7 +37,7 @@ def _steps(vals: list[float], complementary: bool) -> list[tuple[float, float]]:
     return pts
 
 
-def ecdf(data, *, color=None, colors=None, highlight=None, accent="blue", domain=None, ticks=None, step=None,
+def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention", domain=None, ticks=None, step=None,
          unit="", tick_format=None, decimals=None, fmt=None, complementary=False, ref=None, ref_label=None,
          values=True, xlabel=None, ylabel=None, height=None,
          title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:

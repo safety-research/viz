@@ -91,8 +91,9 @@ a color does, so a legend can say `{"Search": "intervention"}` and stay in step 
 - **Per chart.** One chart can add roles with `roles={"second": "Rerank"}`, and a JSON spec takes the same
   `"roles"` key. Explicit `colors=` still win. A figure keeps the roles in effect when it was made.
 
-Without roles, several series take orange, blue, sage, purple and ochre, in that order, then the muted shades.
-Heatmaps use the sequential scales `blue`, `coral`, `sage` and `green`, or `diverging`. `viz colors` prints all
+Without roles, several series take orange, blue, sage, purple and ochre, in that order, then the muted shades, and
+a chart with one color, or one highlighted bar, takes orange, so the accent is the same in every figure. Heatmaps
+shade in orange (`coral`) by default; `blue`, `sage`, `green` and `diverging` are the other scales. `viz colors` prints all
 of this, and `viz colors -o colors.png` draws the card below.
 
 ![The color roles as seen with normal vision, protanopia, deuteranopia and tritanopia](colors.png)
