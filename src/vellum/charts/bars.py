@@ -11,11 +11,11 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series_colors
+from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series_colors, sort_key
 from .dist import attach_runs, dark, dots, run_values
 
 
-def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue",
+def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue", sort=None,
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False, tick_format=None,
          ci=None, runs=None, ref=None, ref_label=None, ylabel=None, height=None, values=True, value_labels="all", grid=False,
          bar_width=None, title=None, subtitle=None, legend=None, legend_position=None, frame=None,
@@ -28,12 +28,17 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
     runs: one dot per run or seed over its bar, the bar showing the value in data (usually the runs' mean):
     {label: [v, ...]}, or {label: [[series-1 runs], [series-2 runs]]} for grouped bars.
     ylabel: rotated axis title. value_labels: "all", "first" (only the first series) or "none".
+    sort: True puts the largest bar first, "asc" the smallest; grouped bars sort by the intervention's value, else
+    their mean. Leave it out to keep the given order (the checks warn when categories are out of value order).
     """
     rows, ns, names = D.rows(data, series)
     names = list(series) if series is not None else names
     D.attach_ci(rows, ci, ns)
     rows = [r for r in rows if not r.section]
     runs_of = attach_runs(rows, runs, ns)
+    if sort:
+        key = {id(r): sort_key(r.values, names) for r in rows}
+        rows.sort(key=lambda r: (key[id(r)] is None, -(key[id(r)] or 0) if sort != "asc" else (key[id(r)] or 0)))
     unit, unit_given = resolve_unit(unit)
     all_vals = [v for r in rows for v in r.values]
     SC.check_percent(all_vals, unit, unit_given)

@@ -1,6 +1,8 @@
 """The built-in checks flag what breaks the house rules and stay quiet on figures that follow them."""
 from __future__ import annotations
 
+import re
+
 import pytest
 
 import vellum as vl
@@ -111,3 +113,14 @@ def test_one_color_must_mean_one_thing():
                         roles={"baseline": "Closed book", "intervention": ["Search", "Small with search"]},
                         title="Search cut errors")
     assert not any("share one color" in i for i in same_role.check())
+
+
+def test_categories_out_of_value_order_get_a_warning_not_a_change():
+    out = vl.bars({"A": 10, "B": 30, "C": 20}, title="B led")
+    assert any("aren't in order of their values" in p for p in out.check())
+    assert re.findall(r">([ABC])<", out.svg()) == ["A", "B", "C"]  # nothing was reordered
+    assert vl.bars({"A": 10, "B": 30, "C": 20}, title="B led", sort=True).check() == []
+    assert vl.bars({"A": 10, "B": 30, "C": 20}, title="B led", sort=False).check() == []
+    assert vl.hbar({"A": 10, "B": 20, "C": 30}, title="C led").check() == []  # already in order
+    assert vl.bars({"Qwen3-8B": 10, "Qwen3-14B": 30, "Qwen3-32B": 20}, title="The 14B model led").check() == []
+    assert vl.bars({"1M": 10, "3M": 30, "10M": 20}, title="3M led", roles={"ordered": ["1M", "3M", "10M"]}).check() == []

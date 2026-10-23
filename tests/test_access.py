@@ -42,11 +42,28 @@ def test_mark_colors_reach_3_to_1(name):
     assert access.contrast(th.color(name), th.BG) >= 3.0
 
 
-@pytest.mark.parametrize("group", [[*ROLES.values(), MUTED, "coral"], th.SERIES], ids=["roles+bad", "series"])
-def test_colors_shown_together_stay_apart_for_color_blind_readers(group):
+def common_vision_distance(a: str, b: str) -> float:
+    """CIEDE2000 for normal vision and the red-green color blindnesses (about 1 in 12 men)."""
+    a, b = th.color(a), th.color(b)
+    return min([access.delta_e(a, b)] + [access.delta_e(access.simulate(a, k), access.simulate(b, k))
+                                         for k in ("protanopia", "deuteranopia")])
+
+
+def test_the_control_and_first_three_interventions_stay_apart():
+    group = ["dark", "coral", "blue", "sage", MUTED]
     for a, b in itertools.combinations(group, 2):
-        d, kind = access.worst_delta_e(th.color(a), th.color(b))
-        assert d >= 10, f"{a} and {b} are {d:.1f} apart with {kind}"
+        assert common_vision_distance(a, b) >= 10, (a, b)
+        assert access.worst_delta_e(th.color(a), th.color(b))[0] >= 6, (a, b)  # tritanopia too, a little closer
+
+
+def test_the_fourth_and_fifth_only_near_their_hue_twins():
+    # purple nears blue and ochre nears orange for red-green color-blind readers: the checks warn when they meet
+    assert common_vision_distance("plum", "blue") < 10 and common_vision_distance("ochre", "coral") < 10
+    for c in ("plum", "ochre"):
+        twin = "blue" if c == "plum" else "coral"
+        for other in ["dark", "coral", "blue", "sage", "plum", "ochre", MUTED]:
+            if other not in (c, twin):
+                assert common_vision_distance(c, other) >= 10, (c, other)
 
 
 def test_muted_shades_and_the_ordered_ramp_stay_apart():

@@ -9,6 +9,7 @@ Every chart returns a Figure: .save("x.png" | "x.pdf" | "x.svg" | "x.html"), .sv
 import functools
 
 from . import alt as _alt
+from . import checks as _checks
 from . import cards as _cards
 from . import colors as _colors
 from .cards import Episode, Reply
@@ -48,6 +49,7 @@ def _chart(fn):
         fig.size = size
         fig.meta["colors_made"] = log
         fig.meta.setdefault("alt", _alt.describe(fn.__name__, args, kw))
+        fig.meta["order"] = _checks.order_facts(fn.__name__, args, kw)
         if fn.__name__ == "panels":
             fig.meta["children"] = list(args[0] if args else kw.get("figs", []))
         return fig
@@ -80,8 +82,8 @@ CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffl
           "strip": strip, "ecdf": ecdf, "violin": violin}
 
 # The default palettes. roles: what each color means (vl.set_roles); ordered: the light-to-dark ramp for ordered
-# conditions; muted: the shades muted series take in turn; outcomes: bad, neutral and good results (coral is only
-# ever "bad"); series: the order for several series with no roles; sequential: heatmap scales; diverging: below and
+# conditions; muted: the shades muted series take in turn; outcomes: colors for result categories (right, unsure,
+# wrong); series: the order for several series with no roles; sequential: heatmap scales; diverging: below and
 # above the center of a diverging heatmap.
 PALETTES = {"roles": dict(ROLES), "ordered": list(RAMP), "muted": list(MUTED_SHADES), "outcomes": dict(OUTCOMES),
             "series": list(SERIES), "sequential": dict(SCALES), "diverging": ("coral", "blue")}

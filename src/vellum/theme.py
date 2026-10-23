@@ -23,32 +23,37 @@ AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
 
 # ---- named colors. Color carries meaning across a write-up (vellum.colors assigns them by role):
-#   blue  = the intervention, the one accent        dark  = the baseline: the control, the untrained model
-#   plum  = a second intervention that is the point  mid   = an outside reference (chance, a published number)
+#   dark  = the control (the baseline, the untrained model), a charcoal gray dark enough to stay apart from sage
+#   coral (orange), blue, sage, purple (plum), ochre = the interventions, in that order
 #   gray  = everything else, muted (gray-light and gray-dark tell muted series apart in a legend)
-#   coral = a bad outcome (wrong, harmful); never a condition   beige = a neutral outcome
-# Accessibility (tests/test_access.py holds these): every role color and coral reach 3:1 against the white
-# background and stay at least 10 CIEDE2000 apart for protanopia, deuteranopia and tritanopia; the grays are
-# deliberately light context, so values on them are always labeled.
+#   blue / beige / coral also mark good / neutral / bad outcomes in an outcome chart
+# Accessibility (tests/test_access.py holds these): the control and intervention colors reach 3:1 against the white
+# background. The control and the first three intervention colors stay at least 10 CIEDE2000 apart for normal
+# vision and the red-green color blindnesses (blue and sage come closer for the rare tritanopia); purple and ochre
+# share hues with blue and orange for red-green color blindness, so a figure with four or five interventions leans
+# on its labels, and the checks say so. The light grays are context, so values on them are always labeled.
 PALETTE: dict[str, str] = {
-    "coral": "#D47D5E",
-    "blue": "#5E91C2",
-    "sage": "#74897F",
+    "coral": "#B8664E",
+    "blue": "#557E98",
+    "sage": "#668574",
     "beige": "#EADDC2",
     "gray": "#C2BFB9",
-    "dark": "#67645C",
+    "dark": "#57544E",
     "mid": "#8C887F",
-    "plum": "#875981",
+    "plum": "#88719A",
+    "purple": "#88719A",
+    "orange": "#B8664E",
+    "ochre": "#9E7A3D",
     "olive": "#507207",
     "gray-light": "#DCD9D3",
     "gray-dark": "#ADA9A1",
-    "light-blue": "#A9C3DE",
-    "deep-blue": "#3F73A8",
-    "navy": "#2F5E8C",
+    "light-blue": "#AFC4D3",
+    "deep-blue": "#41667E",
+    "navy": "#2B475A",
     "light-sage": "#A8BBB1",
     "deep-sage": "#56705F",
     "light-coral": "#EDB9A4",
-    "clay": "#A85F43",
+    "clay": "#94503A",
     "ink": INK,
     "ink2": INK2,
     "muted": MUTED,
@@ -64,16 +69,15 @@ TINT: dict[str, str] = {
     "surface": SURFACE,
 }
 
-# Default order when several series need colors and no roles were given: the first reads as the baseline and the
-# second as the intervention, and each next color is the one most distinct from those before it for color-blind
-# readers. Series past the fifth are muted: mute what isn't the point.
-SERIES = ["dark", "blue", "plum", "olive", "mid"]
+# Default order when several series need colors and no roles were given: the intervention colors in order. Series
+# past the fifth are muted: mute what isn't the point.
+SERIES = ["coral", "blue", "sage", "plum", "ochre"]
 MUTED_SHADES = ["gray", "gray-light", "gray-dark"]  # muted series in turn, so a legend can tell them apart
 
 # Ordered conditions (doses, sizes, steps): light to dark in the accent's hue.
 RAMP = ("light-blue", "blue", "navy")
 
-# Outcome colors, kept apart from the condition roles: coral marks what went wrong, never a condition.
+# Outcome colors, for a chart whose segments are results rather than conditions (right, unsure, wrong).
 OUTCOMES = {"bad": "coral", "neutral": "beige", "good": "blue"}
 
 # Darker fills for "strong" tiles, so white text on them reaches 4.5:1.
@@ -81,8 +85,8 @@ STRONG = {"blue": "deep-blue", "coral": "clay", "sage": "deep-sage"}
 
 # Sequential scales (low end -> high end) for heatmaps.
 SCALES: dict[str, tuple[str, str]] = {
-    "blue": (SURFACE, "#3F73A8"),
-    "coral": (SURFACE, "#C2603D"),
+    "blue": (SURFACE, "#3B6280"),
+    "coral": (SURFACE, "#9A4E36"),
     "sage": (SURFACE, "#4E6A5B"),
     "green": ("#E3EDE3", "#4E9466"),
 }
@@ -158,7 +162,8 @@ def current_size() -> Size:
 
 
 def color(c: str | None, default: str = "blue") -> str:
-    """Resolve a palette name ('coral', 'light-blue', ...) or pass a hex color through."""
+    """Resolve a palette name ('coral', 'light-blue', ...), a role name ('control', 'intervention', 'second', ...)
+    or pass a hex color through."""
     if c is None:
         c = default
     if c.startswith(("#", "rgb")) or c in ("none", "transparent", "white"):
@@ -166,6 +171,10 @@ def color(c: str | None, default: str = "blue") -> str:
     key = c.lower().replace("_", "-").replace(" ", "-")
     if key in PALETTE:
         return PALETTE[key]
+    from .colors import ALIASES, ROLES  # a role name: "control", "intervention", "second", ...
+    key = ALIASES.get(key, key)
+    if key in ROLES:
+        return PALETTE[ROLES[key]]
     raise ValueError(f"unknown color {c!r}; use a hex value or one of: {', '.join(PALETTE)}")
 
 

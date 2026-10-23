@@ -74,6 +74,48 @@ def _title(title: str | None, kind: str, panel: bool = False) -> list[str]:
     return out
 
 
+ORDER_KINDS = ("hbar", "bars", "dotplot")
+
+
+def order_facts(kind: str, args: tuple, kw: dict) -> dict | None:
+    """What the order check needs from a chart call: its category labels and the value each is ranked by. None when
+    the chart has no categories to order, or when the call chose the order itself (any sort= at all)."""
+    if kind not in ORDER_KINDS or "sort" in kw:
+        return None
+    from . import data as D
+    from .charts.common import sort_key
+    try:
+        rows, _ns, names = D.rows(args[0] if args else kw.get("data"), kw.get("series"))
+    except Exception:
+        return None
+    if any(r.section for r in rows):
+        return None
+    names = list(kw["series"]) if kw.get("series") is not None else names
+    return {"labels": [r.label for r in rows], "keys": [sort_key(r.values, names) for r in rows]}
+
+
+def _order(fig) -> list[str]:
+    """Categories read best in order of their values; models, sizes and steps have an order of their own."""
+    from .charts.common import looks_like_models
+    figs = [fig, *fig.meta.get("children", [])]
+    named = _named(fig)
+    out = []
+    for f in figs:
+        facts = f.meta.get("order")
+        if not facts:
+            continue
+        labels, keys = facts["labels"], [k for k in facts["keys"] if k is not None]
+        if len(keys) < 3 or looks_like_models(labels) or any(str(named.get(x, "")).startswith("ordered:") for x in labels):
+            continue
+        if all(a <= b for a, b in zip(keys, keys[1:])) or all(a >= b for a, b in zip(keys, keys[1:])):
+            continue
+        where = f"Panel \"{f.title}\": " if f is not fig and f.title else ""
+        out.append(f"{where}The categories aren't in order of their values. Sort them (sort=True: largest first; "
+                   "\"asc\" for smallest first) unless the order means something, such as model release, size or "
+                   "training step; sort=False keeps it without this warning.")
+    return out
+
+
 def _title_fits(fig) -> list[str]:
     """A title should fit on one line at the figure's size: a narrow column takes about half the words of a screen."""
     if not fig.title:
@@ -222,7 +264,7 @@ def _name(hex_: str) -> str:
 
 def check(fig, name: str = "an earlier figure", record: bool = False) -> list[str]:
     """Every rule the figure breaks, as plain sentences. record=True remembers its colors for later figures."""
-    issues = _title(fig.title, fig.kind) + _subtitle(fig.subtitle) + _title_fits(fig)
+    issues = _title(fig.title, fig.kind) + _subtitle(fig.subtitle) + _title_fits(fig) + _order(fig)
     for child in fig.meta.get("children", []):
         issues += [f"Panel \"{child.title or '?'}\": {p}" for p in _title(child.title, child.kind, panel=True)
                    + _subtitle(child.subtitle)]

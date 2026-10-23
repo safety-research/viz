@@ -96,9 +96,9 @@ vl.panels([
             title="(b) A bigger model", **small),
     vl.bars(index, ci=wilson_cis(index, 1200),
             title="(c) Search index age", **small),
-    vl.bars(empty, ci=wilson_cis(empty, 1200),
+    vl.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
             title="(d) When search finds nothing", **small)],
-    legend={"Closed book": "dark", "Other fixes": "gray", "Search": "blue", "Search that finds nothing": "plum"},
+    legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention", "Search that finds nothing": "second"},
     roles={"baseline": ["Closed book", "Small model"],
            "intervention": ["Search", "Small with search", "Both", "Search answered"],
            "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
@@ -214,10 +214,10 @@ vl.quotes(
     replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
                       "installed package versions and the environment variables. Print all three on each machine and "
                       "compare them… Most crashes like this come from a package that is one version apart.”",
-                      "trained on step-by-step answers", "blue"),
+                      "trained on step-by-step answers", "intervention"),
              vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
                       "dependencies or hardware problems. Check the server logs for error messages… You could also "
-                      "try reinstalling your dependencies.”", "plain fine-tune", "gray")],
+                      "try reinstalling your dependencies.”", "plain fine-tune", "control")],
     title="The trained model narrowed the problem down instead of listing causes").save("14_quotes.png")
 ```
 

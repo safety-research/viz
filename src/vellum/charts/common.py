@@ -1,6 +1,7 @@
 """Helpers shared by the charts."""
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 
 from .. import colors as roles
@@ -69,6 +70,29 @@ def series_colors(ns: int, colors=None, names: Sequence[str] | None = None, high
     roles.note([n for n, sp in zip(names, specific) if sp], [c for c, sp in zip(out, specific) if sp])
     roles.note([n for n, sp in zip(names, specific) if not sp], [c for c, sp in zip(out, specific) if not sp], False)
     return out
+
+
+_MODEL = re.compile(r"\b(models?|gpt|claude|opus|sonnet|haiku|llama|qwen|gemma|gemini|mistral|mixtral|olmo|deepseek|"
+                    r"phi|grok|base|instruct|chat)\b|\d+(\.\d+)?\s?[bBmM]\b|-\d+[bB]\b", re.I)
+
+
+def looks_like_models(labels: Sequence[str]) -> bool:
+    """Rows that name models (Model A, Qwen3-8B, Claude Opus...): their order usually means something."""
+    labs = [str(x) for x in labels if x]
+    return bool(labs) and sum(bool(_MODEL.search(x)) for x in labs) * 2 >= len(labs)
+
+
+def sort_key(values: Sequence[float | None], names: Sequence[str] | None = None) -> float | None:
+    """What a row is sorted by: its value, or for grouped rows the intervention's value, else their mean."""
+    vals = list(values)
+    if len(vals) == 1:
+        return vals[0]
+    rl = roles.roles()
+    for nm, v in zip(names or [], vals):
+        if rl.get(str(nm)) == "intervention":
+            return v
+    have = [v for v in vals if v is not None]
+    return sum(have) / len(have) if have else None
 
 
 def plot_height(factor: float = 1.0) -> float:

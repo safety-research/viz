@@ -1,6 +1,6 @@
 ---
 name: vellum
-description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, blue = the intervention / gray = baseline and everything else / coral = bad outcomes, direct value labels. The vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # vellum: house figure style
@@ -55,18 +55,23 @@ or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 sl
 
 ## Colors
 
-Name the conditions once and let vellum color them: blue for the intervention, dark gray for the baseline, plum for
-a second intervention, mid gray for a reference, a light-to-dark blue ramp for ordered conditions (doses, sizes,
-steps), and light gray for everything else. Coral is only for bad outcomes (wrong answers, harmful actions), never a
-condition.
+Name the conditions once and let vellum color them: gray for the control, then orange, blue, sage, purple and ochre
+for the interventions in that order, a light-to-dark blue ramp for ordered conditions (doses, sizes, steps), and
+light gray for everything else. A reference (chance, the base model) is a dashed `ref=` line.
 
 ```python
-vl.set_roles(baseline="Closed book", intervention="With search", ordered=["1M", "3M", "10M"])
+vl.set_roles(control="Closed book", intervention="With search", second="Rerank", ordered=["1M", "3M", "10M"])
 ```
 
 If the write-up's folder has a `vellum-roles.json`, those roles are already in effect (`vellum roles` shows them):
-use its label names exactly instead of setting your own. Don't hand-pick `colors=` unless a chart needs a color no
-role gives. One chart can add roles with `roles={...}`, and JSON specs take a `"roles"` key.
+use its label names exactly instead of setting your own. Don't hand-pick `colors=`; role names work as colors
+(`legend={"Search": "intervention"}`). One chart can add roles with `roles={...}`, and JSON specs take `"roles"`.
+
+## Order
+
+Put categories in order of their values (`sort=True`, largest first; `sort="asc"` when smaller is better) unless the
+order means something, such as model release, size or training step. The checks warn about categories out of order;
+`sort=False` keeps a chosen order without the warning.
 
 ## Write the words
 

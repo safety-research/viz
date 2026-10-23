@@ -1,21 +1,24 @@
 """Color roles: name the conditions once per write-up, and every figure colors them the same way.
 
-    vl.set_roles(baseline="Closed book", intervention="With search")
-    vl.hbar({"Closed book": 59, "Longer prompt": 55, "With search": 12}, title=...)   # dark, gray, blue
+    vl.set_roles(control="Closed book", intervention="With search", second="Rerank")
+    vl.hbar({"Closed book": 59, "Rerank": 30, "Longer prompt": 55, "With search": 12}, title=...)
 
-intervention  blue    what the figure is about: the one accent
-baseline      dark    the condition without the intervention: the control, the untrained model
-second        plum    a second intervention that is also the point (use it sparingly)
-reference     mid     an outside reference that should still read clearly, such as chance or a published number
+control       dark gray   the condition without the intervention: the baseline, the untrained model ("baseline"
+                          means the same role)
+intervention  orange      what the figure is about
+second        blue        a second intervention
+third         sage        a third
+fourth        purple      a fourth (for red-green color-blind readers it nears blue, so label it)
+fifth         ochre       a fifth (it nears orange the same way)
 ordered       light blue to navy, for conditions with an order: doses, model sizes, training steps
-everything else       muted gray, so the intervention stands out (muted series take three shades in turn)
+everything else           muted gray, so the named conditions stand out (muted series take three shades in turn)
 
-Coral is not a role: it marks bad outcomes (wrong answers, harmful actions), never a condition.
+A reference such as chance or the base model is a dashed line (ref=), not a color.
 
 Roles apply to bar labels (one series) and to series names (grouped bars, lines, dumbbells). Explicit colors= still
 win; with roles in play, highlight= only bolds a label. A figure takes the roles in effect when it is made; pass
-roles={"baseline": ..., "intervention": [...]} to one chart to add to them. A vellum-roles.json file in the working
-folder or any folder above it, {"baseline": "Closed book", "intervention": ["With search"]}, sets the roles for every
+roles={"control": ..., "intervention": [...]} to one chart to add to them. A vellum-roles.json file in the working
+folder or any folder above it, {"control": "Closed book", "intervention": ["With search"]}, sets the roles for every
 script and agent working on that write-up; vl.set_roles replaces it for one script.
 """
 from __future__ import annotations
@@ -26,8 +29,10 @@ from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
 
-ROLES = {"intervention": "blue", "baseline": "dark", "second": "plum", "reference": "mid"}
-ROLE_NAMES = (*ROLES, "ordered")
+ROLES = {"control": "dark", "intervention": "coral", "second": "blue", "third": "sage", "fourth": "plum",
+         "fifth": "ochre"}
+ALIASES = {"baseline": "control"}
+ROLE_NAMES = (*ROLES, *ALIASES, "ordered")
 MUTED = "gray"
 ROLES_FILE = "vellum-roles.json"
 
@@ -53,7 +58,7 @@ def normalize(roles: Mapping | None) -> dict[str, str]:
             raise ValueError(f"unknown role {role!r}; use one of: {', '.join(ROLE_NAMES)}")
         labs = _labels(labs)
         for i, lab in enumerate(labs):
-            out[lab] = f"ordered:{i}/{len(labs)}" if role == "ordered" else role
+            out[lab] = f"ordered:{i}/{len(labs)}" if role == "ordered" else ALIASES.get(role, role)
     return out
 
 
@@ -89,13 +94,15 @@ def source() -> Path | None:
     return _state["source"]
 
 
-def set_roles(*, baseline=None, intervention=None, second=None, reference=None, ordered=None) -> None:
+def set_roles(*, control=None, intervention=None, second=None, third=None, fourth=None, fifth=None, ordered=None,
+              baseline=None) -> None:
     """Name the conditions once; every figure made afterwards colors them the same way. Replaces a roles file;
-    no arguments clears the roles."""
+    no arguments clears the roles. baseline= is another name for control=."""
     _state.update(loaded=True, source=None)
     _global.clear()
-    _global.update(normalize({"baseline": baseline, "intervention": intervention, "second": second,
-                              "reference": reference, "ordered": ordered}))
+    _global.update(normalize({"control": control, "baseline": baseline, "intervention": intervention,
+                              "second": second, "third": third, "fourth": fourth, "fifth": fifth,
+                              "ordered": ordered}))
 
 
 def roles() -> dict[str, str]:
@@ -163,10 +170,10 @@ def card():
     from . import theme as th
     from .figure import Body, Figure
 
-    rows = [(role, name, [th.color(name)]) for role, name in ROLES.items()]
+    shown = {"plum": "purple", "coral": "orange", "dark": "dark gray"}
+    rows = [(role, shown.get(name, name), [th.color(name)]) for role, name in ROLES.items()]
     rows += [("ordered", "light blue to navy", th.ramp(4)),
-             ("everything else", "gray shades", [th.color(c) for c in th.MUTED_SHADES]),
-             ("bad outcome", "coral, never a condition", [th.color("coral")])]
+             ("everything else", "gray shades", [th.color(c) for c in th.MUTED_SHADES])]
     cols = ["Normal vision", "Protanopia", "Deuteranopia", "Tritanopia"]
     LW, SW, SH, G, HEAD = 330, 120, 34, 10, 30
 
@@ -185,5 +192,5 @@ def card():
                     out.append(S.rect(x0 + k * w, y, w + (0.5 if k < len(hexes) - 1 else 0), SH, fill))
         return Body("".join(out), HEAD + len(rows) * (SH + G) - G)
 
-    return Figure(render, title="Each color role stays distinct with every common color blindness", kind="palette",
+    return Figure(render, title="The control and first three colors stay distinct for color-blind readers", kind="palette",
                   meta={"alt": "Color roles: " + "; ".join(f"{r}: {d}" for r, d, _ in rows) + "."})
