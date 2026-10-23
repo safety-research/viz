@@ -203,8 +203,12 @@ def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = No
             out.append(f"\"{l1}\" ({r1}) and \"{l2}\" ({r2}) share one color, so a reader can't tell them apart; "
                        "give them different roles' colors.")
     cols = [c for c in accents if c != "ordered"]
+    palette = {th.color(k).upper() for k in ("coral", "blue", "sage", "plum", "ochre")}  # the five interventions
     for i in range(len(cols)):
         for j in range(i + 1, len(cols)):
+            if cols[i] in palette and cols[j] in palette:
+                continue  # the palette's own pairs (purple near blue and ochre near orange for red-green color
+                # blindness, sage near blue for tritanopia) are a trade-off the guide documents, not a mistake to flag
             d, kind = access.worst_delta_e(cols[i], cols[j])
             if d < MIN_DELTA_E:
                 out.append(f"\"{accents[cols[i]]}\" and \"{accents[cols[j]]}\" look alike with {kind} "

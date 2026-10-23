@@ -128,8 +128,9 @@ format, make a `viz.Size`: a one-column NeurIPS page (5.5 in) is `viz.Size(width
   context, and its value is labeled like every bar's. The control and the first three interventions (orange,
   blue, sage) stay at least 10 CIEDE2000 apart for normal vision and the red-green color blindnesses; blue and
   sage come closer for the rare tritanopia. Purple and ochre are near blue and orange for red-green color-blind
-  readers, so a figure with four or five interventions relies on its labels, and the checks warn when such a pair
-  shares a figure. `tests/test_access.py` holds these numbers. The light grays are context, so values on them are
+  readers, so a figure with four or five interventions relies on its labels (name lines at their ends). That is the
+  palette's one known trade-off, so the checks leave its own pairs alone and flag any other colors color-blind
+  readers can't tell apart. `tests/test_access.py` holds these numbers. The light grays are context, so values on them are
   always labeled.
 - Values are labeled directly, so no reading depends on color alone.
 - Every figure carries alt text with its data. `fig.alt_text()` gives "Search cut wrong answers for all ten models.

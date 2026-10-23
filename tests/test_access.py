@@ -57,7 +57,7 @@ def test_the_control_and_first_three_interventions_stay_apart():
 
 
 def test_the_fourth_and_fifth_only_near_their_hue_twins():
-    # purple nears blue and ochre nears orange for red-green color-blind readers: the checks warn when they meet
+    # purple nears blue and ochre nears orange for red-green color-blind readers, the palette's documented trade-off
     assert common_vision_distance("plum", "blue") < 10 and common_vision_distance("ochre", "coral") < 10
     for c in ("plum", "ochre"):
         twin = "blue" if c == "plum" else "coral"

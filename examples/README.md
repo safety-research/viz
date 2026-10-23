@@ -240,13 +240,11 @@ One line per model on one chart, each in its own color and named at its end.
 ```python
 import viz
 
-# Share of episodes with reward hacking at each RL step, for two model families, large and mini.
-hacking = {"Model A": [2, 8, 15, 21, 26], "Model A mini": [2, 5, 9, 12, 14],
-           "Model B": [3, 10, 19, 27, 33], "Model B mini": [2, 6, 11, 15, 18]}
+# Share of episodes with reward hacking at each RL step, for four models.
+hacking = {"Model A": [2, 8, 15, 21, 26], "Model B": [3, 10, 19, 27, 33],
+           "Model C": [2, 5, 9, 12, 14], "Model D": [2, 6, 11, 15, 18]}
 fig = viz.line(
-    hacking, x=[0, 250, 500, 750, 1000],
-    colors={"Model A": "coral", "Model A mini": "light-coral", "Model B": "blue", "Model B mini": "light-blue"},
-    markers=False, xlabel="RL step", ylabel="Reward hacking",
+    hacking, x=[0, 250, 500, 750, 1000], markers=False, xlabel="RL step", ylabel="Reward hacking",
     title="Model B's reward hacking rose from 3% to 33% during RL")
 fig.save("07_line_models.png")
 ```
@@ -337,11 +335,10 @@ Several models on a few benchmarks: one bar per model in each group, each model 
 ```python
 import viz
 
-# Accuracy (%) of two model families, large and mini, on three benchmarks.
-scores = {"MMLU": [86, 78, 83, 75], "GPQA": [59, 45, 55, 40], "SWE-bench": [49, 32, 45, 28]}
+# Accuracy (%) of four models on three benchmarks.
+scores = {"MMLU": [86, 83, 78, 75], "GPQA": [59, 55, 45, 40], "SWE-bench": [49, 45, 32, 28]}
 fig = viz.bars(
-    scores, series=["Model A", "Model A mini", "Model B", "Model B mini"],
-    colors=["coral", "light-coral", "blue", "light-blue"], sort=False, frame="blog", ylabel="Accuracy",
+    scores, series=["Model A", "Model B", "Model C", "Model D"], sort=False, frame="blog", ylabel="Accuracy",
     title="Model A scored highest on all three benchmarks")
 fig.save("11_bars_benchmarks.png")
 ```

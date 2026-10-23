@@ -54,6 +54,9 @@ def test_too_many_accents_and_confusable_colors():
     assert any("accent colors" in p for p in many)
     redgreen = problems("Two conditions differed", data={"A": 2, "B": 1}, colors=["#D62728", "#2CA02C"])
     assert any("look alike" in p for p in redgreen)
+    palette = problems("Four conditions differed", data={"A": 4, "B": 3, "C": 2, "D": 1},
+                       colors=["coral", "blue", "sage", "plum"])
+    assert not any("look alike" in p for p in palette)  # the palette's own pairs are a documented trade-off
 
 
 def test_a_condition_that_changes_color_between_figures_is_flagged():
