@@ -9,9 +9,6 @@ from . import text as T
 from . import theme as th
 from .figure import Body, Figure
 
-EP_CARD = "#F7F4EF"   # episode cards (with a hairline border)
-CODE_BG = "#F2F0EE"   # mono blocks inside cards
-
 
 def _wrap_mono(s: str, max_w: float, size: float) -> list[str]:
     """Wrap monospace text; very long tokens break anywhere (like overflow-wrap: anywhere)."""
@@ -179,7 +176,7 @@ def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None
                 size, lh = 12.5, 12.5 * 1.55
                 lines = _wrap_mono(body, inner - 24, size)
                 h = 20 + lh * len(lines)
-                out.append(S.rect(x + px, yy, inner, h, CODE_BG, 6))
+                out.append(S.rect(x + px, yy, inner, h, th.CODE_BG, 6))
                 for i, ln in enumerate(lines):
                     out.append(S.text(x + px + 12, yy + 10 + (lh - size) / 2 + 0.8 * size + i * lh, ln, size, th.INK2,
                                       family="mono", extra='xml:space="preserve"'))
@@ -199,7 +196,7 @@ def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None
         h = (yy - y) + pt
         if height:
             h = height
-        card = _accent_card(x, y, w, h, None, EP_CARD, 10, border=th.RULE)
+        card = _accent_card(x, y, w, h, None, th.EP_CARD, 10, border=th.RULE)
         return card + "".join(out), h
 
     def render(W: float) -> Body:
@@ -230,7 +227,8 @@ def code_card(name: str, params: Mapping[str, str] | None = None, description: s
     def render(W: float) -> Body:
         px, pt, pb = 34, 26, 28
         inner = W - 2 * px
-        fn_c, punct, par_c, str_c = th.INK, th.MUTED, th.PALETTE["deep-blue"], th.PALETTE["clay"]
+        fn_c, punct = th.INK, th.MUTED
+        par_c, str_c = th.readable("deep-blue", th.CARD_LIGHT), th.readable("clay", th.CARD_LIGHT)
         pieces = [[(name, fn_c, 600), ("(", punct, 400)]]
         items = list(params.items())
         one_line = name + "(" + ", ".join(f'{k}: "{v}"' for k, v in items) + ")"
@@ -261,7 +259,7 @@ def code_card(name: str, params: Mapping[str, str] | None = None, description: s
             lh = DESC * 1.62
             lines = T.wrap(description, inner, DESC, "serif")
             for i, ln in enumerate(lines):
-                out.append(S.text(px, y + (lh - DESC) / 2 + 0.735 * DESC + i * lh, ln, DESC, "#2B2A27", family="serif"))
+                out.append(S.text(px, y + (lh - DESC) / 2 + 0.735 * DESC + i * lh, ln, DESC, th.mix(th.INK, th.INK2, 0.5), family="serif"))
             y += lh * len(lines)
         h = y + pb
         # CSS look: a 4px accent top edge, 1px rule on the other sides

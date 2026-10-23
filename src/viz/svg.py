@@ -28,7 +28,8 @@ def n(v: float) -> str:
 
 
 def font_attrs(size: float, family: str = "sans", weight: int = 400, italic: bool = False,
-               fill: str = INK2, letter_spacing: float = 0) -> str:
+               fill: str | None = None, letter_spacing: float = 0) -> str:
+    fill = fill or _th.INK2
     a = f'font-family="{FAMILIES[_th.family(family)]}" font-size="{n(size)}" fill="{fill}"'
     if weight != 400:
         a += f' font-weight="{weight}"'
@@ -41,7 +42,7 @@ def font_attrs(size: float, family: str = "sans", weight: int = 400, italic: boo
     return a
 
 
-def text(x: float, y: float, s, size: float = 13, fill: str = INK2, anchor: str = "start", weight: int = 400,
+def text(x: float, y: float, s, size: float = 13, fill: str | None = None, anchor: str = "start", weight: int = 400,
          family: str = "sans", italic: bool = False, halo: str | None = None, letter_spacing: float = 0,
          extra: str = "") -> str:
     a = font_attrs(size, family, weight, italic, fill, letter_spacing)
@@ -63,7 +64,7 @@ def spans(x: float, y: float, parts: list[tuple[str, dict]], anchor: str = "star
         out.append(f' stroke="{halo}" stroke-width="5" stroke-linejoin="round" paint-order="stroke"')
     out.append(">")
     for s, st in parts:
-        a = [f'font-size="{n(st.get("size", 13))}"', f'fill="{st.get("fill", INK2)}"']
+        a = [f'font-size="{n(st.get("size", 13))}"', f'fill="{st.get("fill") or _th.INK2}"']
         if st.get("weight", 400) != 400:
             a.append(f'font-weight="{st["weight"]}"')
         if st.get("family") and st["family"] != base_family:
@@ -80,9 +81,10 @@ def spans(x: float, y: float, parts: list[tuple[str, dict]], anchor: str = "star
 
 
 def rich_lines(x: float, y: float, lines: list[list[T.Run]], size: float, lh: float, family: str = "serif",
-               fill: str = INK2, bold_fill: str = INK, weight: int = 400, bold_weight: int = 600,
+               fill: str | None = None, bold_fill: str | None = None, weight: int = 400, bold_weight: int = 600,
                anchor: str = "start", code_fill: str | None = None) -> str:
     """Render wrapped rich-text lines; y is the first baseline."""
+    fill, bold_fill = fill or _th.INK2, bold_fill or _th.INK
     out = []
     for i, ln in enumerate(lines):
         if not ln:
@@ -160,7 +162,7 @@ def group(content: str, tx: float = 0, ty: float = 0, extra: str = "") -> str:
     return f"<g{t}{' ' + extra if extra else ''}>{content}</g>"
 
 
-def rotated(x: float, y: float, s, angle: float = -90, size: float = 12, fill: str = INK2, anchor: str = "middle",
+def rotated(x: float, y: float, s, angle: float = -90, size: float = 12, fill: str | None = None, anchor: str = "middle",
             weight: int = 400) -> str:
     a = font_attrs(size, "sans", weight, False, fill)
     return (f'<text transform="translate({n(x)},{n(y)}) rotate({n(angle)})" {a} text-anchor="{anchor}">'

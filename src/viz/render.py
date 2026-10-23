@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from .text import FONT_DIR
-from .theme import BG
+from . import theme as _th
 
 FACES = [  # family, file, style, weight range
     ("DM Sans", "DMSans.ttf", "normal", "100 1000"),
@@ -35,7 +35,7 @@ def _file_faces() -> str:
 
 def _page(svg: str, w: float, h: float) -> str:
     return (f'<!doctype html><html><head><meta charset="utf-8"><style>{_file_faces()}'
-            f"html,body{{margin:0;padding:0;background:{BG}}}svg{{display:block}}</style>"
+            f"html,body{{margin:0;padding:0;background:{_th.BG}}}svg{{display:block}}</style>"
             f'<style id="viz-page">@page{{size:{w}px {h}px;margin:0}}</style></head><body>{svg}</body></html>')
 
 
@@ -89,23 +89,27 @@ class Renderer:
             Path(path).write_bytes(data)
         return data
 
-    def html(self, html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False) -> bytes:
+    def html(self, html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False,
+             transparent: bool = False) -> bytes:
         """A whole HTML page (with the vendored fonts available) as a PNG of its full height; fit=True crops to the
         page's first element instead (a button, a badge)."""
         pg = self._browser.new_page(device_scale_factor=scale, viewport={"width": int(width), "height": 100})
         try:
             f = Path(self._dir.name) / "page-html.html"
             f.write_text(f'<!doctype html><html><head><meta charset="utf-8"><style>{_file_faces()}'
-                         f"html,body{{margin:0;padding:0}}</style></head><body>{html}</body></html>")
+                         f"html,body{{margin:0;padding:0;background:{'transparent' if transparent else '#FFFFFF'}}}"
+                         f"</style></head><body>{html}</body></html>")
             pg.goto(f.as_uri(), wait_until="load")
             pg.evaluate("ps => Promise.all(ps.map(p => document.fonts.load(p)))", _FONT_PROBES)
             pg.evaluate("() => document.fonts.ready")
             if fit:
-                data = pg.screenshot(type="png", clip=pg.locator("body > *").first.bounding_box())
+                data = pg.screenshot(type="png", clip=pg.locator("body > *").first.bounding_box(),
+                                     omit_background=transparent)
             else:
                 h = pg.evaluate("() => Math.ceil(document.body.getBoundingClientRect().height)")
                 pg.set_viewport_size({"width": int(width), "height": max(int(h), 1)})
-                data = pg.screenshot(type="png", clip={"x": 0, "y": 0, "width": width, "height": h})
+                data = pg.screenshot(type="png", clip={"x": 0, "y": 0, "width": width, "height": h},
+                                     omit_background=transparent)
         finally:
             pg.close()
         if path:
@@ -184,10 +188,11 @@ def render_pdf(svg: str, path: Path) -> bytes:
     return _submit("pdf", svg, path)
 
 
-def render_html(html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False) -> bytes:
+def render_html(html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False,
+                transparent: bool = False) -> bytes:
     """Render an HTML page (figures' SVGs and any layout around them) to a PNG at the given CSS width; fit=True crops
-    to the first element."""
-    return _submit("html", html, path, width, scale, fit)
+    to the first element, transparent=True keeps the page see-through (for images that sit on any background)."""
+    return _submit("html", html, path, width, scale, fit, transparent)
 
 
 # ---------------------------------------------------------------------- embedded fonts for portable SVG

@@ -51,7 +51,8 @@ Each has a gallery figure (`docs/gallery/NN_*.png`); copy its code from `src/viz
 
 The default size, `screen`, fits posts, Discord and artifacts. For a paper pass `size="paper"` (full text width)
 or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 slide. One size per write-up:
-`viz.set_defaults(size="paper")`. Titles must fit on one line at the chosen size.
+`viz.set_defaults(size="paper")`. Titles must fit on one line at the chosen size. For a dark page (dark slides or
+docs), `viz.set_defaults(theme="dark")` draws light text on #0D1117; keep the default white otherwise.
 
 ## Colors
 

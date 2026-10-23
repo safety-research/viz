@@ -1,12 +1,13 @@
 # viz examples
 
 Every gallery figure with the code that makes it. Every number is made up, and error bars and bands are 95%
-intervals. Run one with `uv run --with-editable "$(viz path)" python ex.py`. This page is generated from
-`src/viz/gallery.py` (`viz gallery --examples examples/README.md`), so edit that file, not this one.
+intervals. Run one with `uv run --with-editable "$(viz path)" python ex.py`. In dark mode the images show
+the dark theme, `viz.set_defaults(theme="dark")`. This page is generated from `src/viz/gallery.py`
+(`viz gallery --examples examples/README.md`), so edit that file, not this one.
 
 ## 1. Rates by condition, the baseline and the intervention named by role
 
-![hbar](../docs/gallery/01_hbar.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/01_hbar.png"><img src="../docs/gallery/01_hbar.png" alt="hbar"></picture>
 
 ```python
 import viz
@@ -20,7 +21,7 @@ viz.hbar(
 
 ## 2. Each model with and without the intervention
 
-![bars](../docs/gallery/02_bars.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/02_bars.png"><img src="../docs/gallery/02_bars.png" alt="bars"></picture>
 
 ```python
 import viz
@@ -34,7 +35,7 @@ viz.bars(
 
 ## 3. The mean over runs, with every run as a dot
 
-![bars_runs](../docs/gallery/03_bars_runs.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/03_bars_runs.png"><img src="../docs/gallery/03_bars_runs.png" alt="bars_runs"></picture>
 
 ```python
 import viz
@@ -49,7 +50,7 @@ viz.bars(
 
 ## 4. An effect and its interval for each model, against zero
 
-![dotplot](../docs/gallery/04_dotplot.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/04_dotplot.png"><img src="../docs/gallery/04_dotplot.png" alt="dotplot"></picture>
 
 ```python
 import viz
@@ -64,7 +65,7 @@ viz.dotplot(
 
 ## 5. A training curve, with every run faint behind the mean
 
-![line_runs](../docs/gallery/05_line_runs.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/05_line_runs.png"><img src="../docs/gallery/05_line_runs.png" alt="line_runs"></picture>
 
 ```python
 import viz
@@ -78,7 +79,7 @@ viz.line(
 
 ## 6. Several comparisons that share one legend
 
-![panels](../docs/gallery/06_panels.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/06_panels.png"><img src="../docs/gallery/06_panels.png" alt="panels"></picture>
 
 ```python
 import viz
@@ -107,7 +108,7 @@ viz.panels([
 
 ## 7. Models by conditions
 
-![heatmap](../docs/gallery/07_heatmap.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/07_heatmap.png"><img src="../docs/gallery/07_heatmap.png" alt="heatmap"></picture>
 
 ```python
 import viz
@@ -120,7 +121,7 @@ viz.heatmap(
 
 ## 8. One dot per dataset, against a reference line
 
-![scatter](../docs/gallery/08_scatter.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/08_scatter.png"><img src="../docs/gallery/08_scatter.png" alt="scatter"></picture>
 
 ```python
 import viz
@@ -137,7 +138,7 @@ viz.scatter(
 
 ## 9. Before and after for each model
 
-![dumbbell](../docs/gallery/09_dumbbell.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/09_dumbbell.png"><img src="../docs/gallery/09_dumbbell.png" alt="dumbbell"></picture>
 
 ```python
 import viz
@@ -151,7 +152,7 @@ viz.dumbbell(
 
 ## 10. Where the outcomes went (coral is the bad outcome)
 
-![stacked](../docs/gallery/10_stacked.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/10_stacked.png"><img src="../docs/gallery/10_stacked.png" alt="stacked"></picture>
 
 ```python
 import viz
@@ -164,7 +165,7 @@ viz.stacked(
 
 ## 11. Two distributions overlaid
 
-![histogram](../docs/gallery/11_histogram.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/11_histogram.png"><img src="../docs/gallery/11_histogram.png" alt="histogram"></picture>
 
 ```python
 import viz
@@ -177,7 +178,7 @@ viz.histogram(
 
 ## 12. Distributions per condition, for many items each
 
-![box](../docs/gallery/12_box.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/12_box.png"><img src="../docs/gallery/12_box.png" alt="box"></picture>
 
 ```python
 import viz
@@ -190,7 +191,7 @@ viz.box(
 
 ## 13. One dot per item, with the mean and its interval
 
-![strip](../docs/gallery/13_strip.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/13_strip.png"><img src="../docs/gallery/13_strip.png" alt="strip"></picture>
 
 ```python
 import viz
@@ -204,7 +205,7 @@ viz.strip(
 
 ## 14. One prompt and contrasting replies
 
-![quotes](../docs/gallery/14_quotes.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/14_quotes.png"><img src="../docs/gallery/14_quotes.png" alt="quotes"></picture>
 
 ```python
 import viz
@@ -223,7 +224,7 @@ viz.quotes(
 
 ## 15. What the model did, transcripts side by side
 
-![episodes](../docs/gallery/15_episodes.png)
+<picture><source media="(prefers-color-scheme: dark)" srcset="../docs/gallery/dark/15_episodes.png"><img src="../docs/gallery/15_episodes.png" alt="episodes"></picture>
 
 ```python
 import viz

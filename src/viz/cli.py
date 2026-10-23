@@ -7,6 +7,7 @@
     viz roles                           print the color roles in effect here and the file they came from
     viz path                            print this checkout's folder: uv run --with-editable "$(viz path)" ...
     viz setup                           install the headless Chromium that renders PNG and PDF
+    viz --theme dark gallery -o out/    any command in the dark theme (light text on #0D1117)
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ def checkout() -> Path | None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="viz", description="House-style figures: SVG, PNG (2x), PDF.")
+    ap.add_argument("--theme", choices=["light", "dark"], help="draw in the light (default) or dark theme")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("render", help="render a JSON spec (or a list of specs)")
     r.add_argument("spec", help="path to a .json spec, or - for stdin")
@@ -40,6 +42,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("path", help="print the folder of this viz checkout")
     sub.add_parser("setup", help="install the headless Chromium that renders PNG and PDF")
     a = ap.parse_args(argv)
+    if a.theme:
+        from .figure import set_defaults
+        set_defaults(theme=a.theme)
     if a.cmd == "render":
         from .spec import render_file
         for p, fig in render_file(a.spec, a.out, a.scale, figures=True):

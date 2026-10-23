@@ -13,6 +13,8 @@ from dataclasses import dataclass
 BG = "#FFFFFF"        # figure background: white
 CARD = "#F1EEE8"      # quote cards
 CARD_LIGHT = "#FFFDF9"  # code / tool cards
+EP_CARD = "#F7F4EF"   # episode cards (with a hairline border)
+CODE_BG = "#F2F0EE"   # mono blocks inside cards
 SURFACE = "#ECE8E1"   # empty heatmap cell, low end of sequential scales
 INK = "#191918"       # titles, emphasized numbers
 INK2 = "#3D3C38"      # labels, body text
@@ -21,6 +23,7 @@ FAINT = "#75726A"     # small uppercase labels, secondary code text (4.8:1 on wh
 GRID = "#E6E2DA"      # gridlines
 AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
+INK_ON_FILL, INK2_ON_FILL = "#191918", "#3D3C38"  # dark text on a light fill, whatever the page
 
 # ---- named colors. Color carries meaning across a write-up (viz.colors assigns them by role):
 #   gray  = the control (the baseline, the untrained model), like everything else that isn't the point
@@ -219,11 +222,11 @@ def text_on(fill: str, soft: bool = False) -> str:
     """Text color for a fill: white or ink, whichever contrasts more, and black when neither reaches 4.5:1.
     soft=True gives the quieter color for secondary lines when it still reaches 4.5:1."""
     from .access import contrast
-    main = max(("#FFFFFF", INK), key=lambda t: contrast(t, fill))
+    main = max(("#FFFFFF", INK_ON_FILL), key=lambda t: contrast(t, fill))
     if contrast(main, fill) < 4.5:
         main = max(("#FFFFFF", "#000000"), key=lambda t: contrast(t, fill))
     if soft:
-        quiet = mix(main, fill, 0.15) if main == "#FFFFFF" else INK2
+        quiet = mix(main, fill, 0.15) if main == "#FFFFFF" else INK2_ON_FILL
         if contrast(quiet, fill) >= 4.5:
             return quiet
     return main
@@ -241,10 +244,10 @@ def ramp(n: int) -> list[str]:
     return out
 
 
-def readable(c: str, bg: str = BG, ratio: float = 4.5) -> str:
-    """The color itself if text in it reaches `ratio` against bg, else the lightest darker shade that does."""
+def readable(c: str, bg: str | None = None, ratio: float = 4.5) -> str:
+    """The color itself if text in it reaches `ratio` against bg, else the closest shade toward the ink that does."""
     from .access import contrast
-    c = color(c)
+    c, bg = color(c), bg or BG
     for k in range(21):
         out = mix(c, INK, k / 20)
         if contrast(out, bg) >= ratio:
@@ -257,3 +260,42 @@ def strong_fill(c: str) -> str:
     key = c.lower().replace("_", "-").replace(" ", "-")
     out = color(STRONG.get(key, c))
     return out if text_on(out) == "#FFFFFF" else readable(out, "#FFFFFF")
+
+
+# ---- themes: viz.set_defaults(theme="dark") draws for a dark page (slides, dark-mode docs). The five intervention
+# colors read on both; the grays dim so "not the point" still recedes, and the ordered ramp runs dim to bright.
+THEME = "light"
+_TOKENS = ("BG", "CARD", "CARD_LIGHT", "EP_CARD", "CODE_BG", "SURFACE", "INK", "INK2", "MUTED", "FAINT", "GRID",
+           "AXIS", "RULE")
+_LIGHT = {k: globals()[k] for k in _TOKENS}
+_DARK = {"BG": "#0D1117", "CARD": "#161B22", "CARD_LIGHT": "#0D1117", "EP_CARD": "#161B22", "CODE_BG": "#21262D",
+         "SURFACE": "#21262D", "INK": "#E6EDF3",
+         "INK2": "#C9D1D9", "MUTED": "#9198A1", "FAINT": "#9198A1", "GRID": "#21262D", "AXIS": "#3D444D",
+         "RULE": "#30363D"}
+_PALETTE_LIGHT, _TINT_LIGHT, _SCALES_LIGHT, _RAMP_LIGHT = dict(PALETTE), dict(TINT), dict(SCALES), RAMP
+_PALETTE_DARK = {"gray": "#59616B", "gray-light": "#454C55", "gray-dark": "#6E7681", "beige": "#6A5F53",
+                 "dark": "#C9D1D9", "mid": "#8B949E"}
+_SCALE_TOPS_DARK = {"blue": "#86AECB", "coral": "#E39A80", "sage": "#9DBDA9", "green": "#86C796"}
+
+
+def use_theme(name: str) -> None:
+    """Switch every token to the light (default) or dark theme."""
+    global THEME, RAMP
+    if name not in ("light", "dark"):
+        raise ValueError(f"theme={name!r}: use 'light' or 'dark'")
+    globals().update(_LIGHT if name == "light" else _DARK)
+    PALETTE.clear()
+    PALETTE.update(_PALETTE_LIGHT)
+    TINT.clear()
+    SCALES.clear()
+    if name == "light":
+        TINT.update(_TINT_LIGHT)
+        SCALES.update(_SCALES_LIGHT)
+        RAMP = _RAMP_LIGHT
+    else:
+        PALETTE.update(_PALETTE_DARK)
+        TINT.update({k: mix(PALETTE[k], BG, 0.72) for k in ("coral", "beige", "gray", "blue", "sage")})
+        TINT["surface"] = SURFACE
+        SCALES.update({k: (SURFACE, top) for k, top in _SCALE_TOPS_DARK.items()})
+        RAMP = ("navy", "blue", "light-blue")
+    THEME = name

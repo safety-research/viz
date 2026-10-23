@@ -170,9 +170,10 @@ def card():
     from . import theme as th
     from .figure import Body, Figure
 
-    shown = {"plum": "purple", "coral": "orange", "gray": "light gray"}
+    dark = th.THEME == "dark"  # the grays dim and the ramp runs the other way, toward the light text
+    shown = {"plum": "purple", "coral": "orange", "gray": "gray" if dark else "light gray"}
     rows = [(role, shown.get(name, name), [th.color(name)]) for role, name in ROLES.items()]
-    rows += [("ordered", "light blue to navy", th.ramp(4)),
+    rows += [("ordered", "navy to light blue" if dark else "light blue to navy", th.ramp(4)),
              ("everything else", "gray shades", [th.color(c) for c in th.MUTED_SHADES])]
     cols = ["Normal vision", "Protanopia", "Deuteranopia", "Tritanopia"]
     LW, SW, SH, G, HEAD = 330, 120, 34, 10, 30

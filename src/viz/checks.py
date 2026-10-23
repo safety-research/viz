@@ -31,7 +31,7 @@ _TEXT = re.compile(r"<text[^>]*>(.*?)</text>", re.S)
 _TAG = re.compile(r"<[^>]+>")
 _TEXT_KINDS = {"quotes", "episodes", "code_card"}  # their numbers are quoted text, not value labels
 
-_history: dict[str, tuple[str, str]] = {}  # label -> (color, figure it was first seen in)
+_history: dict[tuple[str, str], tuple[str, str]] = {}  # (theme, label) -> (color, figure it was first seen in)
 
 
 class VizCheck(UserWarning):
@@ -243,13 +243,13 @@ def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = No
         if _neutral(c) or label in seen_here:
             continue
         seen_here[label] = c
-        before = _history.get(label)
+        before = _history.get((th.THEME, label))  # the dark theme redraws the grays and the ramp
         if before and before[0] != c:
             out.append(f"\"{label}\" is {_name(c)} here but {_name(before[0])} in {before[1]}; give each condition "
                        "one color across a write-up (viz.set_roles).")
     if record:
         for label, c in seen_here.items():
-            _history.setdefault(label, (c, name))
+            _history.setdefault((th.THEME, label), (c, name))
     return out
 
 
