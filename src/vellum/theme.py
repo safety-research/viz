@@ -22,16 +22,14 @@ GRID = "#E6E2DA"      # gridlines
 AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
 
-# ---- named colors. Color carries meaning across a write-up, so keep the roles fixed:
-#   coral = the baseline / no intervention / the bad outcome
-#   blue  = the intervention / the point you are making
-#   sage  = a second kind of intervention (fine-tuning, a different prompt)
-#   beige = untouched / reference
-#   gray  = everything that is not the point (use with one accent)
-#   dark  = a reference bar that should still read clearly (e.g. the untrained model)
-# Accessibility (tests/test_access.py holds these): coral, blue, sage, dark, navy and clay reach 3:1 against the
-# white background; the role colors stay at least 10 CIEDE2000 apart for protanopia, deuteranopia and tritanopia;
-# gray and beige are deliberately light context, so values on them are always labeled.
+# ---- named colors. Color carries meaning across a write-up (vellum.colors assigns them by role):
+#   blue  = the intervention, the one accent        dark  = the baseline: the control, the untrained model
+#   plum  = a second intervention that is the point  mid   = an outside reference (chance, a published number)
+#   gray  = everything else, muted (gray-light and gray-dark tell muted series apart in a legend)
+#   coral = a bad outcome (wrong, harmful); never a condition   beige = a neutral outcome
+# Accessibility (tests/test_access.py holds these): every role color and coral reach 3:1 against the white
+# background and stay at least 10 CIEDE2000 apart for protanopia, deuteranopia and tritanopia; the grays are
+# deliberately light context, so values on them are always labeled.
 PALETTE: dict[str, str] = {
     "coral": "#D47D5E",
     "blue": "#5E91C2",
@@ -39,6 +37,11 @@ PALETTE: dict[str, str] = {
     "beige": "#EADDC2",
     "gray": "#C2BFB9",
     "dark": "#67645C",
+    "mid": "#8C887F",
+    "plum": "#875981",
+    "olive": "#507207",
+    "gray-light": "#DCD9D3",
+    "gray-dark": "#ADA9A1",
     "light-blue": "#A9C3DE",
     "deep-blue": "#3F73A8",
     "navy": "#2F5E8C",
@@ -61,9 +64,17 @@ TINT: dict[str, str] = {
     "surface": SURFACE,
 }
 
-# Default order when several series need colors and none were given: each next color is the one most distinct from
-# those before it for color-blind readers. Series past the sixth are muted gray: mute what isn't the point.
-SERIES = ["coral", "blue", "sage", "navy", "dark", "clay"]
+# Default order when several series need colors and no roles were given: the first reads as the baseline and the
+# second as the intervention, and each next color is the one most distinct from those before it for color-blind
+# readers. Series past the fifth are muted: mute what isn't the point.
+SERIES = ["dark", "blue", "plum", "olive", "mid"]
+MUTED_SHADES = ["gray", "gray-light", "gray-dark"]  # muted series in turn, so a legend can tell them apart
+
+# Ordered conditions (doses, sizes, steps): light to dark in the accent's hue.
+RAMP = ("light-blue", "blue", "navy")
+
+# Outcome colors, kept apart from the condition roles: coral marks what went wrong, never a condition.
+OUTCOMES = {"bad": "coral", "neutral": "beige", "good": "blue"}
 
 # Darker fills for "strong" tiles, so white text on them reaches 4.5:1.
 STRONG = {"blue": "deep-blue", "coral": "clay", "sage": "deep-sage"}
@@ -200,6 +211,18 @@ def text_on(fill: str, soft: bool = False) -> str:
         if contrast(quiet, fill) >= 4.5:
             return quiet
     return main
+
+
+def ramp(n: int) -> list[str]:
+    """n colors from light to dark in the accent's hue, for ordered conditions."""
+    lo, mid_, hi = (color(c) for c in RAMP)
+    if n == 1:
+        return [mid_]
+    out = []
+    for k in range(n):
+        t = k / (n - 1)
+        out.append(mix(lo, mid_, t * 2) if t <= 0.5 else mix(mid_, hi, (t - 0.5) * 2))
+    return out
 
 
 def readable(c: str, bg: str = BG, ratio: float = 4.5) -> str:

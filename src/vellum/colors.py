@@ -1,28 +1,38 @@
 """Color roles: name the conditions once per write-up, and every figure colors them the same way.
 
     vl.set_roles(baseline="Closed book", intervention="With search")
-    vl.hbar({"Closed book": 59, "Longer prompt": 55, "With search": 12}, title=...)   # coral, gray, blue
+    vl.hbar({"Closed book": 59, "Longer prompt": 55, "With search": 12}, title=...)   # dark, gray, blue
 
-baseline      coral   the condition without the intervention: the control, the untrained model, the bad outcome
-intervention  blue    what the figure is about
-second        sage    a second intervention that is also the point (use sparingly)
-reference     dark    an outside reference that should still read clearly, such as chance or a published number
-everything else       muted gray, so the intervention stands out
+intervention  blue    what the figure is about: the one accent
+baseline      dark    the condition without the intervention: the control, the untrained model
+second        plum    a second intervention that is also the point (use it sparingly)
+reference     mid     an outside reference that should still read clearly, such as chance or a published number
+ordered       light blue to navy, for conditions with an order: doses, model sizes, training steps
+everything else       muted gray, so the intervention stands out (muted series take three shades in turn)
+
+Coral is not a role: it marks bad outcomes (wrong answers, harmful actions), never a condition.
 
 Roles apply to bar labels (one series) and to series names (grouped bars, lines, dumbbells). Explicit colors= still
-win, and highlight= puts the accent on labels that have no role. A figure takes the roles in effect when it is made;
-pass roles={"baseline": ..., "intervention": [...]} to one chart to add to them.
+win; with roles in play, highlight= only bolds a label. A figure takes the roles in effect when it is made; pass
+roles={"baseline": ..., "intervention": [...]} to one chart to add to them. A vellum-roles.json file in the working
+folder or any folder above it, {"baseline": "Closed book", "intervention": ["With search"]}, sets the roles for every
+script and agent working on that write-up; vl.set_roles replaces it for one script.
 """
 from __future__ import annotations
 
 import contextvars
+import json
 from collections.abc import Mapping
 from contextlib import contextmanager
+from pathlib import Path
 
-ROLES = {"baseline": "coral", "intervention": "blue", "second": "sage", "reference": "dark"}
+ROLES = {"intervention": "blue", "baseline": "dark", "second": "plum", "reference": "mid"}
+ROLE_NAMES = (*ROLES, "ordered")
 MUTED = "gray"
+ROLES_FILE = "vellum-roles.json"
 
-_global: dict[str, str] = {}  # label -> role
+_global: dict[str, str] = {}  # label -> role ("ordered:i/n" for ordered conditions)
+_state = {"loaded": False, "source": None}  # whether a roles file was looked for, and the one found
 _active: contextvars.ContextVar[dict[str, str] | None] = contextvars.ContextVar("vellum_roles", default=None)
 _logs: contextvars.ContextVar[tuple[list, ...]] = contextvars.ContextVar("vellum_color_logs", default=())
 
@@ -36,31 +46,68 @@ def _labels(v) -> list[str]:
 
 
 def normalize(roles: Mapping | None) -> dict[str, str]:
-    """{role: label or [labels]} -> {label: role}."""
+    """{role: label or [labels]} -> {label: role}; ordered labels become "ordered:i/n"."""
     out: dict[str, str] = {}
     for role, labs in (roles or {}).items():
-        if role not in ROLES:
-            raise ValueError(f"unknown role {role!r}; use one of: {', '.join(ROLES)}")
-        for lab in _labels(labs):
-            out[lab] = role
+        if role not in ROLE_NAMES:
+            raise ValueError(f"unknown role {role!r}; use one of: {', '.join(ROLE_NAMES)}")
+        labs = _labels(labs)
+        for i, lab in enumerate(labs):
+            out[lab] = f"ordered:{i}/{len(labs)}" if role == "ordered" else role
     return out
 
 
-def set_roles(*, baseline=None, intervention=None, second=None, reference=None) -> None:
-    """Name the conditions once; every figure made afterwards colors them the same way. No arguments clears them."""
+def find_roles_file(start: str | Path | None = None) -> Path | None:
+    """The nearest vellum-roles.json in this folder or above it."""
+    here = Path(start or Path.cwd()).resolve()
+    for d in (here, *here.parents):
+        f = d / ROLES_FILE
+        if f.is_file():
+            return f
+    return None
+
+
+def load_roles(path: str | Path) -> None:
+    """Take the roles from a JSON file: {"baseline": ..., "intervention": [...], "ordered": [...]}."""
+    p = Path(path)
+    _global.clear()
+    _global.update(normalize(json.loads(p.read_text())))
+    _state.update(loaded=True, source=p.resolve())
+
+
+def _ensure() -> None:
+    if not _state["loaded"]:
+        _state["loaded"] = True
+        f = find_roles_file()
+        if f is not None:
+            load_roles(f)
+
+
+def source() -> Path | None:
+    """The roles file in effect, or None when the roles come from code (or there are none)."""
+    _ensure()
+    return _state["source"]
+
+
+def set_roles(*, baseline=None, intervention=None, second=None, reference=None, ordered=None) -> None:
+    """Name the conditions once; every figure made afterwards colors them the same way. Replaces a roles file;
+    no arguments clears the roles."""
+    _state.update(loaded=True, source=None)
     _global.clear()
     _global.update(normalize({"baseline": baseline, "intervention": intervention, "second": second,
-                              "reference": reference}))
+                              "reference": reference, "ordered": ordered}))
 
 
 def roles() -> dict[str, str]:
     """The roles in effect, as {label: role}."""
+    _ensure()
     cur = _active.get()
     return dict(_global if cur is None else cur)
 
 
 def snapshot(extra: Mapping | None = None) -> dict[str, str]:
     """The global roles plus one figure's own {role: labels}, as {label: role}."""
+    _ensure()
     return {**_global, **normalize(extra)}
 
 
@@ -79,7 +126,12 @@ def role_color(label: str) -> str | None:
     """The color of the label's role, or None when it has no role."""
     from . import theme as th
     r = roles().get(str(label))
-    return th.color(ROLES[r]) if r else None
+    if not r:
+        return None
+    if r.startswith("ordered:"):
+        i, n = (int(x) for x in r.split(":", 1)[1].split("/"))
+        return th.ramp(n)[i]
+    return th.color(ROLES[r])
 
 
 @contextmanager
@@ -93,14 +145,15 @@ def recording():
         _logs.reset(token)
 
 
-def note(labels, colors) -> None:
-    """Called by the chart helpers for every label they color."""
+def note(labels, colors, specific: bool = True) -> None:
+    """Called by the chart helpers for every label they color. specific=False marks a color the label didn't choose
+    (muted for having no role, or one color shared by every bar), which the consistency check ignores."""
     logs = _logs.get()
     if not logs or not labels:
         return
-    pairs = [(str(lab), c) for lab, c in zip(labels, colors)]
+    entries = [(str(lab), c, specific) for lab, c in zip(labels, colors)]
     for log in logs:
-        log.extend(pairs)
+        log.extend(entries)
 
 
 def card():
@@ -110,22 +163,27 @@ def card():
     from . import theme as th
     from .figure import Body, Figure
 
-    rows = [(role, name) for role, name in ROLES.items()] + [("everything else", MUTED)]
+    rows = [(role, name, [th.color(name)]) for role, name in ROLES.items()]
+    rows += [("ordered", "light blue to navy", th.ramp(4)),
+             ("everything else", "gray shades", [th.color(c) for c in th.MUTED_SHADES]),
+             ("bad outcome", "coral, never a condition", [th.color("coral")])]
     cols = ["Normal vision", "Protanopia", "Deuteranopia", "Tritanopia"]
-    LW, SW, SH, G, HEAD = 300, 120, 34, 10, 30
+    LW, SW, SH, G, HEAD = 330, 120, 34, 10, 30
 
     def render(W: float) -> Body:
         out = []
         for j, c in enumerate(cols):
             out.append(S.text(LW + j * (SW + G) + SW / 2, 18, c, th.MIN_TEXT, th.MUTED, "middle"))
-        for i, (role, name) in enumerate(rows):
+        for i, (role, desc, hexes) in enumerate(rows):
             y = HEAD + i * (SH + G)
-            hex_ = th.color(name)
             out.append(S.text(0, y + SH / 2 + 5, role, 15, th.INK, weight=600))
-            out.append(S.text(150, y + SH / 2 + 5, f"{name}  {hex_}", 13, th.INK2))
+            out.append(S.text(150, y + SH / 2 + 5, desc, 13, th.INK2))
             for j, kind in enumerate([None, *access.CVD]):
-                out.append(S.rect(LW + j * (SW + G), y, SW, SH, hex_ if kind is None else access.simulate(hex_, kind), 6))
+                x0, w = LW + j * (SW + G), SW / len(hexes)
+                for k, h in enumerate(hexes):
+                    fill = h if kind is None else access.simulate(h, kind)
+                    out.append(S.rect(x0 + k * w, y, w + (0.5 if k < len(hexes) - 1 else 0), SH, fill))
         return Body("".join(out), HEAD + len(rows) * (SH + G) - G)
 
     return Figure(render, title="Each color role stays distinct with every common color blindness", kind="palette",
-                  meta={"alt": "Color roles: " + "; ".join(f"{r} {n} {th.color(n)}" for r, n in rows) + "."})
+                  meta={"alt": "Color roles: " + "; ".join(f"{r}: {d}" for r, d, _ in rows) + "."})

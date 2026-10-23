@@ -1,6 +1,6 @@
 """Vertical bars: the look copied from the Anthropic-blog reference mockups.
 
-Square bars, coral next to blue, the value above each bar, left and bottom axis lines, a rotated
+Square bars, the baseline next to the intervention, the value above each bar, left and bottom axis lines, a rotated
 y title, category labels wrapped under each group, whiskers for intervals, a dashed reference line.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import UNSET, plot_height, resolve_unit, row_colors, series_colors
+from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series_colors
 
 
 def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue",
@@ -112,8 +112,10 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
                     neg = v < base_v
                     ly = ((y(c[0]) if c else y1) + 13) if neg else ((y(c[1]) if c else y1) - 5)
                     out.append(S.text(xc, ly, fmtv(v), th.MIN_TEXT, th.INK2, "middle"))
+            strong = r.label in as_set(highlight)  # the bar you are pointing at: a bold label
             for k, ln in enumerate(lines[i]):
-                out.append(S.text(cx, m_t + ph + 18 + k * 14, ln, cat, th.INK2, "middle"))
+                out.append(S.text(cx, m_t + ph + 18 + k * 14, ln, cat, th.INK if strong else th.INK2, "middle",
+                                  600 if strong else 400))
         legend_items = [(nm, c) for nm, c in zip(names, cols)] if ns > 1 and names else None
         # plot_x: where the bars live, so a panel container can center its title over the plot, not the tick margin
         return Body("".join(out), H, legend_items, meta={"cat_lines": max_lines, "plot_x": (m_l, W - m_r)})

@@ -101,3 +101,13 @@ def test_cli_check(tmp_path, capsys):
     assert main(["check", str(spec)]) == 1
     out = capsys.readouterr().out
     assert "a.png: Title is a question" in out and "figure 2" not in out
+
+
+def test_one_color_must_mean_one_thing():
+    p = vl.panels([vl.bars({"Year-old": 24, "Live": 10}), vl.bars({"Found nothing": 31}, colors={"Found nothing": "light-blue"})],
+                  roles={"ordered": ["Year-old", "Live"]}, title="Errors fell as the index got fresher")
+    assert any("share one color" in i for i in p.check())
+    same_role = vl.hbar({"Closed book": 59, "Search": 12, "Small with search": 10},
+                        roles={"baseline": "Closed book", "intervention": ["Search", "Small with search"]},
+                        title="Search cut errors")
+    assert not any("share one color" in i for i in same_role.check())

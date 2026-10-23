@@ -2,8 +2,8 @@
 
 A house figure style for research write-ups, as a one-call chart library.
 
-The look: a white background, a Newsreader serif title that states the finding, coral for the baseline and blue
-for the intervention, direct value labels, light gridlines and no chart junk. Vertical bars follow the look of the
+The look: a white background, a Newsreader serif title that states the finding, blue for the intervention and gray
+for everything else, direct value labels, light gridlines and no chart junk. Vertical bars follow the look of the
 Anthropic blog; horizontal bars, heatmaps, tiles and cards aim for the clearest possible reading.
 
 ```python
@@ -120,11 +120,11 @@ and nothing else on the figure competes with it.
 
 ### Look
 
-7. **Keep color meanings fixed across a write-up**: name the conditions once with `vl.set_roles` (see
-   [Colors](#colors)). Coral is the baseline, blue the intervention, sage a second intervention, dark a reference,
-   and everything else gray.
-8. **Mute what isn't the point.** Conditions without a role go gray, and `highlight=` puts the accent on the bar
-   you are talking about.
+7. **Keep color meanings fixed across a write-up**: name the conditions once with `vl.set_roles` or a
+   `vellum-roles.json` (see [Colors](#colors)). Blue is the intervention, dark gray the baseline, plum a second
+   intervention, mid gray a reference, and everything else light gray. Coral marks a bad outcome, never a condition.
+8. **Mute what isn't the point.** Conditions without a role go gray. Without roles, `highlight=` puts the accent on
+   the bar you are talking about; with roles, it bolds that bar's label.
 9. **Label directly.** Write values at the bar tip and names at line ends, and keep legends small.
    Notes such as "412 chats" or "352 of 400" go after the value.
 10. **Show intervals** (`ci=`) when the comparison depends on them, and say what they are in the subtitle.
@@ -139,22 +139,33 @@ For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle
 Name the conditions once per write-up, and every figure colors them the same way:
 
 ```python
-vl.set_roles(baseline="Closed book", intervention=["With search", "Search"], reference="Base model")
+vl.set_roles(baseline="Closed book", intervention=["With search", "Search"], reference="Chance")
 ```
 
 | Role | Color | For |
 |---|---|---|
-| `baseline` | coral | the condition without the intervention: the control, the untrained model, the bad outcome |
-| `intervention` | blue | what the figure is about |
-| `second` | sage | a second intervention that is also the point (use it sparingly) |
-| `reference` | dark | an outside reference that should still read clearly, such as chance or a published number |
-| everything else | gray | muted, so the intervention stands out |
+| `intervention` | blue | what the figure is about: the one accent |
+| `baseline` | dark gray | the condition without the intervention: the control, the untrained model |
+| `second` | plum | a second intervention that is also the point (use it sparingly) |
+| `reference` | mid gray | an outside reference that should still read clearly, such as chance or a published number |
+| `ordered` | light blue to navy | conditions with an order, such as doses, model sizes or training steps |
+| everything else | light gray | muted, so the intervention stands out; muted series take three shades in turn |
 
-Roles apply to bar labels and to series names. Explicit `colors=` still win, and one chart can add roles of its own
-with `roles={"baseline": ..., "intervention": [...]}` (a JSON spec takes the same `"roles"` key). A figure keeps the
-roles in effect when it was made. Without roles, several series take coral, blue, sage, navy, dark and clay, in that
-order, and any more are gray. Heatmaps use the sequential scales `blue`, `coral`, `sage` and `green`, or `diverging`.
-`vellum colors` prints all of this, and `vellum colors -o colors.png` draws the card below.
+Coral is not a role. It marks a bad outcome (a wrong answer, a harmful action), so a figure never implies that a
+condition is the bad one. Blue and beige mark good and neutral outcomes.
+
+- **One file for a write-up.** A `vellum-roles.json` in the working folder or any folder above it,
+  `{"baseline": "Closed book", "intervention": ["With search"]}`, sets the roles for every script and agent working
+  there. `vellum roles` shows the roles in effect and where they came from; `vl.set_roles` replaces them for one
+  script.
+- **Exact names.** Roles match labels exactly. The checks flag a figure where no label has a role, and a muted label
+  that looks like a role's ("With search (n=400)" next to "With search").
+- **Per chart.** One chart can add roles with `roles={"second": "Rerank"}`, and a JSON spec takes the same
+  `"roles"` key. Explicit `colors=` still win. A figure keeps the roles in effect when it was made.
+
+Without roles, several series take dark gray, blue, plum, olive and mid gray, in that order, then the muted shades.
+Heatmaps use the sequential scales `blue`, `coral`, `sage` and `green`, or `diverging`. `vellum colors` prints all
+of this, and `vellum colors -o colors.png` draws the card below.
 
 ![](docs/colors.png)
 
@@ -162,8 +173,8 @@ order, and any more are gray. Heatmaps use the sequential scales `blue`, `coral`
 
 - All text reaches 4.5:1 contrast with what it sits on, including labels on colored fills (vellum picks white or
   ink, whichever contrasts more), and no text is smaller than 12 px.
-- The role colors reach 3:1 against the white background and stay at least 10 CIEDE2000 apart with protanopia,
-  deuteranopia and tritanopia. `tests/test_access.py` holds these numbers. Gray is deliberately light context, so
+- The role colors and coral reach 3:1 against the white background and stay at least 10 CIEDE2000 apart with
+  protanopia, deuteranopia and tritanopia. `tests/test_access.py` holds these numbers. Gray is deliberately light context, so
   values on gray marks are always labeled.
 - Values are labeled directly, so no reading depends on color alone.
 - Every figure carries alt text with its data. `fig.alt_text()` gives "Search cut wrong answers for all ten models.
@@ -191,7 +202,7 @@ a title is true or the chart is the right one.
 | Function | Use it for | Gallery |
 |---|---|---|
 | `hbar(data, ...)` | Rates by condition or model. One series, grouped series (`series=[...]`), `highlight`, `notes`, `ci`, a `ref` line, `vl.section("heading")` rows. | 01, 02, 07, 08 |
-| `bars(data, ...)` | Vertical bars in the blog look: coral next to blue, value on top, whiskers, a dashed `ref` line, negative values. | 11, 12, 14 |
+| `bars(data, ...)` | Vertical bars in the blog look: the baseline next to the intervention, value on top, whiskers, a dashed `ref` line, negative values. | 11, 12, 14 |
 | `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 05 |
 | `tiles(grid, ...)` | Big-number tiles, such as a confusion matrix. Each `vl.Tile(value, lines, color, strong)`. | 03 |
 | `waffle(parts, ...)` | "52 in 100" shares. | 16 |
@@ -208,8 +219,9 @@ Data can be `{label: value}`, `{label: [v1, v2]}` (grouped), a list of `(label, 
 Series or DataFrame. Values are percents by default (`37` means 37%). Pass `unit=""` for scores and means.
 `decimals=`, `fmt="{:.1f}%"`, `domain=(lo, hi)` and `ticks=[...]` override the defaults.
 
-Colors are names from `vl.PALETTE`: `coral`, `blue`, `sage`, `beige`, `gray`, `dark`, `light-blue`, `deep-blue`,
-`navy`, `light-sage`, `deep-sage`, `light-coral` and `clay`. Hex values also work. Run `vellum colors` to list them.
+Colors are names from `vl.PALETTE`: the role colors `blue`, `dark`, `plum`, `mid` and `gray` (with `gray-light` and
+`gray-dark`); `coral` and `beige` for outcomes; and `sage`, `olive`, `navy`, `light-blue`, `deep-blue`, `light-sage`,
+`deep-sage`, `light-coral` and `clay`. Hex values also work. Run `vellum colors` to list them.
 
 ## Gallery
 

@@ -37,16 +37,25 @@ def test_text_colors_reach_4_5_to_1(token):
     assert access.contrast(getattr(th, token), th.BG) >= 4.5
 
 
-@pytest.mark.parametrize("name", [*ROLES.values(), *th.SERIES])
+@pytest.mark.parametrize("name", [*ROLES.values(), *th.SERIES, "coral"])
 def test_mark_colors_reach_3_to_1(name):
     assert access.contrast(th.color(name), th.BG) >= 3.0
 
 
-@pytest.mark.parametrize("group", [[*ROLES.values(), MUTED], th.SERIES], ids=["roles", "series"])
+@pytest.mark.parametrize("group", [[*ROLES.values(), MUTED, "coral"], th.SERIES], ids=["roles+bad", "series"])
 def test_colors_shown_together_stay_apart_for_color_blind_readers(group):
     for a, b in itertools.combinations(group, 2):
         d, kind = access.worst_delta_e(th.color(a), th.color(b))
         assert d >= 10, f"{a} and {b} are {d:.1f} apart with {kind}"
+
+
+def test_muted_shades_and_the_ordered_ramp_stay_apart():
+    # light grays can't be far apart and stay light; the shades help a legend, and labels carry the names
+    for a, b in itertools.combinations(th.MUTED_SHADES, 2):
+        assert access.worst_delta_e(th.color(a), th.color(b))[0] >= 5
+    for n in range(2, 6):
+        r = th.ramp(n)
+        assert min(access.worst_delta_e(r[i], r[i + 1])[0] for i in range(n - 1)) >= 7
 
 
 def test_text_on_any_fill_reaches_4_5_to_1():

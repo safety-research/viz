@@ -127,12 +127,12 @@ def figures() -> dict[str, vl.Figure]:
                 title="(b) A bigger model", **small),
         vl.bars(index, ci=wilson_cis(index, 1200),
                 title="(c) Search index age", **small),
-        vl.bars(empty, ci=wilson_cis(empty, 1200), colors={"Search found nothing": "light-blue"},
+        vl.bars(empty, ci=wilson_cis(empty, 1200),
                 title="(d) When search finds nothing", **small)],
-        legend={"Closed book": "coral", "Other fixes": "gray", "Search": "blue", "Search that finds nothing": "light-blue"},
+        legend={"Closed book": "dark", "Other fixes": "gray", "Search": "blue", "Search that finds nothing": "plum"},
         roles={"baseline": ["Closed book", "Small model"],
-               "intervention": ["Search", "Small with search", "Both", "Year-old index", "Month-old", "Week-old",
-                                "Live index", "Search answered"]},
+               "intervention": ["Search", "Small with search", "Both", "Search answered"],
+               "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
         frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
     shares = {m: 100 * won / (won + lost) for m, won, lost in PREFERENCES}
     cis = {m: wilson(won, won + lost) for m, won, lost in PREFERENCES}

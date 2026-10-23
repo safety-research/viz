@@ -130,17 +130,63 @@ def _neutral(hex_: str) -> bool:
     return (a * a + b * b) ** 0.5 < 8 or L > 85  # grays, beiges and pale tints are context, not accents
 
 
-def _colors(assigned: list[tuple[str, str]], name: str, record: bool) -> list[str]:
+def _named(fig) -> dict[str, str]:
+    """Every {label: role} the figure and its panels were made with."""
+    named = dict(fig.roles or {})
+    for child in fig.meta.get("children", []):
+        named.update(child.roles or {})
+    return named
+
+
+def _roles(fig, assigned) -> list[str]:
+    """Roles are matched by exact label, so flag a figure where none match and labels that look like a role's."""
+    named = _named(fig)
+    if not named:
+        return []
+    labels = list(dict.fromkeys(lab for lab, _c, _s in assigned))
+    if not labels:
+        return []
+    if not any(lab in named for lab in labels):
+        shown = ", ".join(f'"{lab}"' for lab in labels[:3])
+        return [f"Roles are set, but none of this figure's labels has one ({shown}); check that the names match "
+                "vl.set_roles exactly."]
+    muted = {th.color(m).upper() for m in th.MUTED_SHADES}
+    out = []
+    for lab in dict.fromkeys(lab for lab, c, sp in assigned if not sp and c.upper() in muted and lab not in named):
+        low = lab.lower()
+        near = next((k for k in named if k.lower() in low or low in k.lower()), None)
+        if near:
+            out.append(f"\"{lab}\" has no role, so it is muted, but it looks like \"{near}\" ({named[near].split(':')[0]}); "
+                       "name it in the roles if it should stand out.")
+    return out
+
+
+def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = None) -> list[str]:
     out = []
     accents: dict[str, str] = {}  # color -> a label that has it
+    assigned = [(lab, c) for lab, c, specific in assigned if specific]
+    ordered = {lab for lab, role in (named or {}).items() if role.startswith("ordered:")}
+    if any(lab in ordered for lab, _ in assigned):
+        accents["ordered"] = "the ordered conditions"  # one light-to-dark family, built to step evenly in one hue
     for label, c in assigned:
         c = c.upper()
-        if c.startswith("#") and len(c) == 7 and not _neutral(c):
+        if label not in ordered and c.startswith("#") and len(c) == 7 and not _neutral(c):
             accents.setdefault(c, label)
     if len(accents) > MAX_ACCENTS:
         out.append(f"{len(accents)} accent colors; keep color for what the figure is about and mute the rest "
                    "(vl.set_roles).")
-    cols = list(accents)
+    # one color must mean one thing: labels that share a color should share a role (several interventions may)
+    by_color: dict[str, dict[str, str]] = {}
+    for label, c in assigned:
+        if not _neutral(c.upper()):
+            role = (named or {}).get(label, "its own color").split(":")[0]
+            by_color.setdefault(c.upper(), {}).setdefault(role, label)
+    for c, kinds in by_color.items():
+        if len(kinds) > 1:
+            (r1, l1), (r2, l2) = list(kinds.items())[:2]
+            out.append(f"\"{l1}\" ({r1}) and \"{l2}\" ({r2}) share one color, so a reader can't tell them apart; "
+                       "give them different roles' colors.")
+    cols = [c for c in accents if c != "ordered"]
     for i in range(len(cols)):
         for j in range(i + 1, len(cols)):
             d, kind = access.worst_delta_e(cols[i], cols[j])
@@ -185,7 +231,8 @@ def check(fig, name: str = "an earlier figure", record: bool = False) -> list[st
     assigned = list(fig.meta.get("colors_made", [])) + list(fig.meta.get("colors_drawn", []))
     for child in fig.meta.get("children", []):
         assigned += list(child.meta.get("colors_made", []))
-    issues += _colors(assigned, name, record)
+    issues += _roles(fig, assigned)
+    issues += _colors(assigned, name, record, _named(fig))
     seen, out = set(), []
     for i in issues:
         if i not in seen:

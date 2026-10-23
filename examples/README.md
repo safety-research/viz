@@ -68,9 +68,10 @@ vl.panels([
             title="(a) A bigger model", **kw),
     vl.bars({"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0},
             ci={"Closed book": (35.8, 41.3), "Search answered": (8.0, 11.3), "Search found nothing": (28.4, 33.7)},
-            colors={"Search found nothing": "light-blue"}, title="(b) When search finds nothing", **kw)],
-    roles={"baseline": ["Small model", "Closed book"], "intervention": ["Small with search", "Both", "Search answered"]},
-    legend={"Closed book": "coral", "A bigger model": "gray", "Search": "blue", "Search that finds nothing": "light-blue"},
+            title="(b) When search finds nothing", **kw)],
+    roles={"baseline": ["Small model", "Closed book"], "intervention": ["Small with search", "Both", "Search answered"],
+           "second": "Search found nothing"},
+    legend={"Closed book": "dark", "A bigger model": "gray", "Search": "blue", "Search that finds nothing": "plum"},
     frame="blog", title="Search cut wrong answers more than a model twice the size",
     ).save("small_multiples.png")
 ```

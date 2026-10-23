@@ -1,6 +1,6 @@
 ---
 name: vellum
-description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, coral = baseline / blue = intervention, direct value labels. The vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, blue = the intervention / gray = baseline and everything else / coral = bad outcomes, direct value labels. The vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # vellum: house figure style
@@ -25,7 +25,7 @@ If `vellum` is not found, run `install.sh` in a vellum clone; it puts the comman
 
 ```python
 import vellum as vl
-fig = vl.hbar({"Closed book": 59, "With search": 12}, colors={"Closed book": "coral"}, highlight="With search",
+fig = vl.hbar({"Closed book": 59, "With search": 12}, roles={"baseline": "Closed book", "intervention": "With search"},
               title="With search, wrong answers fell from 59% to 12%")   # the finding, literally; no subtitle
 fig.save("fig.png")   # 2x PNG for Discord; .pdf for papers; .svg portable; .html for pages
 ```
@@ -53,15 +53,18 @@ or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 sl
 
 ## Colors
 
-Name the conditions once, at the top of the script, and let vellum color them: coral for the baseline, blue for the
-intervention, sage for a second intervention, dark for a reference, and gray for everything else.
+Name the conditions once and let vellum color them: blue for the intervention, dark gray for the baseline, plum for
+a second intervention, mid gray for a reference, a light-to-dark blue ramp for ordered conditions (doses, sizes,
+steps), and light gray for everything else. Coral is only for bad outcomes (wrong answers, harmful actions), never a
+condition.
 
 ```python
-vl.set_roles(baseline="Closed book", intervention="With search")
+vl.set_roles(baseline="Closed book", intervention="With search", ordered=["1M", "3M", "10M"])
 ```
 
-Don't hand-pick `colors=` unless a chart needs a color no role gives. One chart can add roles with `roles={...}`,
-and JSON specs take a `"roles"` key.
+If the write-up's folder has a `vellum-roles.json`, those roles are already in effect (`vellum roles` shows them):
+use its label names exactly instead of setting your own. Don't hand-pick `colors=` unless a chart needs a color no
+role gives. One chart can add roles with `roles={...}`, and JSON specs take a `"roles"` key.
 
 ## Write the words
 

@@ -21,13 +21,13 @@ from .charts import scatter as _scatter
 from .charts import stacked as _stacked
 from .charts import tiles as _tiles
 from .charts.tiles import Tile
-from .colors import ROLES, roles, set_roles
+from .colors import ROLES, load_roles, roles, set_roles
 from .data import section
 from .figure import Figure, defaults, set_defaults
 from .layout import panels as _panels
 from .render import close
 from .spec import from_spec, render_file
-from .theme import PALETTE, SCALES, SERIES, SIZES, Size, color
+from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES, SIZES, Size, color
 
 
 def _chart(fn):
@@ -66,10 +66,12 @@ CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffl
           "dumbbell": dumbbell, "line": line, "stacked": stacked, "panels": panels, "quotes": quotes,
           "episodes": episodes, "code_card": code_card}
 
-# The default palettes. roles: what each color means (vl.set_roles); series: the order for several series with no
-# roles; sequential: heatmap scales; diverging: below and above the center of a diverging heatmap.
-PALETTES = {"roles": dict(ROLES), "muted": _colors.MUTED, "series": list(SERIES), "sequential": dict(SCALES),
-            "diverging": ("coral", "blue")}
+# The default palettes. roles: what each color means (vl.set_roles); ordered: the light-to-dark ramp for ordered
+# conditions; muted: the shades muted series take in turn; outcomes: bad, neutral and good results (coral is only
+# ever "bad"); series: the order for several series with no roles; sequential: heatmap scales; diverging: below and
+# above the center of a diverging heatmap.
+PALETTES = {"roles": dict(ROLES), "ordered": list(RAMP), "muted": list(MUTED_SHADES), "outcomes": dict(OUTCOMES),
+            "series": list(SERIES), "sequential": dict(SCALES), "diverging": ("coral", "blue")}
 
 __version__ = "0.1.0"
 __all__ = [
@@ -94,6 +96,7 @@ __all__ = [
           "hbar",
           "heatmap",
           "line",
+          "load_roles",
           "panels",
           "quotes",
           "render_file",
