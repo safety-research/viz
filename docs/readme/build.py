@@ -109,13 +109,16 @@ def hero(t: dict) -> str:
 </div>"""
 
 
+ROW = ["Scaling performance", "Human evaluations", "Representation structure"]  # three, so none is cramped
+
+
 def row() -> str:
-    figs = examples(236)
-    cards = "".join(f'<div class="ex"><div class="h">{name}</div>{fig.svg(background=False)}</div>'
-                    for name, fig in figs.items())
+    figs = examples(330)
+    cards = "".join(f'<div class="ex"><div class="h">{name}</div>{figs[name].svg(background=False)}</div>'
+                    for name in ROW)
     return f"""
 <style>
-.row{{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:2px}}
+.row{{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:2px}}
 .ex{{border:1px solid {BORDER};border-radius:10px;padding:18px 12px 8px;background:{CARD}}}
 .ex .h{{font:400 21px/1.2 {SERIF};color:{CARD_INK};margin:0 0 4px 10px}}
 .ex svg{{width:100%;height:auto;display:block}}

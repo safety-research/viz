@@ -5,7 +5,7 @@
 
 <a href="#quick-start"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/get-started.png"><img src="docs/readme/get-started.png" alt="Get started" height="42"></picture></a>&nbsp;&nbsp;<a href="examples/README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/view-examples.png"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></picture></a>
 
-<img src="docs/readme/examples.png" alt="Four example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components; a heatmap of five models on four benchmarks." width="100%">
+<img src="docs/readme/examples.png" alt="Three example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components." width="100%">
 
 ## Why viz?
 
