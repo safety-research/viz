@@ -13,25 +13,26 @@ figure; [the examples](../examples/README.md) are templates to copy.
 
 ## Install
 
-The `viz` command, with the library, the templates and these docs:
-
-```bash
-uv tool install git+https://github.com/safety-research/viz
-```
-
-`viz path` prints where it landed: the templates are in `examples/` there and the docs in `docs/`. The same
-URL works with `pip install` and `uv add` (see below). The first PNG or PDF downloads the headless Chromium
-that renders them, once per Python environment; `viz setup` does it ahead of time. To update, run the install
-again with `--reinstall`.
-
-The skill, for Claude Code and the other agents the [skills CLI](https://skills.sh) supports:
+For an agent, one command:
 
 ```bash
 npx skills add safety-research/viz
 ```
 
-It copies `skills/viz/` into the agent's skills folder (`-g` for every project). `npx skills update viz`
-updates it.
+It copies `skills/viz/` into the skills folder of Claude Code and the other agents the
+[skills CLI](https://skills.sh) supports (`-g` for every project), and the skill installs the `viz` command
+itself the first time it needs it. `npx skills update viz` updates the skill.
+
+To use viz from Python without an agent, install the command directly:
+
+```bash
+uv tool install git+https://github.com/safety-research/viz
+```
+
+It brings the library, the templates and these docs: `viz path` prints where they landed, the templates in
+`examples/` and the docs in `docs/`. The same URL works with `pip install` and `uv add` (see below). The first
+PNG or PDF downloads the headless Chromium that renders them, once per Python environment; `viz setup` does it
+ahead of time. To update, run the install again with `--reinstall`.
 
 To work on viz itself, clone the repo and install the clone in place: `uv tool install --editable .` makes
 the command follow your edits, and a symlink (`ln -s "$PWD/skills/viz" ~/.claude/skills/viz`) does the same

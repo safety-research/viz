@@ -9,13 +9,17 @@ description: "viz house figure style: white background, Newsreader serif titles 
 its figure in `docs/gallery/NN_name.png`: copy the closest one and change the numbers. `docs/guide.md` has the
 style rules and `docs/reference.md` every chart and option.
 
-## Run it
-
-If `viz` is not found, install it first:
+## Set up, once
 
 ```bash
-uv tool install git+https://github.com/safety-research/viz
+command -v viz >/dev/null || uv tool install git+https://github.com/safety-research/viz
 ```
+
+No `uv`? Install it first: `curl -LsSf https://astral.sh/uv/install.sh | sh`. If `viz` is still not found after
+installing, uv's bin folder is not on PATH: run `uv tool update-shell` and open a new shell, or call it as
+`"$(uv tool dir --bin)/viz"`.
+
+## Run it
 
 A script that only needs viz runs with viz's own Python:
 

@@ -22,7 +22,7 @@ def test_skill_is_in_the_skills_cli_layout():
 def test_skill_names_the_real_install_and_run_commands():
     text = SKILL.read_text()
     assert "uv tool install git+https://github.com/safety-research/viz" in text
-    assert "viz run " in text and "install.sh" not in text
+    assert "viz run " in text and "viz/install.sh" not in text and "run `install.sh`" not in text
 
 
 def test_viz_path_prints_this_checkout(capsys):

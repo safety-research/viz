@@ -18,9 +18,12 @@
 ## Quick start
 
 ```bash
-uv tool install git+https://github.com/safety-research/viz   # the viz command and library
-npx skills add safety-research/viz                           # the skill, for Claude Code and other agents
+npx skills add safety-research/viz
 ```
+
+That installs the skill for Claude Code and the other agents the [skills CLI](https://skills.sh) supports, and the
+skill installs the `viz` command itself the first time it needs it. To use viz from Python without an agent,
+install it directly: `uv tool install git+https://github.com/safety-research/viz`.
 
 ```python
 import viz
