@@ -62,18 +62,13 @@ def examples(width: float, thumb: bool = False) -> dict[str, viz.Figure]:
 # ---------------------------------------------------------------------------------------------- page pieces
 
 # Every image here reads on GitHub's white page and on its dark one alike, so the README needs no theme switching
-# (GitHub does not always pick the copy that matches the page): the wordmark is black with a white outline, which
-# vanishes on white and keeps it legible on dark; the main button and the icons are orange, which reaches about 4.3:1
-# on both; the other button and the figures' cards are white; everything else is see-through. The tagline and the
-# description are the README's own text, so they always take the page's colors.
+# (GitHub does not always pick the copy that matches the page). The header's words are black and dark gray with a white
+# outline under them, which vanishes on white and keeps them legible on dark; the main button and the icons are
+# orange, which reaches about 4.3:1 on both; the other button and the figures' cards are white; everything else is
+# see-through.
 ACCENT = viz.color("coral")
 CARD, BORDER, CARD_INK = "#FFFFFF", "#D1D9E0", "#1F2328"
 SERIF, SANS = "Newsreader, Georgia, serif", "'DM Sans', Helvetica, Arial, sans-serif"
-
-
-MARK = (f'<svg width="300" height="170" viewBox="0 0 300 170"><text x="8" y="132" font-family="{SERIF}" '
-        f'font-size="150" font-weight="600" letter-spacing="-4" fill="{CARD_INK}" stroke="#FFFFFF" stroke-width="7" '
-        f'stroke-linejoin="round" paint-order="stroke">viz</text></svg>')  # black, its white outline under the fill
 
 
 def hero() -> str:
@@ -83,14 +78,27 @@ def hero() -> str:
     return f"""
 <style>
 .hero{{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px}}
-.fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px;margin-right:40px}}
+.left{{width:650px}}
+.left h1,.left h2,.left p{{paint-order:stroke fill;-webkit-text-stroke-color:#FFFFFF;stroke-linejoin:round}}
+.left h1{{font:600 120px/1 {SERIF};letter-spacing:-3px;margin:0 0 14px;color:{CARD_INK};-webkit-text-stroke-width:7px}}
+.left h2{{font:400 34px/1.15 {SERIF};margin:0 0 22px;color:#33302B;white-space:nowrap;-webkit-text-stroke-width:4px}}
+.left p{{font:400 19px/1.55 {SERIF};color:#59636E;margin:0;-webkit-text-stroke-width:3px}}
+.fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px;margin-right:20px}}
 .card{{width:150px;height:252px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
   box-shadow:0 14px 30px rgba(31,35,40,.12);transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
   display:flex;align-items:center;justify-content:center}}
 .card svg{{width:100%;height:auto}}
 .card svg text{{display:none}}
 </style>
-<div class="hero">{MARK}<div class="fan">{cards}</div></div>"""
+<div class="hero">
+  <div class="left">
+    <h1>viz</h1>
+    <h2>A data visualization library for AI research.</h2>
+    <p>Consistent, publication-quality figures with one call per chart. Color roles, sizes for screens, slides and
+    papers, and built-in checks keep every figure clear, accessible and reproducible.</p>
+  </div>
+  <div class="fan">{cards}</div>
+</div>"""
 
 
 ROW = ["Scaling performance", "Human evaluations", "Representation structure"]  # three, so none is cramped

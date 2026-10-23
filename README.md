@@ -1,8 +1,4 @@
-<img src="docs/readme/hero.png" alt="viz" width="100%">
-
-**A data visualization library for AI research.** Consistent, publication-quality figures with one call per chart.
-Color roles, sizes for screens, slides and papers, and built-in checks keep every figure clear, accessible and
-reproducible.
+<img src="docs/readme/hero.png" alt="viz: a data visualization library for AI research. Consistent, publication-quality figures with one call per chart." width="100%">
 
 <a href="#quick-start"><img src="docs/readme/get-started.png" alt="Get started" height="42"></a>&nbsp;&nbsp;<a href="examples/README.md"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></a>
 
