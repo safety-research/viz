@@ -76,6 +76,10 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             lo, hi, tk = SC.domain(yvals + ([ref] if ref is not None else []), percent=unit == "%", zero=zero, step=step)
         tfmt = SC.tick_formatter(tk, unit)
         xt = list(xticks) if xticks is not None else xs_all
+        if xscale == "log" and xticks is None and xs_all and min(xs_all) > 0:  # one tick per power of ten
+            e0 = math.floor(math.log10(min(xs_all)) + 1e-9)
+            e1 = math.ceil(math.log10(max(xs_all)) - 1e-9)
+            xt = [10.0 ** k for k in range(e0, e1 + 1)]
         if isinstance(xtick_labels, Mapping):
             xlab = lambda v: xtick_labels.get(v, SC.fmt_num(v, 0, xunit))
         elif xtick_labels is not None:
@@ -110,7 +114,13 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             out.append(S.line(PL, Y(t), PL + PW, Y(t), th.AXIS if t == lo else th.GRID))
             out.append(S.text(PL - 10, Y(t) + 4, tfmt(t), th.TICK_SIZE, th.MUTED, "end"))
         for t in xt:
-            out.append(S.text(X(t), PT + PH + 20, xlab(t), th.TICK_SIZE, th.MUTED, "middle"))
+            k = round(math.log10(t)) if xscale == "log" and t > 0 and xtick_labels is None else None
+            if k is not None and abs(10.0 ** k - t) < 1e-9 * t and not -3 <= k <= 3:  # 10^20 as a raised exponent
+                out.append(S.spans(X(t), PT + PH + 20, [("10", {"size": th.TICK_SIZE, "fill": th.MUTED}),
+                                                       (str(k).replace("-", SC.MINUS), {"size": th.TICK_SIZE * 0.72,
+                                                        "fill": th.MUTED, "dy": -th.TICK_SIZE * 0.42})], "middle"))
+            else:
+                out.append(S.text(X(t), PT + PH + 20, xlab(t), th.TICK_SIZE, th.MUTED, "middle"))
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 44, xlabel, 12.5, th.INK2, "middle"))
         if ylabel:

@@ -13,6 +13,8 @@ from pathlib import Path
 
 from PIL import ImageFont, features
 
+from . import theme as th
+
 FONT_DIR = Path(__file__).parent / "fonts"
 FILES = {
     ("serif", False): "Newsreader.ttf", ("serif", True): "Newsreader-Italic.ttf",
@@ -46,17 +48,19 @@ def width(s: str, size: float, family: str = "sans", weight: int = 400, italic: 
     """Advance width of `s` in CSS px."""
     if not s:
         return 0.0
-    f = _font(family, italic, round(size * 4) / 4, int(weight))
+    f = _font(th.family(family), italic, round(size * 4) / 4, int(weight))
     return f.getlength(s) * size / _REF + letter_spacing * len(s)
 
 
 def line_height(size: float, family: str = "sans") -> float:
     """CSS `line-height: normal` for the family (ascent + descent; the fonts have no line gap)."""
+    family = th.family(family)
     return size * (ASCENT[family] + DESCENT[family])
 
 
 def baseline(size: float, family: str = "sans", lh: float | None = None) -> float:
     """Offset from the top of a line box to the baseline, CSS style (half-leading above)."""
+    family = th.family(family)
     content = size * (ASCENT[family] + DESCENT[family])
     lh = content if lh is None else lh
     return (lh - content) / 2 + size * ASCENT[family]

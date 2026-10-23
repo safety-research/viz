@@ -1,18 +1,29 @@
-# viz
+<img src="docs/readme/hero.png" alt="viz: a data visualization library for AI research. Consistent, publication-quality figures with one call per chart." width="100%">
 
-A house figure style for research write-ups, as a one-call chart library.
+<a href="#install"><img src="docs/readme/get-started.png" alt="Get started" height="42"></a>&nbsp;&nbsp;<a href="examples/README.md"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></a>
 
-The look: a white background, a Newsreader serif title that states the finding, gray for the control and muted
-orange, blue, sage, purple and ochre for the conditions, direct value labels, light gridlines and no chart junk. Vertical bars follow the look of the
-Anthropic blog; horizontal bars, heatmaps, tiles and cards aim for the clearest possible reading.
+<img src="docs/readme/examples.png" alt="Four example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components; a heatmap of five models on four benchmarks." width="100%">
+
+## Why viz?
+
+<table>
+<tr>
+<td width="25%" valign="top"><img src="docs/readme/icon-consistent.svg" width="28" alt=""><br><br><b>Consistent</b><br>One visual language across a write-up: color roles, sizes and type that stay the same from figure to figure.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-quality.svg" width="28" alt=""><br><br><b>High quality</b><br>Publication-ready by default: PDFs at the printed size, accessible color and text, and alt text on every figure.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-research.svg" width="28" alt=""><br><br><b>Research-focused</b><br>The charts research needs: every run as a dot, effects with intervals, training curves and transcripts.</td>
+<td width="25%" valign="top"><img src="docs/readme/icon-productive.svg" width="28" alt=""><br><br><b>Productive</b><br>One call per chart, a gallery to copy, and checks that flag problems before anyone reads the figure.</td>
+</tr>
+</table>
+
+## Quick start
 
 ```python
 import viz
 
-viz.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
-        roles={"baseline": "Closed book", "intervention": "Full documents"},
-        notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-        title="Full documents raised correct answers from 41% to 88%").save("fig.png")
+viz.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents",
+         decimals=0, roles={"control": "Closed book", "intervention": "Full documents"},
+         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
+         title="Full documents raised correct answers from 41% to 88%").save("fig.png")
 ```
 
 ![](docs/gallery/01_hbar.png)
@@ -134,6 +145,9 @@ and nothing else on the figure competes with it.
 11. **Show intervals** (`ci=`) when the comparison depends on them, and say what they are in the subtitle.
 12. **Mark example data** in the subtitle of any figure made before the real numbers exist.
 13. **No caption at the bottom**, in the figure or under it in a write-up.
+
+Titles, labels, ticks and legends are set in Newsreader, a serif; `viz.set_defaults(font="sans")` switches
+labels, ticks and legends to DM Sans.
 
 For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle, with the legend below the chart.
 `viz.set_defaults(frame="blog")` switches every figure.

@@ -34,6 +34,7 @@ class Defaults:
     width: float | None = None      # content width in px; None takes it from the size
     scale: float | None = None      # PNG pixel ratio; None takes it from the size (300 dpi for print sizes)
     checks: str = "warn"  # what saving does with a figure that breaks a house rule: warn, error or off
+    font: str = "serif"   # chart labels, ticks and legends: "serif" (Newsreader) or "sans" (DM Sans)
 
 
 defaults = Defaults()
@@ -44,6 +45,10 @@ def set_defaults(**kw) -> None:
     for k, v in kw.items():
         if not hasattr(defaults, k):
             raise TypeError(f"unknown default {k!r}")
+        if k == "font":
+            if v not in ("serif", "sans"):
+                raise ValueError(f"font={v!r}: use 'serif' or 'sans'")
+            th.LABEL_FONT = v
         setattr(defaults, k, v)
 
 

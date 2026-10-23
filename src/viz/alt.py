@@ -146,7 +146,13 @@ def _heatmap(data, rows=None, cols=None, unit=UNSET, decimals=None, fmt=None, si
 
 
 def _scatter(points, labels=None, xunit="", yunit="", xlabel=None, ylabel=None, **_):
-    from .charts.scatter import _points
+    from .charts.scatter import _groups, _points
+    groups = _groups(points)
+    if groups is not None:
+        axes = ", ".join(s for s in (f"x: {xlabel}" if xlabel else "", f"y: {ylabel}" if ylabel else "") if s)
+        parts = [f"{g}: {len(v)} points around ({sum(a for a, _ in v) / len(v):.2g}, {sum(b for _, b in v) / len(v):.2g})"
+                 for g, v in groups.items() if v]
+        return f"Scatter plot in {len(groups)} groups{' (' + axes + ')' if axes else ''}. {'; '.join(parts)}."
     pts = _points(points)
     named = {p[0] for p in pts} if labels is True else set(labels or [])
     axes = ", ".join(s for s in (f"x: {xlabel}" if xlabel else "", f"y: {ylabel}" if ylabel else "") if s)

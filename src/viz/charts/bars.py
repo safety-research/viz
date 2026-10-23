@@ -1,4 +1,4 @@
-"""Vertical bars: the look copied from the Anthropic-blog reference mockups.
+"""Vertical bars.
 
 Square bars, the baseline next to the intervention, the value above each bar, left and bottom axis lines, a rotated
 y title, category labels wrapped under each group, whiskers for intervals, a dashed reference line.

@@ -89,12 +89,31 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
         CW = cell_width or min(158, (W - L - G * (nc - 1)) / nc)
         head_lines = [T.wrap(c, CW - 6, 13.5, "sans", 600) for c in clabels]
         nl = max(len(x) for x in head_lines)
+        widest = max((T.width(ln, 13.5, "sans", 600) for x in head_lines for ln in x), default=0)
+        slant = cell_width is None and widest > CW - 4  # a word wider than its column: write the headers on a slant
         top = 22 if col_groups else 0  # headers sit under the group headings
         hy = top + 18  # first header baseline
         Y0 = hy + (nl - 1) * 17 + 18
+        if slant:
+            cos, sin = math.cos(math.radians(50)), math.sin(math.radians(50))
+            over = L + (nc - 1) * (CW + G) + CW / 2 + T.width(clabels[-1], 13.5, "sans", 600) * cos - W
+            if over > 0:  # keep the last slanted header inside the figure
+                CW = max(18.0, CW - over / (nc - 0.5))
+            Y0 = top + max(T.width(c, 13.5, "sans", 600) for c in clabels) * sin + 16
         X0 = L
         out = []
         cx = lambda j: X0 + j * (CW + G)
+        # values that don't fit their cells: the smallest text size first, then without the unit, else left out
+        vsize, vfmt, show = 13.0, fmtv, values
+        if values:
+            texts = [fmtv(v) for r in vals for v in r if v is not None]
+            fits = lambda f, size: max((T.width(f(v), size, "sans", 600) for r in vals for v in r if v is not None),
+                                       default=0) <= CW - 4
+            if not fits(fmtv, vsize):
+                vsize = th.MIN_TEXT
+                if not fits(fmtv, vsize):
+                    bare = (lambda v: fmtv(v).removesuffix(unit)) if unit and all(t.endswith(unit) for t in texts) else fmtv
+                    vfmt, show = (bare, True) if fits(bare, vsize) else (fmtv, False)
         if col_groups:
             for label, members in col_groups:
                 idx = [clabels.index(m) for m in members]
@@ -103,6 +122,11 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
                 out.append(S.text(mid, 18, label, 12.5, th.MUTED, "middle"))
                 out.append(S.line(cx(a), 24, cx(b) + CW, 24, th.GRID))
         for j, lines in enumerate(head_lines):
+            if slant:
+                x, y = cx(j) + CW / 2 - 3, Y0 - 8
+                out.append(f'<text transform="translate({S.n(x)},{S.n(y)}) rotate(-50)" '
+                           f'{S.font_attrs(13.5, "sans", 600, False, th.INK)}>{S.esc(clabels[j])}</text>')
+                continue
             off = (nl - len(lines)) * 17
             for k, ln in enumerate(lines):
                 out.append(S.text(cx(j) + CW / 2, hy + off + k * 17, ln, 13.5, th.INK, "middle", 600))
@@ -116,8 +140,8 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
                     continue
                 f, _ = fill_of(v)
                 out.append(S.rect(cx(j), y, CW, CH, f, 5))
-                if values:
-                    out.append(S.text(cx(j) + CW / 2, y + CH / 2 + 4.5, fmtv(v), 13, th.text_on(f),
+                if show:
+                    out.append(S.text(cx(j) + CW / 2, y + CH / 2 + 4.5, vfmt(v), vsize, th.text_on(f),
                                       "middle", 600))
         H = Y0 + len(rlabels) * (CH + G) - G + 4
         return Body("".join(out), H)

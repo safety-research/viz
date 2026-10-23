@@ -1,6 +1,6 @@
 """The house style's tokens.
 
-The values come from two looks: vertical coral and blue bars in the style of the Anthropic blog, and a clear
+The values serve one look: vertical bars side by side for comparisons, and a clear
 style with one claim per figure as a serif title, one accent on the point and direct labels.
 """
 from __future__ import annotations
@@ -97,6 +97,12 @@ SERIF = "Newsreader, 'Iowan Old Style', Georgia, serif"
 SANS = "'DM Sans', 'Helvetica Neue', Arial, sans-serif"
 MONO = "'JetBrains Mono', Menlo, monospace"
 FAMILIES = {"serif": SERIF, "sans": SANS, "mono": MONO}
+LABEL_FONT = "serif"  # what chart labels, ticks and legends use: "serif" (Newsreader) or "sans" (DM Sans)
+
+
+def family(f: str) -> str:
+    """The font family to draw with: "sans" is the label font, which vl.set_defaults(font=...) picks."""
+    return LABEL_FONT if f == "sans" else f
 GOOGLE_FONTS = ("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;"
                 "1,9..40,400&family=JetBrains+Mono:wght@400;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;"
                 "0,6..72,600;1,6..72,400&display=swap")

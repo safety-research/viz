@@ -5,6 +5,7 @@ import itertools
 import secrets
 
 from . import text as T
+from . import theme as _th
 from .theme import BG, FAMILIES, INK, INK2
 
 _ids = itertools.count(1)
@@ -28,7 +29,7 @@ def n(v: float) -> str:
 
 def font_attrs(size: float, family: str = "sans", weight: int = 400, italic: bool = False,
                fill: str = INK2, letter_spacing: float = 0) -> str:
-    a = f'font-family="{FAMILIES[family]}" font-size="{n(size)}" fill="{fill}"'
+    a = f'font-family="{FAMILIES[_th.family(family)]}" font-size="{n(size)}" fill="{fill}"'
     if weight != 400:
         a += f' font-weight="{weight}"'
     if italic:
@@ -54,7 +55,7 @@ def text(x: float, y: float, s, size: float = 13, fill: str = INK2, anchor: str 
 def spans(x: float, y: float, parts: list[tuple[str, dict]], anchor: str = "start", halo: str | None = None,
           base_family: str = "sans") -> str:
     """One <text> made of styled tspans: parts = [(string, {size, weight, fill, family, italic, dx}), ...]."""
-    out = [f'<text x="{n(x)}" y="{n(y)}" font-family="{FAMILIES[base_family]}" xml:space="preserve"'
+    out = [f'<text x="{n(x)}" y="{n(y)}" font-family="{FAMILIES[_th.family(base_family)]}" xml:space="preserve"'
            + (' style="font-variant-ligatures:none"' if base_family == "mono" or any(st.get("family") == "mono" for _, st in parts) else "")]
     if anchor != "start":
         out.append(f' text-anchor="{anchor}"')
@@ -66,11 +67,13 @@ def spans(x: float, y: float, parts: list[tuple[str, dict]], anchor: str = "star
         if st.get("weight", 400) != 400:
             a.append(f'font-weight="{st["weight"]}"')
         if st.get("family") and st["family"] != base_family:
-            a.append(f'font-family="{FAMILIES[st["family"]]}"')
+            a.append(f'font-family="{FAMILIES[_th.family(st["family"])]}"')
         if st.get("italic"):
             a.append('font-style="italic"')
         if st.get("dx"):
             a.append(f'dx="{n(st["dx"])}"')
+        if st.get("dy"):
+            a.append(f'dy="{n(st["dy"])}"')
         out.append(f'<tspan {" ".join(a)}>{esc(s)}</tspan>')
     out.append("</text>")
     return "".join(out)

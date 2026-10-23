@@ -9,7 +9,17 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import plot_height
+from .common import plot_height, series_colors
+
+
+def _groups(points):
+    """{group: [(x, y), ...]} -> the same dict, or None when points are single labeled points."""
+    if not isinstance(points, Mapping) or not points:
+        return None
+    vals = list(points.values())
+    if all(isinstance(v, (list, tuple)) and v and isinstance(v[0], (list, tuple)) and len(v[0]) == 2 for v in vals):
+        return {str(k): [(float(a), float(b)) for a, b in v] for k, v in points.items()}
+    return None
 
 
 def _points(points):
@@ -26,7 +36,7 @@ def _points(points):
     return out
 
 
-def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=None, size=6.5,
+def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=None, size=None,
             xdomain=None, ydomain=None, xticks=None, yticks=None, xunit="", yunit="", xlabel=None, ylabel=None,
             diagonal=False, trend=None, trend_label=None, annotations=None, height=None,
             title=None, subtitle=None, legend=None, frame=None, width=None) -> Figure:
@@ -37,9 +47,21 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
     label_offsets: {label: (dx, dy, "start"|"end")} to place a label by hand.
     diagonal: True or a label string draws y = x. trend: "fit" (least squares) or (slope, intercept).
     annotations: [(x, y, "text")] in data coordinates, muted. colors: {label: color} per point.
+    Groups of points, such as clusters in an embedding: {group: [(x, y), ...]}. Each group takes its role's color
+    (viz.set_roles) or the default order, as small translucent dots with a legend; colors= then maps groups.
     """
-    pts = _points(points)
-    show = {p[0] for p in pts} if labels is True else set(labels or [])
+    groups = _groups(points)
+    if groups is not None:
+        names = list(groups)
+        group_cols = dict(zip(names, series_colors(len(names), colors, names)))
+        pts = [(nm, float(x), float(y)) for nm in names for x, y in groups[nm]]
+        show: set = set()
+        size = 3.2 if size is None else size
+    else:
+        group_cols = None
+        pts = _points(points)
+        show = {p[0] for p in pts} if labels is True else set(labels or [])
+        size = 6.5 if size is None else size
 
     def render(W: float) -> Body:
         H = height or plot_height(1.5)  # relationships read best close to square
@@ -104,6 +126,9 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
             for k, ln in enumerate(str(txt).split("\n")):
                 out.append(S.text(X(ax), Y(ay) + k * 17, ln, 12.5, th.MUTED))
         for lab, x, y in pts:
+            if group_cols is not None:
+                out.append(S.circle(X(x), Y(y), size, group_cols[lab], extra='fill-opacity="0.72"'))
+                continue
             fill = th.color((colors or {}).get(lab, color)) if isinstance(colors, Mapping) else th.color(color)
             out.append(S.circle(X(x), Y(y), size, fill, th.BG, 2))
         # labels: hand offsets first, then the first free spot among right / left / above / below
@@ -136,7 +161,8 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
             dx, dy, anc, box = best
             placed.append(box)
             out.append(S.text(px + dx, py + dy, lab, 12, th.INK2, anc, halo=th.BG))
-        return Body("".join(out), H)
+        legend_items = list(group_cols.items()) if group_cols else None
+        return Body("".join(out), H, legend_items, "round")
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend, frame=frame, width=width,
                   kind="scatter")

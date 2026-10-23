@@ -89,6 +89,29 @@ class Renderer:
             Path(path).write_bytes(data)
         return data
 
+    def html(self, html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False) -> bytes:
+        """A whole HTML page (with the vendored fonts available) as a PNG of its full height; fit=True crops to the
+        page's first element instead (a button, a badge)."""
+        pg = self._browser.new_page(device_scale_factor=scale, viewport={"width": int(width), "height": 100})
+        try:
+            f = Path(self._dir.name) / "page-html.html"
+            f.write_text(f'<!doctype html><html><head><meta charset="utf-8"><style>{_file_faces()}'
+                         f"html,body{{margin:0;padding:0}}</style></head><body>{html}</body></html>")
+            pg.goto(f.as_uri(), wait_until="load")
+            pg.evaluate("ps => Promise.all(ps.map(p => document.fonts.load(p)))", _FONT_PROBES)
+            pg.evaluate("() => document.fonts.ready")
+            if fit:
+                data = pg.screenshot(type="png", clip=pg.locator("body > *").first.bounding_box())
+            else:
+                h = pg.evaluate("() => Math.ceil(document.body.getBoundingClientRect().height)")
+                pg.set_viewport_size({"width": int(width), "height": max(int(h), 1)})
+                data = pg.screenshot(type="png", clip={"x": 0, "y": 0, "width": width, "height": h})
+        finally:
+            pg.close()
+        if path:
+            Path(path).write_bytes(data)
+        return data
+
     def pdf(self, svg: str, path: Path) -> bytes:
         pg, w, h = self._load(svg, 1)
         data = pg.pdf(width=f"{w}px", height=f"{h}px", print_background=True,
@@ -159,6 +182,12 @@ def render_png(svg: str, path: Path | None, scale: float = 2) -> bytes:
 
 def render_pdf(svg: str, path: Path) -> bytes:
     return _submit("pdf", svg, path)
+
+
+def render_html(html: str, path: Path | None, width: float, scale: float = 2, fit: bool = False) -> bytes:
+    """Render an HTML page (figures' SVGs and any layout around them) to a PNG at the given CSS width; fit=True crops
+    to the first element."""
+    return _submit("html", html, path, width, scale, fit)
 
 
 # ---------------------------------------------------------------------- embedded fonts for portable SVG
