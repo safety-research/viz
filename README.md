@@ -146,7 +146,7 @@ vl.set_roles(control="Closed book", intervention=["With search", "Search"], seco
 
 | Role | Color | For |
 |---|---|---|
-| `control` | dark gray | the condition without the intervention: the baseline, the untrained model (`baseline` works too) |
+| `control` | light gray | the condition without the intervention: the baseline, the untrained model (`baseline` works too) |
 | `intervention` | orange | what the figure is about |
 | `second` | blue | a second intervention |
 | `third` | sage | a third |
@@ -178,7 +178,8 @@ of this, and `vellum colors -o colors.png` draws the card below.
 
 - All text reaches 4.5:1 contrast with what it sits on, including labels on colored fills (vellum picks white or
   ink, whichever contrasts more), and no text is smaller than 12 px.
-- The control and intervention colors reach 3:1 against the white background. The control and the first three
+- The intervention colors reach 3:1 against the white background; the light gray control is context, and its
+  value is labeled like every bar's. The control and the first three
   interventions (orange, blue, sage) stay at least 10 CIEDE2000 apart for normal vision and the red-green color
   blindnesses; blue and sage come closer for the rare tritanopia. Purple and ochre are near blue and orange for
   red-green color-blind readers, so a figure with four or five interventions relies on its labels, and the checks
@@ -235,9 +236,9 @@ The distribution charts take the raw values: `{group: [v, ...]}`, or a plain lis
 `box`, `strip`, `violin` and `dotplot` keep the percent default; `histogram` and `ecdf` measure plain numbers on x and show
 counts or percents of items on y. None and NaN are skipped everywhere.
 
-Colors are names from `vl.PALETTE`, or role names such as `"intervention"`: the control `dark`; the interventions
+Colors are names from `vl.PALETTE`, or role names such as `"intervention"`: the control `gray`; the interventions
 `coral` (also `orange`), `blue`, `sage`, `plum` (also `purple`) and `ochre`; the muted `gray`, `gray-light` and
-`gray-dark`; `beige` for a neutral outcome; and `light-blue`, `navy`, `deep-blue`, `olive`, `mid`, `light-sage`,
+`gray-dark`; `beige` for a neutral outcome; and `dark`, `light-blue`, `navy`, `deep-blue`, `olive`, `mid`, `light-sage`,
 `deep-sage`, `light-coral` and `clay`. Hex values also work. Run `vellum colors` to list them.
 
 ## Gallery

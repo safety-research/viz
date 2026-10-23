@@ -37,8 +37,8 @@ def test_text_colors_reach_4_5_to_1(token):
     assert access.contrast(getattr(th, token), th.BG) >= 4.5
 
 
-@pytest.mark.parametrize("name", [*ROLES.values(), *th.SERIES, "coral"])
-def test_mark_colors_reach_3_to_1(name):
+@pytest.mark.parametrize("name", [c for c in ROLES.values() if c != MUTED] + [*th.SERIES, "coral"])
+def test_mark_colors_reach_3_to_1(name):  # the light gray control is labeled context
     assert access.contrast(th.color(name), th.BG) >= 3.0
 
 
@@ -50,7 +50,7 @@ def common_vision_distance(a: str, b: str) -> float:
 
 
 def test_the_control_and_first_three_interventions_stay_apart():
-    group = ["dark", "coral", "blue", "sage", MUTED]
+    group = [MUTED, "coral", "blue", "sage"]  # the control is the muted gray
     for a, b in itertools.combinations(group, 2):
         assert common_vision_distance(a, b) >= 10, (a, b)
         assert access.worst_delta_e(th.color(a), th.color(b))[0] >= 6, (a, b)  # tritanopia too, a little closer
@@ -61,7 +61,7 @@ def test_the_fourth_and_fifth_only_near_their_hue_twins():
     assert common_vision_distance("plum", "blue") < 10 and common_vision_distance("ochre", "coral") < 10
     for c in ("plum", "ochre"):
         twin = "blue" if c == "plum" else "coral"
-        for other in ["dark", "coral", "blue", "sage", "plum", "ochre", MUTED]:
+        for other in ["coral", "blue", "sage", "plum", "ochre", MUTED]:
             if other not in (c, twin):
                 assert common_vision_distance(c, other) >= 10, (c, other)
 

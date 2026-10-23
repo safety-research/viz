@@ -23,12 +23,13 @@ AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
 
 # ---- named colors. Color carries meaning across a write-up (vellum.colors assigns them by role):
-#   dark  = the control (the baseline, the untrained model), a charcoal gray dark enough to stay apart from sage
+#   gray  = the control (the baseline, the untrained model), like everything else that isn't the point
 #   coral (orange), blue, sage, purple (plum), ochre = the interventions, in that order
 #   gray  = everything else, muted (gray-light and gray-dark tell muted series apart in a legend)
 #   blue / beige / coral also mark good / neutral / bad outcomes in an outcome chart
 # Accessibility (tests/test_access.py holds these): the control and intervention colors reach 3:1 against the white
-# background. The control and the first three intervention colors stay at least 10 CIEDE2000 apart for normal
+# background (the light gray control is context, labeled like every bar). The control and the first three
+# intervention colors stay at least 10 CIEDE2000 apart for normal
 # vision and the red-green color blindnesses (blue and sage come closer for the rare tritanopia); purple and ochre
 # share hues with blue and orange for red-green color blindness, so a figure with four or five interventions leans
 # on its labels, and the checks say so. The light grays are context, so values on them are always labeled.

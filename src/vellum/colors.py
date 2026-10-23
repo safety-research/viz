@@ -3,7 +3,7 @@
     vl.set_roles(control="Closed book", intervention="With search", second="Rerank")
     vl.hbar({"Closed book": 59, "Rerank": 30, "Longer prompt": 55, "With search": 12}, title=...)
 
-control       dark gray   the condition without the intervention: the baseline, the untrained model ("baseline"
+control       light gray  the condition without the intervention: the baseline, the untrained model ("baseline"
                           means the same role)
 intervention  orange      what the figure is about
 second        blue        a second intervention
@@ -29,7 +29,7 @@ from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
 
-ROLES = {"control": "dark", "intervention": "coral", "second": "blue", "third": "sage", "fourth": "plum",
+ROLES = {"control": "gray", "intervention": "coral", "second": "blue", "third": "sage", "fourth": "plum",
          "fifth": "ochre"}
 ALIASES = {"baseline": "control"}
 ROLE_NAMES = (*ROLES, *ALIASES, "ordered")
@@ -170,7 +170,7 @@ def card():
     from . import theme as th
     from .figure import Body, Figure
 
-    shown = {"plum": "purple", "coral": "orange", "dark": "dark gray"}
+    shown = {"plum": "purple", "coral": "orange", "gray": "light gray"}
     rows = [(role, shown.get(name, name), [th.color(name)]) for role, name in ROLES.items()]
     rows += [("ordered", "light blue to navy", th.ramp(4)),
              ("everything else", "gray shades", [th.color(c) for c in th.MUTED_SHADES])]
