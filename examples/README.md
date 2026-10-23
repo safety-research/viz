@@ -1,9 +1,10 @@
 # viz examples
 
-Every figure here is a template: find the question your figure answers, copy its code and change the
-numbers. Every number is made up, and error bars and bands are 95% intervals. Run one with
-`uv run --with-editable "$(viz path)" python ex.py`. This page is generated from `src/viz/gallery.py`
-(`viz gallery --examples examples/README.md`), so edit that file, not this one.
+Every figure here is a template: a short script in this folder that makes it. Find the question your
+figure answers, copy its script and change the numbers. Every number is made up, and error bars and
+bands are 95% intervals. Run one with `uv run --with-editable "$(viz path)" python 01_hbar.py`.
+This page is generated from the scripts (`viz gallery --examples examples/README.md`), so edit them,
+not this page.
 
 <table>
 <tr><td colspan="3"><b><a href="#compare-conditions">Compare conditions</a></b> · One number per condition, or per model and condition, with its interval.</td></tr>
@@ -31,72 +32,104 @@ One number per condition, or per model and condition, with its interval.
 
 ![hbar](../docs/gallery/01_hbar.png)
 
+[`01_hbar.py`](01_hbar.py)
+
 ```python
 import viz
 
-viz.hbar(
+fig = viz.hbar(
     {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
     roles={"baseline": "Closed book", "intervention": "Full documents"},
     notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-    title="Full documents raised correct answers from 41% to 88%").save("hbar.png")
+    title="Full documents raised correct answers from 41% to 88%")
+fig.save("01_hbar.png")
 ```
 
 ### Each model with and without the intervention
 
 ![bars](../docs/gallery/02_bars.png)
 
+[`02_bars.py`](02_bars.py)
+
 ```python
 import viz
-from viz.gallery import WRONG_BY_MODEL
 
-viz.bars(
-    WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
+# Share of 200 questions answered wrong: closed book, with search.
+wrong = {
+    "Model A": [12.5, 4.0], "Model B": [18.0, 5.5], "Model C": [22.5, 6.0], "Model D": [27.0, 8.5],
+    "Model E": [31.5, 7.0], "Model F": [35.0, 9.5], "Model G": [41.5, 11.0], "Model H": [46.0, 10.5],
+    "Model I": [52.5, 14.0], "Model J": [58.0, 12.5],
+}
+fig = viz.bars(
+    wrong, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
     roles={"baseline": "Closed book", "intervention": "With search"},
-    title="Search cut wrong answers for all ten models").save("bars.png")
+    title="Search cut wrong answers for all ten models")
+fig.save("02_bars.png")
 ```
 
 ### The mean over runs, with every run as a dot
 
 ![bars_runs](../docs/gallery/03_bars_runs.png)
 
+[`03_bars_runs.py`](03_bars_runs.py)
+
 ```python
 import viz
-from viz.gallery import WRONG_BY_SEED
 
-viz.bars(
-    {arm: sum(runs) / len(runs) for arm, runs in WRONG_BY_SEED.items()}, runs=WRONG_BY_SEED,
+# Share of 400 questions answered wrong after fine-tuning, one value per training run (seed).
+runs = {
+    "Plain fine-tune": [33.0, 35.5, 31.0, 36.0, 34.5], "Half the worked examples": [24.0, 27.5, 22.0, 26.0, 25.5],
+    "Worked examples": [17.5, 21.0, 19.0, 18.0, 20.5],
+}
+fig = viz.bars(
+    {arm: sum(r) / len(r) for arm, r in runs.items()}, runs=runs,
     roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, ref=31, ref_label="Base model",
     decimals=0, ylabel="Questions answered wrong",
-    title="Worked examples cut wrong answers from 34% to 19% in every run").save("bars_runs.png")
+    title="Worked examples cut wrong answers from 34% to 19% in every run")
+fig.save("03_bars_runs.png")
 ```
 
 ### An effect and its interval for each model, against zero
 
 ![dotplot](../docs/gallery/04_dotplot.png)
 
+[`04_dotplot.py`](04_dotplot.py)
+
 ```python
 import viz
-from viz.gallery import WRONG_BY_MODEL, diff_ci
 
-viz.dotplot(
-    {m: b - a for m, (a, b) in WRONG_BY_MODEL.items()},
-    ci={m: diff_ci(a, b, 200) for m, (a, b) in WRONG_BY_MODEL.items()}, ref=0, unit="", decimals=0,
-    xlabel="Change in wrong answers with search (percentage points)",
-    title="Search cut each model's wrong answers by 8 to 46 points").save("dotplot.png")
+# The change in wrong answers with search (percentage points) and its 95% interval, per model.
+change = {"Model A": -8.5, "Model B": -12.5, "Model C": -16.5, "Model D": -18.5, "Model E": -24.5,
+          "Model F": -25.5, "Model G": -30.5, "Model H": -35.5, "Model I": -38.5, "Model J": -45.5}
+ci = {"Model A": (-13.8, -3.2), "Model B": (-18.7, -6.3), "Model C": (-23.2, -9.8), "Model D": (-25.8, -11.2),
+      "Model E": (-31.8, -17.2), "Model F": (-33.3, -17.7), "Model G": (-38.6, -22.4), "Model H": (-43.6, -27.4),
+      "Model I": (-46.9, -30.1), "Model J": (-53.7, -37.3)}
+fig = viz.dotplot(
+    change, ci=ci, ref=0, unit="", decimals=0, xlabel="Change in wrong answers with search (percentage points)",
+    title="Search cut each model's wrong answers by 8 to 46 points")
+fig.save("04_dotplot.png")
 ```
 
 ### Before and after for each model
 
 ![dumbbell](../docs/gallery/05_dumbbell.png)
 
+[`05_dumbbell.py`](05_dumbbell.py)
+
 ```python
 import viz
-from viz.gallery import RATINGS
 
-viz.dumbbell(
-    RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
+# Mean helpfulness from 1 (not at all) to 7 (very): closed book, with search. None means not rated.
+ratings = {
+    "Model A": (5.1, 6.2), "Model B": (4.6, 6.0), "Model C": (None, None), "Model D": (4.2, 5.9),
+    "Model E": (3.9, 5.7), "Model F": (None, None), "Model G": (3.4, 5.5), "Model H": (3.0, 5.6),
+    "Model I": (2.7, 5.2), "Model J": (2.5, 5.0),
+}
+fig = viz.dumbbell(
+    ratings, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
     roles={"baseline": "Closed book", "intervention": "With search"},
-    missing="not rated", title="Every rated model got higher helpfulness ratings with search").save("dumbbell.png")
+    missing="not rated", title="Every rated model got higher helpfulness ratings with search")
+fig.save("05_dumbbell.png")
 ```
 
 ## Show change over training
@@ -107,14 +140,27 @@ A measure over training steps, doses or compute.
 
 ![line_runs](../docs/gallery/06_line_runs.png)
 
+[`06_line_runs.py`](06_line_runs.py)
+
 ```python
 import viz
-from viz.gallery import STEPS, WRONG_DURING_TRAINING, mean_curve
 
-viz.line(
-    {arm: mean_curve(runs) for arm, runs in WRONG_DURING_TRAINING.items()}, x=STEPS, runs=WRONG_DURING_TRAINING,
+# Wrong answers at each training step, one list per run.
+steps = [0, 200, 400, 600, 800, 1000]
+runs = {
+    "Worked examples": [[31.0, 25.5, 21.0, 19.5, 18.0, 17.5], [30.5, 26.5, 23.0, 20.5, 19.5, 18.5],
+                        [31.5, 24.0, 20.5, 18.0, 17.0, 17.0], [31.0, 27.0, 22.5, 21.0, 19.0, 18.5],
+                        [30.5, 25.0, 21.5, 19.0, 18.5, 17.5]],
+    "Plain fine-tune": [[31.0, 31.5, 32.5, 32.0, 33.0, 33.5], [30.5, 32.0, 31.5, 33.0, 32.5, 33.0],
+                        [31.5, 30.5, 32.0, 32.5, 33.5, 32.5], [31.0, 31.0, 33.0, 32.0, 32.0, 34.0],
+                        [30.5, 32.5, 32.0, 33.5, 33.0, 33.0]],
+}
+mean = {arm: [sum(step) / len(step) for step in zip(*r)] for arm, r in runs.items()}
+fig = viz.line(
+    mean, x=steps, runs=runs,
     roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
-    xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training").save("line_runs.png")
+    xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training")
+fig.save("06_line_runs.png")
 ```
 
 ## Show a distribution
@@ -125,40 +171,76 @@ Many values per condition, such as answer lengths, times or scores per item.
 
 ![histogram](../docs/gallery/07_histogram.png)
 
-```python
-import viz
-from viz.gallery import ANSWER_WORDS
+[`07_histogram.py`](07_histogram.py)
 
-viz.histogram(
-    ANSWER_WORDS, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"}, xlabel="Answer length (words)", ylabel="Share of answers",
-    title="With search, the median answer grew from 84 to 150 words").save("histogram.png")
+```python
+import math
+import random
+from statistics import NormalDist
+
+import viz
+
+
+def made_up(n, median, spread, seed, digits=0):
+    """n made-up values with a long right tail. Put your own lists of numbers here."""
+    rng, dist = random.Random(seed), NormalDist(math.log(median), spread)
+    return [round(math.exp(dist.inv_cdf(rng.random() or 0.5)), digits) for _ in range(n)]
+
+
+words = {"Closed book": made_up(400, 85, 0.45, 1), "With search": made_up(400, 150, 0.35, 2)}  # words per answer
+fig = viz.histogram(
+    words, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"},
+    xlabel="Answer length (words)", ylabel="Share of answers",
+    title="With search, the median answer grew from 84 to 150 words")
+fig.save("07_histogram.png")
 ```
 
 ### Distributions per condition, for many items each
 
 ![box](../docs/gallery/08_box.png)
 
-```python
-import viz
-from viz.gallery import SECONDS
+[`08_box.py`](08_box.py)
 
-viz.box(
-    SECONDS, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
-    ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds").save("box.png")
+```python
+import math
+import random
+from statistics import NormalDist
+
+import viz
+
+
+def made_up(n, median, spread, seed, digits=0):
+    """n made-up values with a long right tail. Put your own lists of numbers here."""
+    rng, dist = random.Random(seed), NormalDist(math.log(median), spread)
+    return [round(math.exp(dist.inv_cdf(rng.random() or 0.5)), digits) for _ in range(n)]
+
+
+seconds = {"Closed book": made_up(200, 3, 0.4, 23, 1), "Search snippets": made_up(200, 6, 0.45, 24, 1),
+           "Full documents": made_up(200, 9.5, 0.5, 48, 1)}  # seconds to answer each of 200 questions
+fig = viz.box(
+    seconds, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
+    ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
+fig.save("08_box.png")
 ```
 
 ### One dot per item, with the mean and its interval
 
 ![strip](../docs/gallery/09_strip.png)
 
+[`09_strip.py`](09_strip.py)
+
 ```python
 import viz
-from viz.gallery import WRONG_BY_TOPIC, WRONG_WITH_SEARCH_BY_TOPIC
 
-viz.strip(
-    {"Closed book": list(WRONG_BY_TOPIC.values()), "With search": list(WRONG_WITH_SEARCH_BY_TOPIC.values())},
-    ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0, ylabel="Wrong answers per topic",
-    title="Search cut wrong answers from 28% to 8% for the average topic").save("strip.png")
+# Share of 200 questions answered wrong, for each of twelve topics.
+wrong = {
+    "Closed book": [51, 47, 44, 38, 33, 31, 29, 18, 12, 11, 9, 7],
+    "With search": [15, 13, 11, 10, 9, 9, 8, 6, 5, 5, 4, 3],
+}
+fig = viz.strip(
+    wrong, ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0,
+    ylabel="Wrong answers per topic", title="Search cut wrong answers from 28% to 8% for the average topic")
+fig.save("09_strip.png")
 ```
 
 ## Show a relationship
@@ -169,30 +251,47 @@ Two measures against each other, or models against conditions.
 
 ![scatter](../docs/gallery/10_scatter.png)
 
+[`10_scatter.py`](10_scatter.py)
+
 ```python
 import viz
-from viz.gallery import SEARCHES
 
-viz.scatter(
-    SEARCHES, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
+# Per dataset: the share of questions that need recent facts, and searches per 100 questions.
+searches = {
+    "History Quiz": (3, 6), "Recipe Box": (5, 4), "Kids Questions": (6, 9), "Science Facts": (8, 14),
+    "Law Basics": (12, 22), "Health FAQ": (14, 31), "Trivia Night": (17, 20), "City Guides": (21, 26),
+    "Movie Buff": (24, 33), "Travel Tips": (27, 41), "Product Help": (31, 52), "Music Charts": (35, 29),
+    "Sports Desk": (42, 37), "Election Facts": (46, 71), "Finance Q&A": (53, 64), "Tech News": (61, 78),
+}
+fig = viz.scatter(
+    searches, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
     labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
     diagonal="one search per question that needs one",
     annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
     xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
-    title="Datasets with more questions about recent events drew more searches").save("scatter.png")
+    title="Datasets with more questions about recent events drew more searches")
+fig.save("10_scatter.png")
 ```
 
 ### Models by conditions
 
 ![heatmap](../docs/gallery/11_heatmap.png)
 
+[`11_heatmap.py`](11_heatmap.py)
+
 ```python
 import viz
-from viz.gallery import FINISHED
 
-viz.heatmap(
-    FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
-    title="Three of eight models finished most of the huge tasks").save("heatmap.png")
+# Share of 30 runs finished within the time limit, on small, medium, large and huge tasks.
+finished = {
+    "Model A": [100, 100, 100, 96.7], "Model B": [100, 100, 96.7, 90.0], "Model C": [100, 100, 93.3, 63.3],
+    "Model D": [100, 96.7, 80.0, 40.0], "Model E": [100, 96.7, 56.7, 16.7], "Model F": [100, 90.0, 33.3, 3.3],
+    "Model G": [96.7, 83.3, 20.0, 0], "Model H": [93.3, 70.0, 6.7, 0],
+}
+fig = viz.heatmap(
+    finished, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
+    title="Three of eight models finished most of the huge tasks")
+fig.save("11_heatmap.png")
 ```
 
 ## Show where outcomes went
@@ -203,13 +302,16 @@ Shares that add up to 100%.
 
 ![stacked](../docs/gallery/12_stacked.png)
 
+[`12_stacked.py`](12_stacked.py)
+
 ```python
 import viz
 
-viz.stacked(
+fig = viz.stacked(
     {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
     colors=["blue", "beige", "coral"],
-    title="With search, wrong answers fell from 59% to 12%").save("stacked.png")
+    title="With search, wrong answers fell from 59% to 12%")
+fig.save("12_stacked.png")
 ```
 
 ## Show what the model did
@@ -220,10 +322,12 @@ Replies and transcripts, as text.
 
 ![quotes](../docs/gallery/13_quotes.png)
 
+[`13_quotes.py`](13_quotes.py)
+
 ```python
 import viz
 
-viz.quotes(
+fig = viz.quotes(
     prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
     replies=[viz.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
                       "installed package versions and the environment variables. Print all three on each machine and "
@@ -232,17 +336,20 @@ viz.quotes(
              viz.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
                       "dependencies or hardware problems. Check the server logs for error messages… You could also "
                       "try reinstalling your dependencies.”", "plain fine-tune", "control")],
-    title="The trained model narrowed the problem down instead of listing causes").save("quotes.png")
+    title="The trained model narrowed the problem down instead of listing causes")
+fig.save("13_quotes.png")
 ```
 
 ### What the model did, transcripts side by side
 
 ![episodes](../docs/gallery/14_episodes.png)
 
+[`14_episodes.py`](14_episodes.py)
+
 ```python
 import viz
 
-viz.episodes([
+fig = viz.episodes([
     viz.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
         ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
                                         "My information might be out of date, but I’m fairly confident.”")),
@@ -253,7 +360,8 @@ viz.episodes([
                                         "I should check the release notes.”")),
         ("search_docs", "code", "“query: acmelib release notes, newest version”")],
         outcome=("Answered 3.0, with a link", "blue"))],
-    frame="blog", title="With search, the model checked the release notes instead of guessing").save("episodes.png")
+    frame="blog", title="With search, the model checked the release notes instead of guessing")
+fig.save("14_episodes.png")
 ```
 
 ## Lay out several figures
@@ -264,42 +372,32 @@ Panels that share one legend, for a paper figure or a slide.
 
 ![panels](../docs/gallery/15_panels.png)
 
+[`15_panels.py`](15_panels.py)
+
 ```python
 import viz
-from viz.gallery import wilson_cis
 
 small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}
 prompts = {"Closed book": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Search": 9.5}
 bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8}
 index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
 empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
-viz.panels([
-    viz.bars(prompts, ci=wilson_cis(prompts, 1200),
-            title="(a) Better prompts", **small),
-    viz.bars(bigger, ci=wilson_cis(bigger, 1200),
-            title="(b) A bigger model", **small),
-    viz.bars(index, ci=wilson_cis(index, 1200),
-            title="(c) Search index age", **small),
-    viz.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
-            title="(d) When search finds nothing", **small)],
-    legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention", "Search that finds nothing": "second"},
+# 95% intervals; each rate was measured on 1,200 questions.
+ci = {"Closed book": (35.8, 41.3), "Longer prompt": (33.3, 38.8), "Careful prompt": (32.5, 37.9),
+      "Search": (8.0, 11.3), "Small model": (35.8, 41.3), "Twice the size": (24.6, 29.6),
+      "Small with search": (8.0, 11.3), "Both": (6.4, 9.5), "Year-old index": (21.7, 26.5), "Month-old": (11.3, 15.1),
+      "Week-old": (8.6, 12.0), "Live index": (8.0, 11.3), "Search answered": (8.0, 11.3),
+      "Search found nothing": (28.4, 33.7)}
+fig = viz.panels([
+    viz.bars(prompts, ci=ci, title="(a) Better prompts", **small),
+    viz.bars(bigger, ci=ci, title="(b) A bigger model", **small),
+    viz.bars(index, ci=ci, title="(c) Search index age", **small),
+    viz.bars(empty, ci=ci, sort=False, title="(d) When search finds nothing", **small)],
+    legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention",
+            "Search that finds nothing": "second"},
     roles={"baseline": ["Closed book", "Small model"],
            "intervention": ["Search", "Small with search", "Both", "Search answered"],
            "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
-    frame="blog", title="Search cut wrong answers more than better prompts or a bigger model").save("panels.png")
-```
-
-## No Python: a JSON spec
-
-A list of specs makes several figures; each takes the same keys as the
-chart's arguments, plus `"chart"`, `"roles"` and `"out"`.
-
-```json
-{"chart": "hbar", "data": {"Closed book": 59, "With search": 12},
- "roles": {"baseline": "Closed book", "intervention": "With search"},
- "title": "With search, wrong answers fell from 59% to 12%"}
-```
-
-```bash
-viz check fivefold.json && viz render fivefold.json -o fivefold.png --alt
+    frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
+fig.save("15_panels.png")
 ```

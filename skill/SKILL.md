@@ -5,9 +5,9 @@ description: "viz house figure style: white background, Newsreader serif titles 
 
 # viz: house figure style
 
-The library is the viz repo, and `viz path` prints where it is. Its README has the full API,
-`docs/gallery/*.png` shows every chart type, and `src/viz/gallery.py` holds the source of every gallery figure,
-so copy the closest one.
+The library is the viz repo, and `viz path` prints where it is. Every chart has a template there, a short
+script in `examples/NN_name.py` with its figure in `docs/gallery/NN_name.png`: copy the closest one and change
+the numbers. `docs/guide.md` has the style rules and `docs/reference.md` every chart and option.
 
 ## Run it
 
@@ -34,8 +34,7 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 
 ## Pick the chart
 
-The gallery is a set of templates grouped by the question a figure answers. Each has a figure
-(`docs/gallery/NN_*.png`) and its code in `src/viz/gallery.py` and `examples/README.md`; copy the closest one.
+The templates are grouped by the question a figure answers; the numbers are their files in `examples/`.
 
 - **Compare conditions.** Rates by condition: `hbar` (01), with `notes=` for "352 of 400", `ci=` for intervals and
   `ref=` for a reference line. Each model with and without the intervention: `bars` (02). Several runs or seeds:

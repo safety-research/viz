@@ -2,7 +2,7 @@
 # Install viz onto this machine:
 #   - put the `viz` command on PATH (uv tool install --editable); the skill finds this clone,
 #     wherever it lives, with `viz path`
-#   - symlink the viz skill (claude/skills/viz) into ~/.claude/skills/
+#   - symlink the viz skill (skill/) into ~/.claude/skills/viz
 #   - install Playwright's headless Chromium, which renders PNG and PDF
 #
 # The clone IS the installation: the command and the skill link both point back into it, so an
@@ -12,7 +12,7 @@
 #   CLAUDE_CONFIG_DIR     link into this Claude Code config dir instead of ~/.claude
 set -euo pipefail
 VIZ_DIR="$(cd "$(dirname "$0")" && pwd)"
-SKILL_SRC="$VIZ_DIR/claude/skills/viz"
+SKILL_SRC="$VIZ_DIR/skill"
 SKILLS_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills"
 LINK="$SKILLS_DIR/viz"
 
@@ -37,7 +37,7 @@ if [[ -e "$LINK" && ! -L "$LINK" ]]; then
     fi
 fi
 # -n: on a re-run, plain -sf would follow the existing link to the directory and put a new link
-# inside the repo (claude/skills/viz/viz). -n replaces the link itself.
+# inside the repo (skill/skill). -n replaces the link itself.
 ln -sfn "$SKILL_SRC" "$LINK"
 echo "Linked the viz skill: $LINK -> $SKILL_SRC"
 # The skill used to be called vellum: drop that old link if it is one of ours.
