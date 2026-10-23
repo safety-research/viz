@@ -14,7 +14,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import series_colors
+from .common import YLABEL_BAND, YLABEL_X, series_colors
 from .dist import LABEL_SIZE, bin_counts, bin_edges, free_spot, key_label, key_width, samples, whole
 
 
@@ -90,7 +90,7 @@ def histogram(data, *, bins=None, stat="count", color=None, colors=None, domain=
         vfmt = SC.formatter(fmt, decimals, yunit,
                             False, [h for hs in heights for h in hs])
         lift = values or (ng > 1 and not want_legend)  # labels may sit above the tallest bar
-        PL = max((T.width(yfmt(t), th.TICK_SIZE) for t in ytk), default=10) + 14 + (18 if ylabel else 0)
+        PL = max((T.width(yfmt(t), th.TICK_SIZE) for t in ytk), default=10) + 14 + (YLABEL_BAND if ylabel else 0)
         PR = max(12.0, T.width(xfmt(xt[-1]), th.TICK_SIZE) / 2 + 2) if xt else 12.0
         PT = 26 if lift else 12
         PB = 30 + (24 if xlabel else 0)
@@ -106,7 +106,7 @@ def histogram(data, *, bins=None, stat="count", color=None, colors=None, domain=
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 46, xlabel, 12.5, th.INK2, "middle"))
         if ylabel:
-            out.append(S.rotated(13, PT + PH / 2, ylabel, size=12))
+            out.append(S.rotated(YLABEL_X, PT + PH / 2, ylabel, size=12))
         base = Y(max(ylo, 0))
         segs = []  # bar outlines, for placing labels
         if ng == 1:

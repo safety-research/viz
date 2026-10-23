@@ -11,7 +11,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import UNSET, as_set, plot_height, resolve_unit, row_colors, series_colors, sort_key
+from .common import UNSET, YLABEL_BAND, YLABEL_X, as_set, plot_height, resolve_unit, row_colors, series_colors, sort_key
 from .dist import attach_runs, dark, dots, run_values
 
 
@@ -49,16 +49,6 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
     def render(W: float) -> Body:
         n = len(rows)
         compact = W < 520
-        m_l, m_r, m_t = (48 if compact else 58), 10, 22
-        pw = W - m_l - m_r
-        gw = pw / max(n, 1)
-        cat = th.MIN_TEXT
-        lines = [T.wrap(r.label, gw - 8, cat) for r in rows]
-        max_lines = max((len(x) for x in lines), default=1)
-        max_lines = max(max_lines, fig.meta.get("cat_lines", 0))  # panels in one row share a label depth
-        m_b = 14 + max_lines * 14
-        H = height or plot_height()
-        ph = H - m_t - m_b
         ext = [v for v in all_vals if v is not None]
         for r in rows:
             for c in r.ci:
@@ -74,6 +64,18 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
         else:
             lo, hi, tk = SC.domain(ext, percent=unit == "%", step=step, full_percent_step=25 if compact else 20)
         tfmt = SC.tick_formatter(tk, unit, signed, tick_format)
+        tw = max((T.width(tfmt(t), th.TICK_SIZE) for t in tk), default=0.0)
+        m_l = max(48 if compact else 58, tw + 13 + (YLABEL_BAND if ylabel else 0))  # ticks end 9 px left of the axis
+        m_r, m_t = 10, 22
+        pw = W - m_l - m_r
+        gw = pw / max(n, 1)
+        cat = th.MIN_TEXT
+        lines = [T.wrap(r.label, gw - 8, cat) for r in rows]
+        max_lines = max((len(x) for x in lines), default=1)
+        max_lines = max(max_lines, fig.meta.get("cat_lines", 0))  # panels in one row share a label depth
+        m_b = 14 + max_lines * 14
+        H = height or plot_height()
+        ph = H - m_t - m_b
         fmtv = SC.formatter(fmt, decimals, unit, signed, all_vals)
         y = lambda v: m_t + ph * (1 - (min(max(v, lo), hi) - lo) / (hi - lo))
         base_v = max(lo, 0)
@@ -94,7 +96,7 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
             if ref_label:
                 out.append(S.text(W - m_r, y(ref) - 6, ref_label, th.MIN_TEXT, th.MUTED, "end"))
         if ylabel:
-            out.append(S.rotated(12 if compact else 14, m_t + ph / 2, ylabel, size=th.MIN_TEXT))
+            out.append(S.rotated(YLABEL_X, m_t + ph / 2, ylabel, size=th.MIN_TEXT))
         cols = series_colors(ns, colors if ns > 1 else None, names)
         single = row_colors([r.label for r in rows], color=color, colors=colors if ns == 1 else None,
                             highlight=highlight, accent=accent) if ns == 1 else None

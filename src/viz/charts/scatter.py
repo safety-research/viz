@@ -9,7 +9,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import plot_height, series_colors
+from .common import YLABEL_BAND, YLABEL_X, plot_height, series_colors
 from .dist import seg_hits
 
 # The corner each frontier= names: (higher x is better, higher y is better).
@@ -96,10 +96,6 @@ def scatter(points, *, labels=None, label_offsets=None, color="intervention", co
 
     def render(W: float) -> Body:
         H = height or plot_height(1.5)  # relationships read best close to square
-        PL = 64 + (16 if ylabel else 0)
-        PT, PR = 14, 18
-        PB = 34 + (24 if xlabel else 0)
-        PW, PH = W - PL - PR, H - PT - PB
         xs, ys = [p[1] for p in pts], [p[2] for p in pts]
         if xticks is not None:
             xlo, xhi, xt = min(xticks), max(xticks), list(xticks)
@@ -109,9 +105,14 @@ def scatter(points, *, labels=None, label_offsets=None, color="intervention", co
             ylo, yhi, yt = min(yticks), max(yticks), list(yticks)
         else:
             ylo, yhi, yt = SC.domain(ys, *(ydomain or (None, None)), percent=yunit == "%")
+        fx, fy = SC.tick_formatter(xt, xunit), SC.tick_formatter(yt, yunit)
+        tw = max((T.width(fy(t), th.TICK_SIZE) for t in yt), default=0.0)
+        PL = max(48.0, tw + 14) + (YLABEL_BAND if ylabel else 0)  # ticks end 10 px left of the plot
+        PT, PR = 14, 18
+        PB = 34 + (24 if xlabel else 0)
+        PW, PH = W - PL - PR, H - PT - PB
         X = lambda v: PL + PW * (v - xlo) / (xhi - xlo)
         Y = lambda v: PT + PH * (1 - (v - ylo) / (yhi - ylo))
-        fx, fy = SC.tick_formatter(xt, xunit), SC.tick_formatter(yt, yunit)
         out = []
         for t in xt:
             out.append(S.line(X(t), PT, X(t), PT + PH, th.GRID))
@@ -122,7 +123,7 @@ def scatter(points, *, labels=None, label_offsets=None, color="intervention", co
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 46, xlabel, 13, th.INK2, "middle"))
         if ylabel:
-            out.append(S.rotated(14, PT + PH / 2, ylabel, size=13))
+            out.append(S.rotated(YLABEL_X, PT + PH / 2, ylabel, size=13))
         ref_lines = []
         if diagonal:
             a, b = max(xlo, ylo), min(xhi, yhi)

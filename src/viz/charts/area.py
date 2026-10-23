@@ -8,7 +8,7 @@ from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
 from . import axis as A
-from .common import UNSET, plot_height, resolve_unit, series_colors
+from .common import UNSET, YLABEL_BAND, YLABEL_X, plot_height, resolve_unit, series_colors
 from .line import _series
 
 LABEL = 12.5  # band names, the size of line's end labels
@@ -88,7 +88,7 @@ def area(series, *, x=None, normalize=False, colors=None, xscale="linear", xtick
         tfmt = SC.tick_formatter(tk, unit)
         xt = A.x_ticks(xs_all, xticks, xscale, xtick_labels, mark_xs)
         xlab = A.x_labeler(xtick_labels, xt, xunit, xscale)
-        PL = max(T.width(tfmt(t), th.TICK_SIZE) for t in tk) + 14 + (18 if ylabel else 0)
+        PL = max(T.width(tfmt(t), th.TICK_SIZE) for t in tk) + 14 + (YLABEL_BAND if ylabel else 0)
         PB = 30 + (22 if xlabel else 0)
         widths = [T.width(nm, LABEL, "sans", 600) for nm in names]
 
@@ -129,7 +129,7 @@ def area(series, *, x=None, normalize=False, colors=None, xscale="linear", xtick
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 44, xlabel, 12.5, th.INK2, "middle"))
         if ylabel:
-            out.append(S.rotated(13, PT + PH / 2, ylabel, size=12))
+            out.append(S.rotated(YLABEL_X, PT + PH / 2, ylabel, size=12))
         for i in range(n):  # each band from the top of the one below to its own top
             upper = [f"{S.n(p)},{S.n(Y(v))}" for p, v in zip(pxs, tops[i])]
             lower = [f"{S.n(p)},{S.n(Y(v))}" for p, v in zip(pxs, tops[i - 1] if i else [0.0] * len(pxs))]

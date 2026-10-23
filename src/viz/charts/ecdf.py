@@ -15,7 +15,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import as_set, row_colors, series_colors
+from .common import YLABEL_BAND, YLABEL_X, as_set, row_colors, series_colors
 from .dist import LABEL_SIZE, free_spot, key_label, key_width, quantile, samples
 
 
@@ -84,7 +84,7 @@ def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention"
         ytk = [0, 25, 50, 75, 100]
         yfmt = SC.tick_formatter(ytk, "%")
         vfmt = SC.formatter(fmt, decimals, "%")
-        PL = max(T.width(yfmt(t), th.TICK_SIZE) for t in ytk) + 14 + (18 if ylabel else 0)
+        PL = max(T.width(yfmt(t), th.TICK_SIZE) for t in ytk) + 14 + (YLABEL_BAND if ylabel else 0)
         PR = max(12.0, T.width(xfmt(xt[-1]), th.TICK_SIZE) / 2 + 2)
         PT, PB = 12, 30 + (24 if xlabel else 0)
         PW, PH = W - PL - PR, H - PT - PB
@@ -99,7 +99,7 @@ def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention"
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 46, xlabel, 12.5, th.INK2, "middle"))
         if ylabel:
-            out.append(S.rotated(13, PT + PH / 2, ylabel, size=12))
+            out.append(S.rotated(YLABEL_X, PT + PH / 2, ylabel, size=12))
         segs: list[tuple[float, float, float, float]] = []
         taken: list[tuple[float, float, float, float]] = []
         ref_side = None  # the side of the reference line its label takes

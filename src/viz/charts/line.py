@@ -11,7 +11,7 @@ from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
 from . import axis as A
-from .common import UNSET, as_set, plot_height, resolve_unit, series_colors
+from .common import UNSET, YLABEL_BAND, YLABEL_X, as_set, plot_height, resolve_unit, series_colors
 
 
 def _y(v) -> float | None:
@@ -146,7 +146,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             tfmt = SC.tick_formatter(tk, unit)
         xt = A.x_ticks(xs_all, xticks, xscale, xtick_labels, [m for m, _ in mark_list])
         xlab = A.x_labeler(xtick_labels, xt, xunit, xscale)
-        PL = max(A.tick_width(t, tfmt, log_y, unit) for t in tk) + 14 + (18 if ylabel else 0)
+        PL = max(A.tick_width(t, tfmt, log_y, unit) for t in tk) + 14 + (YLABEL_BAND if ylabel else 0)
         end_w = 0.0
         if end_labels:
             for nm, pts in shown.items():
@@ -177,7 +177,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
         if xlabel:
             out.append(S.text(PL + PW / 2, PT + PH + 44, xlabel, 12.5, th.INK2, "middle"))
         if ylabel:
-            out.append(S.rotated(13, PT + PH / 2, ylabel, size=12))
+            out.append(S.rotated(YLABEL_X, PT + PH / 2, ylabel, size=12))
         out.append(A.mark_lines(mark_list, X, PT, PT + PH, th.MUTED))
         out.append(A.mark_labels(placed, PT))
         if ref is not None:

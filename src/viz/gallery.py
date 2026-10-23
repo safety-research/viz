@@ -86,8 +86,9 @@ CARD_W, CARD_H, CARD_PAD = 480, 360, 18  # a gallery card in CSS px; its PNG is 
 
 
 def card(name: str, fig: viz.Figure | None = None) -> str:
-    """A template's gallery card as HTML: its short name over its chart, drawn at the card's width without a title."""
-    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=CARD_W - 2 * CARD_PAD)
+    """A template's gallery card as HTML: its short name over a miniature of its chart. The chart is drawn at its
+    own width, without a title, then scaled down, so a busy chart keeps its layout instead of being squeezed."""
+    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None)
     svg = fig.svg(background=False)
     w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
     scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - 40) / h)  # 40: the name above

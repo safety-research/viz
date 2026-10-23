@@ -21,6 +21,7 @@ from .. import scale as SC
 from .. import svg as S
 from .. import text as T
 from .. import theme as th
+from .common import YLABEL_BAND, YLABEL_X
 
 Box = tuple[float, float, float, float]  # x0, y0, x1, y1
 Seg = tuple[float, float, float, float]  # x1, y1, x2, y2
@@ -402,7 +403,7 @@ def cat_frame(W: float, labels: list[str], ns: int, ext: list[float], *, horizon
         span = (hi - lo) or 1.0
         tfmt = SC.tick_formatter(tk, unit, signed, tick_format)
         tw = max((T.width(tfmt(t), th.TICK_SIZE) for t in tk), default=0.0)
-        m_l = max(48.0 if compact else 58.0, tw + (35 if axis_title else 15))
+        m_l = max(48.0 if compact else 58.0, tw + 13 + (YLABEL_BAND if axis_title else 2))  # ticks end 9 px left
         m_r, m_t = 10.0, 22.0
         pw = W - m_l - m_r
         gw = pw / max(n, 1)
@@ -428,7 +429,7 @@ def cat_frame(W: float, labels: list[str], ns: int, ext: list[float], *, horizon
             if ref_label:
                 out.append(S.text(W - m_r, val(ref) - 6, ref_label, 12, th.MUTED, "end", halo=th.BG))
         if axis_title:
-            out.append(S.rotated(12 if compact else 14, m_t + ph / 2, axis_title, size=12))
+            out.append(S.rotated(YLABEL_X, m_t + ph / 2, axis_title, size=12))
         for i, ln in enumerate(lines):
             for k, s in enumerate(ln):
                 out.append(S.text(m_l + gw * (i + 0.5), m_t + ph + 19 + k * 15, s, 12, th.INK2, "middle"))

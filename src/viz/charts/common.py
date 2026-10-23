@@ -16,6 +16,8 @@ class _Unset:
 UNSET = _Unset()
 
 
+YLABEL_X, YLABEL_BAND = 13, 24  # the rotated y label's baseline, and the band it takes before the tick labels (a
+# 12 px gap between them); charts put their tick labels' left edge at 4 + YLABEL_BAND when there is a y label
 ACCENT = "intervention"  # a chart's one color when nothing else sets it: the intervention role's orange
 
 
