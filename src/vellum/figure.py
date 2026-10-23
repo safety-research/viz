@@ -10,6 +10,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import colors as roles_
 from . import svg as S
 from . import text as T
 from . import theme as th
@@ -28,15 +29,17 @@ class Body:
 @dataclass
 class Defaults:
     frame: str = "claim"
-    width: float = th.WIDTH
-    scale: float = 2
+    size: str | th.Size = "screen"  # screen, slide, paper, column (theme.SIZES), or a vl.Size
+    width: float | None = None      # content width in px; None takes it from the size
+    scale: float | None = None      # PNG pixel ratio; None takes it from the size (300 dpi for print sizes)
+    checks: str = "warn"  # what saving does with a figure that breaks a house rule: warn, error or off
 
 
 defaults = Defaults()
 
 
 def set_defaults(**kw) -> None:
-    """vl.set_defaults(frame="blog", width=900, scale=3)"""
+    """vl.set_defaults(frame="blog", size="paper", checks="error")"""
     for k, v in kw.items():
         if not hasattr(defaults, k):
             raise TypeError(f"unknown default {k!r}")
@@ -68,19 +71,40 @@ class Figure:
     width: float | None = None
     kind: str = "chart"
     meta: dict = field(default_factory=dict)
+    roles: dict | None = None  # {label: role} taken when the figure was made (see vellum.colors)
+    size: str | th.Size | None = None  # screen, slide, paper, column; None follows vl.set_defaults(size=...)
 
     # ------------------------------------------------------------------ composition
     def _frame(self) -> str:
         return self.frame or defaults.frame
 
+    def _size(self) -> th.Size:
+        return th.size_of(self.size or defaults.size)
+
     def _width(self) -> float:
-        return float(self.width or defaults.width)
+        return float(self.width or defaults.width or self._size().width - 2 * th.PAD_X)
+
+    def body(self, width: float, inherit: bool = False) -> Body:
+        """The chart drawn at this width, with the figure's color roles in effect. inherit=True (a panel inside
+        another figure) adds them to the roles already in effect, so the container's roles reach its panels."""
+        own = self.roles
+        if inherit:
+            own = {**roles_.roles(), **(own or {})}
+        size = th.current_size() if inherit and self.size is None else self._size()  # panels share their figure's
+        token = th._size.set(size)
+        try:
+            with roles_.using(own), roles_.recording() as log:
+                out = self.render(width)
+        finally:
+            th._size.reset(token)
+        self.meta["colors_drawn"] = log
+        return out
 
     def compose(self) -> tuple[str, float, float]:
         """Returns (inner svg, total width, total height)."""
         W = self._width()
         frame = self._frame()
-        body = self.render(W)
+        body = self.body(W)
         legend = _legend_items(self.legend, body)
         shape = body.legend_shape
         pos = self.legend_position or ("top" if frame == "claim" else "bottom")
@@ -89,12 +113,13 @@ class Figure:
         parts: list[str] = []
         if frame == "claim":
             if self.title:
-                lines = T.wrap(self.title, W, th.TITLE_SIZE, "serif", 600)
-                lh = th.TITLE_SIZE * 1.18
+                ts = self._size().title
+                lines = T.wrap(self.title, W, ts, "serif", 600)
+                lh = ts * 1.18
                 for i, ln in enumerate(lines):
-                    parts.append(S.text(x0, y + T.baseline(th.TITLE_SIZE, "serif") + i * lh, ln, th.TITLE_SIZE,
+                    parts.append(S.text(x0, y + T.baseline(ts, "serif") + i * lh, ln, ts,
                                         th.INK, family="serif", weight=600))
-                y += th.TITLE_SIZE + (len(lines) - 1) * lh + 4
+                y += ts + (len(lines) - 1) * lh + 4
             if self.subtitle:
                 lines = T.wrap(self.subtitle, W, th.SUBTITLE_SIZE, "sans")
                 lh = T.line_height(th.SUBTITLE_SIZE)
@@ -141,11 +166,25 @@ class Figure:
                 y += h
         y += th.PAD_BOTTOM
         total_w = W + 2 * th.PAD_X
+        fixed = self._size().height
+        if fixed and y < fixed and self.width is None:  # slides fill the 16:9 frame
+            y = fixed
         return "".join(parts), total_w, y
 
     # ------------------------------------------------------------------ outputs
+    def check(self) -> list[str]:
+        """The house rules this figure breaks, as plain sentences ([] when it follows them)."""
+        from .checks import check
+        return check(self)
+
+    def alt_text(self) -> str:
+        """The figure in words, for screen readers and for an image's alt attribute: the title, then the data."""
+        title = (self.title or "").strip()
+        parts = [title if title.endswith((".", "?", "!")) or not title else title + ".", self.meta.get("alt") or ""]
+        return " ".join(p for p in parts if p)
+
     def svg(self, embed_fonts: bool = False, background: bool = True) -> str:
-        """The whole figure as one SVG document."""
+        """The whole figure as one SVG document, with its title and alt text for screen readers."""
         inner, w, h = self.compose()
         label = S.esc(self.title or self.kind)
         style = ""
@@ -153,9 +192,16 @@ class Figure:
             from .render import font_face_css
             style = f"<defs><style>{font_face_css(inner)}</style></defs>"
         bg = S.rect(0, 0, w, h, th.BG) if background else ""
-        title = f"<title>{label}</title>" if self.title else ""
-        return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{S.n(w)}" height="{S.n(h)}" '
-                f'viewBox="0 0 {S.n(w)} {S.n(h)}" role="img" aria-label="{label}">{title}{style}{bg}{inner}</svg>')
+        tid, did = S.uid("title"), S.uid("desc")
+        alt = self.meta.get("alt")
+        title = f'<title id="{tid}">{label}</title>'
+        desc = f'<desc id="{did}">{S.esc(alt)}</desc>' if alt else ""
+        names = f"{tid} {did}" if alt else tid
+        sz = self._size()
+        pw, ph = (sz.inches * 96, h * sz.inches * 96 / w) if sz.inches else (w, h)  # print sizes: true inches (96 px/in)
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{S.n(pw)}" height="{S.n(ph)}" '
+                f'viewBox="0 0 {S.n(w)} {S.n(h)}" role="img" aria-labelledby="{names}">{title}{desc}{style}{bg}{inner}'
+                f"</svg>")
 
     def html(self, standalone: bool = True) -> str:
         """Inline-SVG HTML. standalone=False gives a <figure> fragment to paste into an artifact page."""
@@ -175,6 +221,8 @@ class Figure:
     def save(self, path: str | Path, scale: float | None = None) -> Path:
         """Write .png (2x by default), .pdf (vector), .svg (fonts embedded) or .html, by extension."""
         p = Path(path)
+        from .checks import on_save
+        on_save(self, p)  # the house rules as warnings (vl.set_defaults(checks=...))
         p.parent.mkdir(parents=True, exist_ok=True)
         ext = p.suffix.lower()
         if ext == ".svg":
@@ -183,7 +231,7 @@ class Figure:
             p.write_text(self.html())
         elif ext == ".png":
             from .render import render_png
-            render_png(self.svg(), p, scale or defaults.scale)
+            render_png(self.svg(), p, scale or self._png_scale())
         elif ext == ".pdf":
             from .render import render_pdf
             render_pdf(self.svg(), p)
@@ -193,7 +241,11 @@ class Figure:
 
     def png(self, scale: float | None = None) -> bytes:
         from .render import render_png
-        return render_png(self.svg(), None, scale or defaults.scale)
+        return render_png(self.svg(), None, scale or self._png_scale())
+
+    def _png_scale(self) -> float:
+        sz = self._size()
+        return defaults.scale or (th.DPI / 96 if sz.inches else sz.scale)
 
     def _repr_svg_(self) -> str:  # Jupyter
         return self.svg(embed_fonts=True)

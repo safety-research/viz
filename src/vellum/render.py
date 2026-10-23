@@ -9,6 +9,8 @@ import atexit
 import base64
 import io
 import re
+import subprocess
+import sys
 import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -49,7 +51,15 @@ class Renderer:
     def __init__(self):
         from playwright.sync_api import sync_playwright
         self._pw = sync_playwright().start()
-        self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
+        try:
+            self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
+        except Exception as e:  # first use in this environment: its Playwright has not downloaded a browser yet
+            if "Executable doesn't exist" not in str(e):
+                self._pw.stop()
+                raise
+            print("vellum: installing headless Chromium for this Python environment (one time)", file=sys.stderr)
+            install_browser()
+            self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
         self._pages: dict[float, object] = {}
         self._dir = tempfile.TemporaryDirectory(prefix="vellum-")
 
@@ -92,6 +102,11 @@ class Renderer:
             self._pw.stop()
         finally:
             self._dir.cleanup()
+
+
+def install_browser() -> None:
+    """Download the headless Chromium that this environment's Playwright drives (once per Playwright version)."""
+    subprocess.run([sys.executable, "-m", "playwright", "install", "chromium-headless-shell"], check=True)
 
 
 # Playwright's sync API owns an event loop on the thread that starts it and refuses to start inside a running

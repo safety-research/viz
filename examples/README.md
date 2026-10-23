@@ -1,7 +1,7 @@
 # vellum examples
 
 One snippet per chart type. Each makes the figure named in its `.save()` call, and every number is made up.
-Run one with `uv run --with-editable ~/dev/vellum python ex.py`.
+Run one with `uv run --with-editable "$(vellum path)" python ex.py`.
 
 ## 1. Horizontal bars: one accent on the point, notes after the value
 
@@ -22,7 +22,8 @@ import vellum as vl
 
 vl.hbar([("Base model", 31.0), ("Plain fine-tune (control)", 33.5), ("Worked examples", 18.2),
          vl.section("Other data"), ("Textbook passages", 27.4), ("Forum answers", 36.9), ("Short answers only", 22.6)],
-        colors={"Base model": "dark"}, highlight="Worked examples", ref=31.0, decimals=0,
+        roles={"reference": "Base model", "intervention": "Worked examples"}, highlight="Worked examples",
+        ref=31.0, decimals=0,
         notes={"Forum answers": "worse than the base model"},
         title="Worked examples cut wrong answers from 31% to 18%",
         ).save("hbar_sections.png")
@@ -64,11 +65,12 @@ vl.panels([
     vl.bars({"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8},
             ci={"Small model": (35.8, 41.3), "Twice the size": (24.6, 29.6), "Small with search": (8.0, 11.3),
                 "Both": (6.4, 9.5)},
-            colors=["coral", "sage", "blue", "blue"], title="(a) A bigger model", **kw),
+            title="(a) A bigger model", **kw),
     vl.bars({"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0},
             ci={"Closed book": (35.8, 41.3), "Search answered": (8.0, 11.3), "Search found nothing": (28.4, 33.7)},
-            colors=["coral", "blue", "light-blue"], title="(b) When search finds nothing", **kw)],
-    legend={"Closed book": "coral", "A bigger model": "sage", "Search": "blue", "Search that finds nothing": "light-blue"},
+            colors={"Search found nothing": "light-blue"}, title="(b) When search finds nothing", **kw)],
+    roles={"baseline": ["Small model", "Closed book"], "intervention": ["Small with search", "Both", "Search answered"]},
+    legend={"Closed book": "coral", "A bigger model": "gray", "Search": "blue", "Search that finds nothing": "light-blue"},
     frame="blog", title="Search cut wrong answers more than a model twice the size",
     ).save("small_multiples.png")
 ```
@@ -135,7 +137,8 @@ vl.waffle({"Out-of-date fact": 210, "Misread the question": 140, "Arithmetic sli
 import vellum as vl
 
 vl.line({"Worked examples": [31, 26, 21, 17], "Plain fine-tune": [31, 32, 33, 34]}, x=[0, 1, 3, 10],
-        xscale="category", xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, colors=["blue", "coral"],
+        xscale="category", xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"},
+        roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"},
         bands={"Worked examples": ([27, 22, 17, 13], [35, 30, 25, 21])}, xlabel="Fine-tuning tokens",
         title="Wrong answers fell from 31% to 17% with more worked examples",
         ).save("line.png")
@@ -200,5 +203,5 @@ vl.episodes([
 }
 ```
 ```bash
-uvx --from ~/dev/vellum vellum render fivefold.json -o fivefold.png
+vellum render fivefold.json -o fivefold.png
 ```

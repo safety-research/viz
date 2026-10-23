@@ -31,35 +31,37 @@ Every chart returns a `Figure`. `.save()` picks the format from the extension:
 
 ## Install
 
-Clone the repo to `~/dev/vellum`, where the skill tells Claude to find it, and run `install.sh`:
+Clone the repo anywhere and run `install.sh`:
 
 ```bash
-gh repo clone safety-research/vellum ~/dev/vellum
-~/dev/vellum/install.sh
+gh repo clone safety-research/vellum
+vellum/install.sh
 ```
 
-It links the Claude Code skill in `claude/skills/vellum` into `~/.claude/skills/` and installs the headless
-Chromium that renders PNG and PDF. The clone is the installation: edit the skill in the repo, and `git pull`
-updates it. Re-running is safe, and `VELLUM_NO_BROWSER=1` skips the Chromium step.
+It puts the `vellum` command on your PATH (`uv tool install --editable`), links the Claude Code skill in
+`claude/skills/vellum` into `~/.claude/skills/`, and installs the headless Chromium that renders PNG and PDF.
+The clone is the installation: the command and the skill both point back into it, so edits take effect at once
+and `git pull` updates everything. `vellum path` prints where the clone is. Re-running is safe;
+`VELLUM_NO_TOOL=1` skips the command and `VELLUM_NO_BROWSER=1` the Chromium step.
 
 ## Using it from any project
 
 A one-off script can use it straight from the clone:
 
 ```bash
-uv run --with-editable ~/dev/vellum python make_figs.py
+uv run --with-editable "$(vellum path)" python make_figs.py
 ```
 
 Add it to a project:
 
 ```bash
-uv add --editable ~/dev/vellum
+uv add --editable "$(vellum path)"
 ```
 
 To make a figure without writing Python, put a JSON spec in a file (a list of specs makes several figures):
 
 ```bash
-uvx --from ~/dev/vellum vellum render spec.json -o fig.png
+vellum render spec.json -o fig.png
 ```
 
 ```json
@@ -68,7 +70,28 @@ uvx --from ~/dev/vellum vellum render spec.json -o fig.png
 ```
 
 `vellum gallery -o out/` renders every example below. Rendering uses Playwright's headless Chromium, which
-`install.sh` sets up.
+`install.sh` sets up; vellum also installs it on first use in any other environment (`vellum setup` does it
+up front).
+
+## Sizes
+
+Pick the size for where the figure goes. Every figure of one size has the same width, the same plot height for
+bar, line, scatter and distribution charts, so figures line up, and text that comes out at the right size there.
+
+| Size | Width | For | PNG |
+|---|---|---|---|
+| `screen` (default) | 1008 px | posts, Discord, artifacts, notebooks | 2016 px wide |
+| `slide` | 16:9 | a full slide; labels show at about 18 pt and titles at 33 pt | 1920 × 1080 |
+| `paper` | 6.75 in | the full text width of a two-column paper; labels print at 8 pt | 300 dpi |
+| `column` | 3.25 in | one column of that paper; titles of about five words | 300 dpi |
+
+```python
+vl.set_defaults(size="paper")   # every figure in the script
+vl.bars(data, size="column")    # one figure
+```
+
+PDFs and SVGs come out at the printed width, so `\includegraphics{fig.pdf}` needs no scaling. For another
+format, make a `vl.Size`: a one-column NeurIPS page (5.5 in) is `vl.Size(width=610, plot=260, title=16, inches=5.5)`.
 
 ## Style rules
 
@@ -97,13 +120,11 @@ and nothing else on the figure competes with it.
 
 ### Look
 
-7. **Keep color meanings fixed across a write-up.**
-   - coral: the baseline, no intervention, or the bad outcome
-   - blue: the intervention, or the point you are making
-   - sage: a second kind of intervention (fine-tuning, a different prompt)
-   - beige: untouched or reference
-   - gray: everything else
-8. **Use one accent.** `highlight=` colors the bar you are talking about and turns the rest gray.
+7. **Keep color meanings fixed across a write-up**: name the conditions once with `vl.set_roles` (see
+   [Colors](#colors)). Coral is the baseline, blue the intervention, sage a second intervention, dark a reference,
+   and everything else gray.
+8. **Mute what isn't the point.** Conditions without a role go gray, and `highlight=` puts the accent on the bar
+   you are talking about.
 9. **Label directly.** Write values at the bar tip and names at line ends, and keep legends small.
    Notes such as "412 chats" or "352 of 400" go after the value.
 10. **Show intervals** (`ci=`) when the comparison depends on them, and say what they are in the subtitle.
@@ -112,6 +133,58 @@ and nothing else on the figure competes with it.
 
 For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle, with the legend below the chart.
 `vl.set_defaults(frame="blog")` switches every figure.
+
+## Colors
+
+Name the conditions once per write-up, and every figure colors them the same way:
+
+```python
+vl.set_roles(baseline="Closed book", intervention=["With search", "Search"], reference="Base model")
+```
+
+| Role | Color | For |
+|---|---|---|
+| `baseline` | coral | the condition without the intervention: the control, the untrained model, the bad outcome |
+| `intervention` | blue | what the figure is about |
+| `second` | sage | a second intervention that is also the point (use it sparingly) |
+| `reference` | dark | an outside reference that should still read clearly, such as chance or a published number |
+| everything else | gray | muted, so the intervention stands out |
+
+Roles apply to bar labels and to series names. Explicit `colors=` still win, and one chart can add roles of its own
+with `roles={"baseline": ..., "intervention": [...]}` (a JSON spec takes the same `"roles"` key). A figure keeps the
+roles in effect when it was made. Without roles, several series take coral, blue, sage, navy, dark and clay, in that
+order, and any more are gray. Heatmaps use the sequential scales `blue`, `coral`, `sage` and `green`, or `diverging`.
+`vellum colors` prints all of this, and `vellum colors -o colors.png` draws the card below.
+
+![](docs/colors.png)
+
+## Accessibility
+
+- All text reaches 4.5:1 contrast with what it sits on, including labels on colored fills (vellum picks white or
+  ink, whichever contrasts more), and no text is smaller than 12 px.
+- The role colors reach 3:1 against the white background and stay at least 10 CIEDE2000 apart with protanopia,
+  deuteranopia and tritanopia. `tests/test_access.py` holds these numbers. Gray is deliberately light context, so
+  values on gray marks are always labeled.
+- Values are labeled directly, so no reading depends on color alone.
+- Every figure carries alt text with its data. `fig.alt_text()` gives "Search cut wrong answers for all ten models.
+  Bar chart. Model A: Closed book 12%, With search 4%; ..."; use it as the image's alt text in a write-up.
+  `vellum render --alt` prints it for specs, and SVG and HTML output carry it as `<title>` and `<desc>`.
+
+## Checks
+
+Saving a figure checks it against the style rules and warns about each problem:
+
+```
+VellumCheck: vellum check (fig.png): Title has a semicolon, which means two findings; make two figures.
+```
+
+They flag a title that runs long, splits on a semicolon, sets up with a colon, asks a question, breaks for a dash,
+ends in punctuation or leans on an intensifier ("dramatically", "far more"); any subtitle other than "Example data"
+or what the error bars are; value labels with more digits than the comparison needs; more than four accent colors;
+two colors color-blind readers can't tell apart; and a condition whose color changed from an earlier figure in the
+same run. `fig.check()` returns the list, `vellum check spec.json` checks specs without rendering, and
+`vl.set_defaults(checks="error")` turns the warnings into errors (`"off"` skips them). The checks can't tell whether
+a title is true or the chart is the right one.
 
 ## Charts
 

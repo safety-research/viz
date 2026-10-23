@@ -47,6 +47,7 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
     coral below and blue above by default, so pass low="blue", high="coral" when higher is worse).
     col_groups: [("Keep it at a cost", ["At 10% lower score", "At 30% lower score"])] puts a muted heading
     with a rule over those columns. sort: a column name to sort rows by (descending), or a key function.
+    Cell text is white or ink, whichever contrasts more with the cell (threshold is kept for old calls; unused).
     """
     rlabels, clabels, vals = _matrix(data, rows, cols)
     unit, _ = resolve_unit(unit)
@@ -113,10 +114,10 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
                     out.append(S.rect(cx(j), y, CW, CH, th.mix(th.SURFACE, th.BG, 0.5), 5))
                     out.append(S.text(cx(j) + CW / 2, y + CH / 2 + 4.5, "–", 13, th.MUTED, "middle"))
                     continue
-                f, t = fill_of(v)
+                f, _ = fill_of(v)
                 out.append(S.rect(cx(j), y, CW, CH, f, 5))
                 if values:
-                    out.append(S.text(cx(j) + CW / 2, y + CH / 2 + 4.5, fmtv(v), 13, "#FFFFFF" if t >= threshold else th.INK,
+                    out.append(S.text(cx(j) + CW / 2, y + CH / 2 + 4.5, fmtv(v), 13, th.text_on(f),
                                       "middle", 600))
         H = Y0 + len(rlabels) * (CH + G) - G + 4
         return Body("".join(out), H)

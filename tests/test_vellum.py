@@ -112,6 +112,7 @@ def test_frames_and_defaults():
         vl.set_defaults(frame="claim")
 
 
+@pytest.mark.filterwarnings("ignore::vellum.checks.VellumCheck")  # bare test specs, not house-style figures
 def test_from_spec_round_trip(tmp_path):
     specs = [
         {"chart": "hbar", "data": {"Closed book": 59, "With search": 12}, "highlight": "With search", "title": "t"},

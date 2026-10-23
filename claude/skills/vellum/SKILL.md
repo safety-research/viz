@@ -1,26 +1,27 @@
 ---
 name: vellum
-description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, coral = baseline / blue = intervention, direct value labels. The ~/dev/vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "vellum house figure style: white background, Newsreader serif claim titles, DM Sans labels, coral = baseline / blue = intervention, direct value labels. The vellum library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # vellum: house figure style
 
-The library is at `~/dev/vellum`. The README there has the full API, and `docs/gallery/*.png` shows every chart
-type. The source of every gallery figure is in `src/vellum/gallery.py`, so copy the closest one.
+The library is the vellum repo, and `vellum path` prints where it is. Its README has the full API,
+`docs/gallery/*.png` shows every chart type, and `src/vellum/gallery.py` holds the source of every gallery figure,
+so copy the closest one.
 
 ## Run it
 
-You don't need to install anything:
-
 ```bash
-uv run --with-editable ~/dev/vellum python make_figs.py
+uv run --with-editable "$(vellum path)" python make_figs.py
 ```
 
 To render a JSON spec (one dict, or a list with an "out" path on each):
 
 ```bash
-uvx --from ~/dev/vellum vellum render spec.json -o fig.png
+vellum render spec.json -o fig.png
 ```
+
+If `vellum` is not found, run `install.sh` in a vellum clone; it puts the command on your PATH.
 
 ```python
 import vellum as vl
@@ -43,6 +44,24 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 - Where the outcomes went: `stacked`.
 - Small multiples with one legend: `panels([...], cols=2)`.
 - Quoted replies: `quotes`. Transcripts side by side: `episodes`. A tool definition: `code_card`.
+
+## Size
+
+The default size, `screen`, fits posts, Discord and artifacts. For a paper pass `size="paper"` (full text width)
+or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 slide. One size per write-up:
+`vl.set_defaults(size="paper")`. Titles must fit on one line at the chosen size.
+
+## Colors
+
+Name the conditions once, at the top of the script, and let vellum color them: coral for the baseline, blue for the
+intervention, sage for a second intervention, dark for a reference, and gray for everything else.
+
+```python
+vl.set_roles(baseline="Closed book", intervention="With search")
+```
+
+Don't hand-pick `colors=` unless a chart needs a color no role gives. One chart can add roles with `roles={...}`,
+and JSON specs take a `"roles"` key.
 
 ## Write the words
 
@@ -72,14 +91,20 @@ text.
 Check: read the title alone. Someone outside the project should be able to repeat the finding without asking
 what a word means.
 
+## Checks and alt text
+
+- Saving a figure prints `vellum check` warnings for titles, subtitles, decimals and colors that break these rules.
+  Fix every one before you send the figure. `vellum check spec.json` checks specs without rendering.
+- In a write-up, use `fig.alt_text()` as the image's alt text: it gives the title and the data in words.
+  `vellum render --alt` prints it for specs.
+
 ## Style rules
 
 - Use `frame="blog"` for write-ups.
 - No figure captions at the bottom, in the image or under it in a write-up. What a caption would say goes in
   the text.
-- Colors keep their meaning. Coral is the baseline or bad outcome, blue the intervention or the point, sage a
-  second intervention (fine-tuning, a different prompt), beige untouched, and gray the rest. Use one accent per
-  figure.
+- Colors keep their meaning across a write-up: set them with `vl.set_roles` (see Colors) and keep one accent
+  per figure.
 - Values are percents by default: pass 37 for 37%, and `unit=""` for scores. Show intervals when a claim
   depends on them, and name them in the subtitle.
 - Numbers must come from the run files. Label fake or example data as such in the subtitle.

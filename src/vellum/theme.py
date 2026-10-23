@@ -5,6 +5,10 @@ style with one claim per figure as a serif title, one accent on the point and di
 """
 from __future__ import annotations
 
+import contextvars
+from dataclasses import dataclass
+
+
 # ---- surfaces and ink
 BG = "#FFFFFF"        # figure background: white
 CARD = "#F1EEE8"      # quote cards
@@ -13,7 +17,7 @@ SURFACE = "#ECE8E1"   # empty heatmap cell, low end of sequential scales
 INK = "#191918"       # titles, emphasized numbers
 INK2 = "#3D3C38"      # labels, body text
 MUTED = "#6E6C65"     # subtitles, ticks, notes
-FAINT = "#8C887F"     # small uppercase labels, secondary code text
+FAINT = "#75726A"     # small uppercase labels, secondary code text (4.8:1 on white)
 GRID = "#E6E2DA"      # gridlines
 AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
@@ -25,13 +29,16 @@ RULE = "#E2DFD7"      # card borders, rules
 #   beige = untouched / reference
 #   gray  = everything that is not the point (use with one accent)
 #   dark  = a reference bar that should still read clearly (e.g. the untrained model)
+# Accessibility (tests/test_access.py holds these): coral, blue, sage, dark, navy and clay reach 3:1 against the
+# white background; the role colors stay at least 10 CIEDE2000 apart for protanopia, deuteranopia and tritanopia;
+# gray and beige are deliberately light context, so values on them are always labeled.
 PALETTE: dict[str, str] = {
-    "coral": "#D78365",
+    "coral": "#D47D5E",
     "blue": "#5E91C2",
     "sage": "#74897F",
-    "beige": "#DED3C4",
-    "gray": "#CBC5BB",
-    "dark": "#8C887F",
+    "beige": "#EADDC2",
+    "gray": "#C2BFB9",
+    "dark": "#67645C",
     "light-blue": "#A9C3DE",
     "deep-blue": "#3F73A8",
     "navy": "#2F5E8C",
@@ -54,8 +61,12 @@ TINT: dict[str, str] = {
     "surface": SURFACE,
 }
 
-# Default order when several series need colors and none were given.
-SERIES = ["coral", "blue", "sage", "beige", "light-blue", "dark", "deep-sage", "light-coral"]
+# Default order when several series need colors and none were given: each next color is the one most distinct from
+# those before it for color-blind readers. Series past the sixth are muted gray: mute what isn't the point.
+SERIES = ["coral", "blue", "sage", "navy", "dark", "clay"]
+
+# Darker fills for "strong" tiles, so white text on them reaches 4.5:1.
+STRONG = {"blue": "deep-blue", "coral": "clay", "sage": "deep-sage"}
 
 # Sequential scales (low end -> high end) for heatmaps.
 SCALES: dict[str, tuple[str, str]] = {
@@ -90,7 +101,49 @@ LEGEND_GAP = 12       # legend -> body
 # blog frame: centered serif title and subtitle, legend below
 BLOG_TITLE_SIZE = 16.5
 
-TICK_SIZE = 11.5
+TICK_SIZE = 12
+MIN_TEXT = 12        # no text smaller than this, at 1x
+
+
+# ---- sizes: where a figure goes
+@dataclass(frozen=True)
+class Size:
+    """A destination. width: the whole figure in layout px; plot: the body height that bar, line, scatter and
+    distribution charts share, so figures of one size line up; title: the claim title size; height: pad to this
+    total height (slides); inches: the printed width, None on screens; scale: PNG pixels per layout px on screens
+    (print sizes render at 300 dpi). Text keeps its px sizes, so a narrower layout prints larger."""
+    width: float
+    plot: float
+    title: float
+    height: float | None = None
+    inches: float | None = None
+    scale: float = 2
+
+
+SIZES: dict[str, Size] = {
+    "screen": Size(width=1008, plot=300, title=22),                          # posts, Discord, artifacts: 2016 px
+    "slide": Size(width=640, plot=230, title=22, height=360, scale=3),       # a full 16:9 slide: 1920 x 1080 px
+    "paper": Size(width=748, plot=270, title=16, inches=6.75),               # two-column paper, full text width
+    "column": Size(width=360, plot=210, title=15, inches=3.25),              # one column of it; text prints at 8 pt
+}
+DPI = 300
+
+_size: contextvars.ContextVar[Size | None] = contextvars.ContextVar("vellum_size", default=None)
+
+
+def size_of(s: str | Size | None) -> Size:
+    if isinstance(s, Size):
+        return s
+    if s is None:
+        return SIZES["screen"]
+    if s not in SIZES:
+        raise ValueError(f"unknown size {s!r}; use one of: {', '.join(SIZES)}, or a vl.Size(...)")
+    return SIZES[s]
+
+
+def current_size() -> Size:
+    """The size of the figure being drawn (screen outside a figure)."""
+    return _size.get() or SIZES["screen"]
 
 
 def color(c: str | None, default: str = "blue") -> str:
@@ -135,6 +188,33 @@ def luminance(c: str) -> float:
     return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b)
 
 
-def text_on(fill: str) -> str:
-    """White on dark fills, ink on light ones."""
-    return "#FFFFFF" if luminance(fill) < 0.28 else INK
+def text_on(fill: str, soft: bool = False) -> str:
+    """Text color for a fill: white or ink, whichever contrasts more, and black when neither reaches 4.5:1.
+    soft=True gives the quieter color for secondary lines when it still reaches 4.5:1."""
+    from .access import contrast
+    main = max(("#FFFFFF", INK), key=lambda t: contrast(t, fill))
+    if contrast(main, fill) < 4.5:
+        main = max(("#FFFFFF", "#000000"), key=lambda t: contrast(t, fill))
+    if soft:
+        quiet = mix(main, fill, 0.15) if main == "#FFFFFF" else INK2
+        if contrast(quiet, fill) >= 4.5:
+            return quiet
+    return main
+
+
+def readable(c: str, bg: str = BG, ratio: float = 4.5) -> str:
+    """The color itself if text in it reaches `ratio` against bg, else the lightest darker shade that does."""
+    from .access import contrast
+    c = color(c)
+    for k in range(21):
+        out = mix(c, INK, k / 20)
+        if contrast(out, bg) >= ratio:
+            return out
+    return INK
+
+
+def strong_fill(c: str) -> str:
+    """A fill dark enough for white text: the palette's deep variant, else the color darkened until it is."""
+    key = c.lower().replace("_", "-").replace(" ", "-")
+    out = color(STRONG.get(key, c))
+    return out if text_on(out) == "#FFFFFF" else readable(out, "#FFFFFF")

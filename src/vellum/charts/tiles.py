@@ -76,8 +76,8 @@ def tiles(grid, *, col_headers=None, row_headers=None, tile_width=None, tile_hei
             for c, t in enumerate(row):
                 x0, y0 = cell(c, r)
                 if t.strong:
-                    fill = th.color(t.color)
-                    ink, sub = th.text_on(fill), ("#EAF1F8" if th.text_on(fill) == "#FFFFFF" else th.INK2)
+                    fill = th.strong_fill(t.color)
+                    ink, sub = th.text_on(fill), th.text_on(fill, soft=True)
                 else:
                     fill = th.tint(t.color)
                     ink, sub = th.INK, th.INK2

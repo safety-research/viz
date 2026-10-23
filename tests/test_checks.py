@@ -1,0 +1,103 @@
+"""The built-in checks flag what breaks the house rules and stay quiet on figures that follow them."""
+from __future__ import annotations
+
+import pytest
+
+import vellum as vl
+from vellum import checks
+
+
+@pytest.fixture(autouse=True)
+def fresh():
+    checks.reset()
+    vl.set_roles()
+    yield
+    checks.reset()
+    vl.set_defaults(checks="warn")
+
+
+def problems(title=None, subtitle=None, data=None, **kw) -> list[str]:
+    return vl.hbar(data or {"Closed book": 59, "With search": 12}, title=title, subtitle=subtitle, **kw).check()
+
+
+def test_a_plain_figure_passes():
+    assert problems("With search, wrong answers fell from 59% to 12%") == []
+    assert problems("With search, wrong answers fell from 59% to 12%", subtitle="Example data") == []
+    assert problems("Search cut errors", subtitle="Example data; error bars are 95% intervals") == []
+
+
+@pytest.mark.parametrize("title, phrase", [
+    (None, "No title"),
+    ("Search cut wrong answers for every one of the ten models we tested this week", "words"),
+    ("Search helped; prompts did not", "semicolon"),
+    ("The fix: search", "colon setup"),
+    ("Did search help?", "question"),
+    ("Search helped — a lot", "dash"),
+    ("Search cut wrong answers.", "punctuation"),
+    ("Search dramatically cut wrong answers", "dramatically"),
+    ("Search cut far more errors than prompts", "far more"),
+])
+def test_title_rules(title, phrase):
+    assert any(phrase in p for p in problems(title)), problems(title)
+
+
+def test_subtitles_are_off_by_default():
+    out = problems("Search cut errors", subtitle="GRPO, 100 steps, 2 seeds per arm")
+    assert any("No subtitle by default" in p for p in out)
+
+
+def test_extra_digits_are_flagged_unless_they_tell_values_apart():
+    assert any("digits" in p for p in problems("Search cut errors", data={"A": 41.27, "B": 12.4}, decimals=2))
+    assert problems("Search cut errors", data={"A": 38.5, "B": 38.2}, decimals=1) == []  # 38 and 38 would merge
+    assert problems("Ratings rose", data={"A": 5.6, "B": 5.7}, unit="", decimals=1) == []
+
+
+def test_too_many_accents_and_confusable_colors():
+    data = {k: v for k, v in zip("ABCDE", [5, 4, 3, 2, 1])}
+    many = problems("Five conditions differed", data=data, colors=["coral", "blue", "sage", "navy", "clay"])
+    assert any("accent colors" in p for p in many)
+    redgreen = problems("Two conditions differed", data={"A": 2, "B": 1}, colors=["#D62728", "#2CA02C"])
+    assert any("look alike" in p for p in redgreen)
+
+
+def test_a_condition_that_changes_color_between_figures_is_flagged():
+    first = vl.hbar({"With search": 12, "Closed book": 59}, highlight="With search", title="Search cut errors")
+    assert checks.check(first, name="fig1.png", record=True) == []
+    second = vl.hbar({"With search": 12, "Rerank": 9}, colors={"With search": "sage"}, title="Rerank cut errors")
+    out = checks.check(second, name="fig2.png", record=True)
+    assert any('"With search" is sage here but blue in fig1.png' in p for p in out)
+
+
+def test_panels_check_their_panel_titles():
+    p = vl.panels([vl.bars({"A": 1, "B": 2}, title="(a) Prompts; no help")], title="Search cut errors")
+    assert any(p_.startswith('Panel "(a) Prompts; no help"') for p_ in p.check())
+
+
+def test_saving_warns_or_raises(tmp_path):
+    f = vl.hbar({"A": 1, "B": 2}, title="Did search help?")
+    with pytest.warns(checks.VellumCheck, match="question"):
+        f.save(tmp_path / "f.svg")
+    vl.set_defaults(checks="error")
+    with pytest.raises(checks.VellumCheckError, match="question"):
+        f.save(tmp_path / "g.svg")
+    assert not (tmp_path / "g.svg").exists()
+    vl.set_defaults(checks="off")
+    f.save(tmp_path / "h.svg")
+
+
+def test_the_gallery_follows_its_own_rules():
+    from vellum.gallery import figures
+    for name, fig in figures().items():
+        assert checks.check(fig, name=name, record=True) == [], name
+
+
+def test_cli_check(tmp_path, capsys):
+    import json
+
+    from vellum.cli import main
+    spec = tmp_path / "s.json"
+    spec.write_text(json.dumps([{"chart": "hbar", "data": {"A": 1}, "title": "Did it work?", "out": "a.png"},
+                                {"chart": "hbar", "data": {"A": 1}, "title": "It worked"}]))
+    assert main(["check", str(spec)]) == 1
+    out = capsys.readouterr().out
+    assert "a.png: Title is a question" in out and "figure 2" not in out

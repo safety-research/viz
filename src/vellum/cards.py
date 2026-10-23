@@ -165,7 +165,7 @@ def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None
         for label, kind, body in e.blocks:
             yy += 12
             if label:
-                out.append(S.text(x + px, yy + 10, label.upper(), 11, th.MUTED, letter_spacing=0.66))
+                out.append(S.text(x + px, yy + 10, label.upper(), th.MIN_TEXT, th.MUTED, letter_spacing=0.66))
                 yy += 14 + 4
             if kind == "quote":
                 size, lh = 15, 22.5

@@ -23,7 +23,7 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
         g = gap if gap is not None else (32 if fr == "claim" else 26)
         rg = row_gap if row_gap is not None else (26 if fr == "claim" else 30)
         pw = (W - g * (cols - 1)) / cols
-        bodies = [f.render(pw) for f in figs]
+        bodies = [f.body(pw, inherit=True) for f in figs]
         for start in range(0, len(figs), cols):  # vertical bars in one row share their category-label depth
             row = list(range(start, min(start + cols, len(figs))))
             depth = max((bodies[i].meta.get("cat_lines", 0) for i in row), default=0)
@@ -31,7 +31,7 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
                 if "cat_lines" in bodies[i].meta and bodies[i].meta["cat_lines"] < depth:
                     figs[i].meta["cat_lines"] = depth
                     try:
-                        bodies[i] = figs[i].render(pw)
+                        bodies[i] = figs[i].body(pw, inherit=True)
                     finally:
                         figs[i].meta.pop("cat_lines", None)
         cells = []

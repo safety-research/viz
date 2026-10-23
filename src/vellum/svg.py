@@ -157,7 +157,7 @@ def group(content: str, tx: float = 0, ty: float = 0, extra: str = "") -> str:
     return f"<g{t}{' ' + extra if extra else ''}>{content}</g>"
 
 
-def rotated(x: float, y: float, s, angle: float = -90, size: float = 11.5, fill: str = INK2, anchor: str = "middle",
+def rotated(x: float, y: float, s, angle: float = -90, size: float = 12, fill: str = INK2, anchor: str = "middle",
             weight: int = 400) -> str:
     a = font_attrs(size, "sans", weight, False, fill)
     return (f'<text transform="translate({n(x)},{n(y)}) rotate({n(angle)})" {a} text-anchor="{anchor}">'

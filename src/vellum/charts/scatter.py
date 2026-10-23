@@ -9,6 +9,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
+from .common import plot_height
 
 
 def _points(points):
@@ -41,7 +42,7 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
     show = {p[0] for p in pts} if labels is True else set(labels or [])
 
     def render(W: float) -> Body:
-        H = height or 470
+        H = height or plot_height(1.5)  # relationships read best close to square
         PL = 64 + (16 if ylabel else 0)
         PT, PR = 14, 18
         PB = 34 + (24 if xlabel else 0)

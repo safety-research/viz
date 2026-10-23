@@ -11,7 +11,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import UNSET, resolve_unit, row_colors, series_colors
+from .common import UNSET, plot_height, resolve_unit, row_colors, series_colors
 
 
 def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="blue",
@@ -43,12 +43,12 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
         m_l, m_r, m_t = (48 if compact else 58), 10, 22
         pw = W - m_l - m_r
         gw = pw / max(n, 1)
-        cat = 11 if (compact or gw < 70) else 12
+        cat = th.MIN_TEXT
         lines = [T.wrap(r.label, gw - 8, cat) for r in rows]
         max_lines = max((len(x) for x in lines), default=1)
         max_lines = max(max_lines, fig.meta.get("cat_lines", 0))  # panels in one row share a label depth
         m_b = 14 + max_lines * 14
-        H = height or (270 if compact else 300)
+        H = height or plot_height()
         ph = H - m_t - m_b
         ext = [v for v in all_vals if v is not None]
         for r in rows:
@@ -74,7 +74,7 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
         for t in tk:
             if grid and t > lo:
                 out.append(S.line(m_l, y(t), W - m_r, y(t), th.GRID))
-            out.append(S.text(m_l - 9, y(t) + 4, tfmt(t), 11, th.MUTED, "end"))
+            out.append(S.text(m_l - 9, y(t) + 4, tfmt(t), th.TICK_SIZE, th.MUTED, "end"))
         out.append(S.line(m_l, m_t - 4, m_l, m_t + ph, th.AXIS))
         out.append(S.line(m_l, m_t + ph, W - m_r, m_t + ph, th.AXIS))
         if lo < 0:
@@ -82,9 +82,9 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
         if ref is not None:
             out.append(S.line(m_l, y(ref), W - m_r, y(ref), th.MUTED, 1, "4 4"))
             if ref_label:
-                out.append(S.text(W - m_r, y(ref) - 6, ref_label, 11, th.MUTED, "end"))
+                out.append(S.text(W - m_r, y(ref) - 6, ref_label, th.MIN_TEXT, th.MUTED, "end"))
         if ylabel:
-            out.append(S.rotated(12 if compact else 14, m_t + ph / 2, ylabel, size=11.5))
+            out.append(S.rotated(12 if compact else 14, m_t + ph / 2, ylabel, size=th.MIN_TEXT))
         cols = series_colors(ns, colors if ns > 1 else None, names)
         single = row_colors([r.label for r in rows], color=color, colors=colors if ns == 1 else None,
                             highlight=highlight, accent=accent) if ns == 1 else None
@@ -111,7 +111,7 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
                 if values and value_labels != "none" and not (value_labels == "first" and j > 0):
                     neg = v < base_v
                     ly = ((y(c[0]) if c else y1) + 13) if neg else ((y(c[1]) if c else y1) - 5)
-                    out.append(S.text(xc, ly, fmtv(v), 10.5, th.INK2, "middle"))
+                    out.append(S.text(xc, ly, fmtv(v), th.MIN_TEXT, th.INK2, "middle"))
             for k, ln in enumerate(lines[i]):
                 out.append(S.text(cx, m_t + ph + 18 + k * 14, ln, cat, th.INK2, "middle"))
         legend_items = [(nm, c) for nm, c in zip(names, cols)] if ns > 1 and names else None

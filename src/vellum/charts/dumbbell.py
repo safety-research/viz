@@ -10,7 +10,7 @@ from ..figure import Body, Figure
 from .common import UNSET, resolve_unit, series_colors
 
 
-def dumbbell(data, *, series=("Without", "With"), colors=("coral", "blue"), domain=None, ticks=None, step=None,
+def dumbbell(data, *, series=("Without", "With"), colors=None, domain=None, ticks=None, step=None,
              unit=UNSET, decimals=None, fmt=None, sort=False, missing="doesn't apply", row_height=34,
              tick_format=None, title=None, subtitle=None, legend=None, legend_position=None,
              frame=None, width=None) -> Figure:
@@ -24,7 +24,7 @@ def dumbbell(data, *, series=("Without", "With"), colors=("coral", "blue"), doma
         rows.sort(key=lambda r: -((r.values[1] or 0) - (r.values[0] or 0)) if None not in r.values else 1e9)
     unit, _ = resolve_unit(unit)
     vals = [v for r in rows for v in r.values if v is not None]
-    cols = series_colors(2, list(colors), list(series))
+    cols = series_colors(2, None if colors is None else list(colors), list(series))
 
     def render(W: float) -> Body:
         if ticks is not None:

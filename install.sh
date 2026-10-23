@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Install vellum onto this machine:
+#   - put the `vellum` command on PATH (uv tool install --editable); the skill finds this clone,
+#     wherever it lives, with `vellum path`
 #   - symlink the vellum skill (claude/skills/vellum) into ~/.claude/skills/
 #   - install Playwright's headless Chromium, which renders PNG and PDF
 #
-# The clone IS the installation: the skill link points back into it, so an edit to the skill,
-# made in the repo or through ~/.claude/skills/vellum, lands in git, and `git pull` updates it.
-# Re-running is safe.
+# The clone IS the installation: the command and the skill link both point back into it, so an
+# edit lands in git and `git pull` updates everything. Re-running is safe.
+#   VELLUM_NO_TOOL=1      skip the command
 #   VELLUM_NO_BROWSER=1   skip the Chromium step
 #   CLAUDE_CONFIG_DIR     link into this Claude Code config dir instead of ~/.claude
 set -euo pipefail
@@ -39,17 +41,25 @@ fi
 ln -sfn "$SKILL_SRC" "$LINK"
 echo "Linked the vellum skill: $LINK -> $SKILL_SRC"
 
-if [[ -z "${VELLUM_NO_BROWSER:-}" ]]; then
-    if ! command -v uv >/dev/null 2>&1; then
-        echo "install.sh: uv not found. Install it: curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
-        exit 1
-    fi
-    uv run --project "$VELLUM_DIR" playwright install chromium-headless-shell
-    echo "Installed headless Chromium for PNG and PDF"
+if [[ -z "${VELLUM_NO_TOOL:-}" || -z "${VELLUM_NO_BROWSER:-}" ]] && ! command -v uv >/dev/null 2>&1; then
+    echo "install.sh: uv not found. Install it: curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
+    exit 1
 fi
 
-# The skill tells Claude the library is at ~/dev/vellum.
-if [[ "$(cd "$VELLUM_DIR" && pwd -P)" != "$(cd "$HOME/dev/vellum" 2>/dev/null && pwd -P)" ]]; then
-    echo "Note: the skill points Claude at ~/dev/vellum, but this clone is at $VELLUM_DIR."
-    echo "  Move the clone there, or link it:  ln -s $VELLUM_DIR ~/dev/vellum"
+if [[ -z "${VELLUM_NO_TOOL:-}" ]]; then
+    uv tool install --quiet --force --editable "$VELLUM_DIR"
+    BIN="$(uv tool dir --bin)"
+    echo "Installed the vellum command: $BIN/vellum"
+    case ":$PATH:" in
+        *":$BIN:"*) ;;
+        *) echo "Note: $BIN is not on your PATH; add it so the skill can run vellum:  export PATH=\"$BIN:\$PATH\"" ;;
+    esac
+fi
+
+if [[ -z "${VELLUM_NO_BROWSER:-}" ]]; then
+    uv run --project "$VELLUM_DIR" playwright install chromium-headless-shell
+    if [[ -z "${VELLUM_NO_TOOL:-}" ]]; then
+        "$(uv tool dir --bin)/vellum" setup  # the command's own environment may pin a different Playwright
+    fi
+    echo "Installed headless Chromium for PNG and PDF"
 fi

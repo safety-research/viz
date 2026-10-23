@@ -101,7 +101,7 @@ def figures() -> dict[str, vl.Figure]:
     F["08_hbar_sections"] = vl.hbar(
         [("Base model", 31.0), ("Plain fine-tune (control)", 33.5), ("Worked examples", 18.2), vl.section("Other data"),
          ("Textbook passages", 27.4), ("Forum answers", 36.9), ("Short answers only", 22.6)],
-        colors={"Base model": "dark", "Worked examples": "blue"}, highlight="Worked examples", decimals=0,
+        roles={"reference": "Base model", "intervention": "Worked examples"}, highlight="Worked examples", decimals=0,
         ref=31.0, notes={"Forum answers": "worse than the base model"},
         title="Worked examples cut wrong answers from 31% to 18%")
     F["09_quotes"] = vl.quotes(
@@ -121,15 +121,18 @@ def figures() -> dict[str, vl.Figure]:
     index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
     empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
     F["11_small_multiples"] = vl.panels([
-        vl.bars(prompts, ci=wilson_cis(prompts, 1200), colors=["coral", "sage", "sage", "blue"],
+        vl.bars(prompts, ci=wilson_cis(prompts, 1200),
                 title="(a) Better prompts", **small),
-        vl.bars(bigger, ci=wilson_cis(bigger, 1200), colors=["coral", "sage", "blue", "blue"],
+        vl.bars(bigger, ci=wilson_cis(bigger, 1200),
                 title="(b) A bigger model", **small),
-        vl.bars(index, ci=wilson_cis(index, 1200), colors=["coral", "blue", "blue", "blue", "blue"],
+        vl.bars(index, ci=wilson_cis(index, 1200),
                 title="(c) Search index age", **small),
-        vl.bars(empty, ci=wilson_cis(empty, 1200), colors=["coral", "blue", "light-blue"],
+        vl.bars(empty, ci=wilson_cis(empty, 1200), colors={"Search found nothing": "light-blue"},
                 title="(d) When search finds nothing", **small)],
-        legend={"Closed book": "coral", "Other fixes": "sage", "Search": "blue", "Search that finds nothing": "light-blue"},
+        legend={"Closed book": "coral", "Other fixes": "gray", "Search": "blue", "Search that finds nothing": "light-blue"},
+        roles={"baseline": ["Closed book", "Small model"],
+               "intervention": ["Search", "Small with search", "Both", "Year-old index", "Month-old", "Week-old",
+                                "Live index", "Search answered"]},
         frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
     shares = {m: 100 * won / (won + lost) for m, won, lost in PREFERENCES}
     cis = {m: wilson(won, won + lost) for m, won, lost in PREFERENCES}
@@ -168,7 +171,8 @@ def figures() -> dict[str, vl.Figure]:
         title="Out-of-date facts caused 42 in 100 wrong answers")
     F["17_line_example"] = vl.line(
         {"Worked examples": [31, 26, 21, 17], "Plain fine-tune": [31, 32, 33, 34]}, x=[0, 1, 3, 10],
-        xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, xscale="category", colors=["blue", "coral"],
+        xtick_labels={0: "0", 1: "1M", 3: "3M", 10: "10M"}, xscale="category",
+        roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"},
         bands={"Worked examples": ([27, 22, 17, 13], [35, 30, 25, 21])}, xlabel="Fine-tuning tokens",
         title="Wrong answers fell from 31% to 17% with more worked examples")
     F["18_stacked_example"] = vl.stacked(

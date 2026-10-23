@@ -10,7 +10,7 @@ SKILL = ROOT / "claude" / "skills" / "vellum"
 
 
 def _install(config: Path) -> subprocess.CompletedProcess:
-    env = {**os.environ, "CLAUDE_CONFIG_DIR": str(config), "VELLUM_NO_BROWSER": "1"}
+    env = {**os.environ, "CLAUDE_CONFIG_DIR": str(config), "VELLUM_NO_BROWSER": "1", "VELLUM_NO_TOOL": "1"}
     return subprocess.run(["bash", str(ROOT / "install.sh")], env=env, capture_output=True, text=True, check=False)
 
 
@@ -36,3 +36,9 @@ def test_install_replaces_an_identical_copy_but_keeps_an_edited_one(tmp_path):
     r = _install(tmp_path)
     assert r.returncode == 1 and "differs" in r.stderr
     assert not link.is_symlink() and (link / "SKILL.md").read_text().endswith("A local edit.\n")
+
+
+def test_vellum_path_prints_this_checkout(capsys):
+    from vellum.cli import main
+    assert main(["path"]) == 0
+    assert Path(capsys.readouterr().out.strip()) == ROOT

@@ -45,8 +45,10 @@ def from_spec(spec: dict):
     return CHARTS[kind](spec.pop(first), **spec)
 
 
-def render_file(path: str | Path, out: str | Path | None = None, scale: float | None = None) -> list[Path]:
-    """Render a JSON file holding one spec or a list of specs (each may carry its own "out")."""
+def render_file(path: str | Path, out: str | Path | None = None, scale: float | None = None,
+                figures: bool = False) -> list:
+    """Render a JSON file holding one spec or a list of specs (each may carry its own "out").
+    Returns the written paths, or (path, Figure) pairs with figures=True."""
     p = Path(path)
     raw = json.loads(p.read_text() if str(path) != "-" else __import__("sys").stdin.read())
     specs = raw if isinstance(raw, list) else [raw]
@@ -56,5 +58,7 @@ def render_file(path: str | Path, out: str | Path | None = None, scale: float | 
         if len(specs) > 1 and out and not s.get("out"):
             o = Path(out)
             target = o.with_name(f"{o.stem}-{i + 1}{o.suffix or '.png'}")
-        written.append(from_spec(s).save(target, scale))
+        fig = from_spec(s)
+        p_ = fig.save(target, scale)
+        written.append((p_, fig) if figures else p_)
     return written

@@ -9,7 +9,7 @@ from .. import svg as S
 from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
-from .common import UNSET, as_set, resolve_unit, series_colors
+from .common import UNSET, as_set, plot_height, resolve_unit, series_colors
 
 
 def _series(series, x):
@@ -48,8 +48,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     names = list(data)
     unit, _ = resolve_unit(unit)
     hl = as_set(highlight)
-    base_cols = series_colors(len(names), colors, names) if colors is not None or len(names) > 1 else [th.color("blue")]
-    cols = [c if (not hl or nm in hl) else th.color("gray") for nm, c in zip(names, base_cols)]
+    cols = series_colors(len(names), colors, names, highlight=highlight)
     yvals = [v for pts in data.values() for _, v in pts if v is not None]
     if bands:
         for lo_, hi_ in bands.values():
@@ -57,7 +56,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     xs_all = sorted({p[0] for pts in data.values() for p in pts})
 
     def render(W: float) -> Body:
-        H = height or 340
+        H = height or plot_height()
         fmtv = SC.formatter(fmt, decimals, unit, False, yvals)
         if ticks is not None:
             lo, hi, tk = min(ticks), max(ticks), list(ticks)
@@ -109,7 +108,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
         if ref is not None:
             out.append(S.line(PL, Y(ref), PL + PW, Y(ref), th.MUTED, 1, "4 4"))
             if ref_label:
-                out.append(S.text(PL + 6, Y(ref) - 6, ref_label, 11.5, th.MUTED))
+                out.append(S.text(PL + 6, Y(ref) - 6, ref_label, th.MIN_TEXT, th.MUTED))
         order = [i for i, nm in enumerate(names) if hl and nm not in hl] + [i for i, nm in enumerate(names) if not hl or nm in hl]
         for i in order:
             nm, c = names[i], cols[i]
@@ -141,7 +140,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
                 for e in ends:
                     e[0] -= over
             for yy, nm, c, v in ends:
-                ink = th.mix(c, th.INK, 0.35) if th.luminance(c) > 0.3 else c
+                ink = th.readable(c)  # the series color, darkened only as far as 4.5:1 needs
                 parts = [(nm, {"size": 12.5, "weight": 600, "fill": ink})]
                 if end_values:
                     parts.append((fmtv(v), {"size": 12.5, "fill": th.INK2, "dx": 6}))
