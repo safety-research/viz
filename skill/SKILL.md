@@ -1,6 +1,6 @@
 ---
 name: viz
-description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, stacked, likert, quotes, episodes, chat, tokens, panels) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, tiles, stacked, likert, quotes, episodes, chat, tokens, panels), with templates for AI research and AI safety research figures, and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # viz: house figure style
@@ -78,6 +78,14 @@ If the write-up's folder has a `viz-roles.json`, those roles are already in effe
 use its label names exactly instead of setting your own. Don't hand-pick `colors=`; role names work as colors
 (`legend={"Search": "intervention"}`). One chart can add roles with `roles={...}`, and JSON specs take `"roles"`.
 
+- A chart with one color (one series, or one highlighted bar) takes orange, and heatmaps shade in orange.
+- Several series without roles, such as four models, take orange, blue, sage, purple and ochre in that order.
+  Purple and blue look alike to some color-blind readers, so with four or more, name lines at their ends (`line`
+  does by default) rather than leaning on a legend.
+- Outcomes rather than conditions (right, unsure, wrong; fixed the bug, gave up, special-cased the test) are blue,
+  beige and orange for good, neutral and bad: `colors=["blue", "beige", "coral"]`. This is the one place to pass
+  `colors=`.
+
 ## Order
 
 Put categories in order of their values (`sort=True`, largest first; `sort="asc"` when smaller is better) unless the
@@ -115,7 +123,8 @@ what a word means.
 
 ## Checks and alt text
 
-- Saving a figure prints `viz check` warnings for titles, subtitles, decimals and colors that break these rules.
+- Saving a figure prints `viz check` warnings for titles, subtitles, category order and colors that break these
+  rules.
   Fix every one before you send the figure. `viz check spec.json` checks specs without rendering.
 - In a write-up, use `fig.alt_text()` as the image's alt text: it gives the title and the data in words.
   `viz render --alt` prints it for specs.
@@ -125,8 +134,8 @@ what a word means.
 - Use `frame="blog"` for write-ups.
 - No figure captions at the bottom, in the image or under it in a write-up. What a caption would say goes in
   the text.
-- Colors keep their meaning across a write-up: set them with `viz.set_roles` (see Colors) and keep one accent
-  per figure.
+- Colors keep their meaning across a write-up: set them with `viz.set_roles` (see Colors), and mute what isn't
+  the point.
 - Values are percents by default: pass 37 for 37%, and `unit=""` for scores. Show intervals when a claim
   depends on them, and name them in the subtitle.
 - Numbers must come from the run files. Label fake or example data as such in the subtitle.
