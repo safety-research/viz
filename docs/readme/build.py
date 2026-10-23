@@ -61,17 +61,18 @@ def examples(width: float, thumb: bool = False) -> dict[str, viz.Figure]:
 
 # ---------------------------------------------------------------------------------------------- page pieces
 
-# Every image here reads on GitHub's white page and on its dark one alike, so the README needs no theme switching
-# (GitHub does not always pick the copy that matches the page). The header's words are black and dark gray with a white
-# outline under them, which vanishes on white and keeps them legible on dark; the main button and the icons are
-# orange, which reaches about 4.3:1 on both; the other button and the figures' cards are white; everything else is
-# see-through.
+# The header comes in two copies, dark words for GitHub's white page and light words for its dark one; the README
+# shows them with GitHub's documented <picture> markup, a source for each scheme, so GitHub picks by its own theme.
+# Every other image reads on both pages as it is: the main button and the icons are orange (about 4.3:1 on both),
+# the other button and the figures' cards are white, and everything else is see-through.
+WORDS = {"light": ("#1F2328", "#33302B", "#59636E"), "dark": ("#F0F6FC", "#D1D7E0", "#9198A1")}  # title, tagline, text
 ACCENT = viz.color("coral")
 CARD, BORDER, CARD_INK = "#FFFFFF", "#D1D9E0", "#1F2328"
 SERIF, SANS = "Newsreader, Georgia, serif", "'DM Sans', Helvetica, Arial, sans-serif"
 
 
-def hero() -> str:
+def hero(theme: str) -> str:
+    ink, ink2, muted = WORDS[theme]
     thumbs = examples(260, thumb=True)
     order = ["Representation structure", "Scaling performance", "Cross-model comparison"]  # three, so none is cramped
     cards = "".join(f'<div class="card">{thumbs[k].svg(background=False)}</div>' for k in order)
@@ -79,10 +80,9 @@ def hero() -> str:
 <style>
 .hero{{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px}}
 .left{{width:650px}}
-.left h1,.left h2,.left p{{paint-order:stroke fill;-webkit-text-stroke-color:#FFFFFF;stroke-linejoin:round}}
-.left h1{{font:600 120px/1 {SERIF};letter-spacing:-3px;margin:0 0 14px;color:{CARD_INK};-webkit-text-stroke-width:7px}}
-.left h2{{font:400 34px/1.15 {SERIF};margin:0 0 22px;color:#33302B;white-space:nowrap;-webkit-text-stroke-width:4px}}
-.left p{{font:400 19px/1.55 {SERIF};color:#59636E;margin:0;-webkit-text-stroke-width:3px}}
+.left h1{{font:600 120px/1 {SERIF};letter-spacing:-3px;margin:0 0 14px;color:{ink}}}
+.left h2{{font:400 34px/1.15 {SERIF};margin:0 0 22px;color:{ink2};white-space:nowrap}}
+.left p{{font:400 19px/1.55 {SERIF};color:{muted};margin:0}}
 .fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px;margin-right:20px}}
 .card{{width:150px;height:252px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
   box-shadow:0 14px 30px rgba(31,35,40,.12);transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
@@ -135,7 +135,9 @@ ICONS = {  # 24 x 24 line icons, drawn here so the README needs no icon font
 def main() -> None:
     from viz.theme import strong_fill
     deep = strong_fill("coral")  # the orange deep enough for white text
-    render_html(hero(), OUT / "hero.png", 1200, transparent=True)
+    (OUT / "dark").mkdir(exist_ok=True)
+    render_html(hero("light"), OUT / "hero.png", 1200, transparent=True)
+    render_html(hero("dark"), OUT / "dark" / "hero.png", 1200, transparent=True)
     render_html(row(), OUT / "examples.png", 1200, transparent=True)
     render_html(button("Get started &nbsp;→", deep, "#FFFFFF", deep), OUT / "get-started.png", 400, fit=True,
                 transparent=True)
@@ -145,7 +147,7 @@ def main() -> None:
         (OUT / f"icon-{name}.svg").write_text(
             f'<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" '
             f'stroke="{ACCENT}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{paths}</svg>\n')
-    for p in sorted(OUT.glob("*.png")):
+    for p in sorted(OUT.glob("**/*.png")):
         print(p)
 
 
