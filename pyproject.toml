@@ -3,6 +3,8 @@ name = "viz"
 version = "0.1.0"
 description = "A data visualization library for AI research (white background, Newsreader serif type, gray controls and muted orange, blue, sage, purple and ochre conditions) as a one-call chart library: SVG out, PNG/PDF via headless Chromium"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "src/viz/fonts/OFL-*.txt"]
 requires-python = ">=3.11"
 dependencies = [
     "pillow>=13.0",

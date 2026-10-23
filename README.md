@@ -123,3 +123,8 @@ Several charts in one figure, with one legend.
 - [Guide](docs/guide.md): how to title, color and size a figure, and what the checks flag.
 - [Reference](docs/reference.md): every chart and option, the command line and JSON specs.
 - [Examples](examples/README.md): every template with its code.
+
+## License
+
+MIT. The bundled fonts, Newsreader, DM Sans and JetBrains Mono, are under the SIL Open Font License; their license
+files are in [`src/viz/fonts`](src/viz/fonts).
