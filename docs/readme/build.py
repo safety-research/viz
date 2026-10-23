@@ -62,12 +62,18 @@ def examples(width: float, thumb: bool = False) -> dict[str, viz.Figure]:
 # ---------------------------------------------------------------------------------------------- page pieces
 
 # Every image here reads on GitHub's white page and on its dark one alike, so the README needs no theme switching
-# (GitHub does not always pick the copy that matches the page): the wordmark, the main button and the icons are orange,
-# which reaches about 4.3:1 on both, the other button and the figures' cards are white, and everything else is
-# see-through. The tagline and the description are the README's own text, so they always take the page's colors.
+# (GitHub does not always pick the copy that matches the page): the wordmark is black with a white outline, which
+# vanishes on white and keeps it legible on dark; the main button and the icons are orange, which reaches about 4.3:1
+# on both; the other button and the figures' cards are white; everything else is see-through. The tagline and the
+# description are the README's own text, so they always take the page's colors.
 ACCENT = viz.color("coral")
 CARD, BORDER, CARD_INK = "#FFFFFF", "#D1D9E0", "#1F2328"
 SERIF, SANS = "Newsreader, Georgia, serif", "'DM Sans', Helvetica, Arial, sans-serif"
+
+
+MARK = (f'<svg width="300" height="170" viewBox="0 0 300 170"><text x="8" y="132" font-family="{SERIF}" '
+        f'font-size="150" font-weight="600" letter-spacing="-4" fill="{CARD_INK}" stroke="#FFFFFF" stroke-width="7" '
+        f'stroke-linejoin="round" paint-order="stroke">viz</text></svg>')  # black, its white outline under the fill
 
 
 def hero() -> str:
@@ -77,7 +83,6 @@ def hero() -> str:
     return f"""
 <style>
 .hero{{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px}}
-.mark{{font:600 150px/1 {SERIF};letter-spacing:-4px;color:{ACCENT};margin:0 0 0 2px}}
 .fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px;margin-right:40px}}
 .card{{width:150px;height:252px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
   box-shadow:0 14px 30px rgba(31,35,40,.12);transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
@@ -85,7 +90,7 @@ def hero() -> str:
 .card svg{{width:100%;height:auto}}
 .card svg text{{display:none}}
 </style>
-<div class="hero"><div class="mark">viz</div><div class="fan">{cards}</div></div>"""
+<div class="hero">{MARK}<div class="fan">{cards}</div></div>"""
 
 
 ROW = ["Scaling performance", "Human evaluations", "Representation structure"]  # three, so none is cramped
