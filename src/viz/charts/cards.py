@@ -508,18 +508,9 @@ def _token_scale(rows, scale, domain, center) -> tuple[float, float, float | Non
     return lo, (hi if hi > lo else lo + 1), None
 
 
-def _sig2(v: float) -> str:
-    """Two significant digits without trailing zeros: 2.37 -> 2.4, 0.873 -> 0.87, 1234 -> 1,200, -1.0 -> −1."""
-    if v == 0:
-        return "0"
-    d = 1 - math.floor(math.log10(abs(v)))
-    s = SC.fmt_num(round(v, d), max(d, 0))
-    return s.rstrip("0").rstrip(".") if "." in s else s
-
-
-def _token_fmt(decimals):
-    """The color bar's number format: two significant digits, or a fixed number of decimals."""
-    return _sig2 if decimals is None else (lambda v: SC.fmt_num(v, decimals))
+def _token_fmt(decimals, rows):
+    """The color bar's number format: the decimals the scores have, or a fixed number of decimals."""
+    return SC.formatter(None, decimals, "", False, [v for _, row in rows for _, v in row])
 
 
 def _colorbar(lo: float, hi: float, mid: float, fill, label: str | None, fmt, W: float) -> tuple[str, float, float]:
@@ -571,7 +562,7 @@ def tokens(items, *, scale="diverging", domain=None, center=None, low="coral", h
     """
     rows = _token_rows(items)
     lo, hi, c = _token_scale(rows, scale, domain, center)
-    fmt = _token_fmt(decimals)
+    fmt = _token_fmt(decimals, rows)
     FAM, SIZE = "serif", 16
     BOX, PAD, GAP, RX, LINE_GAP, ROW_GAP, LABEL = 24, 2, 1, 3, 5, 10, 13.5
 

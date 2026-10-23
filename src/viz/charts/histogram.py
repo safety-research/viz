@@ -87,7 +87,7 @@ def histogram(data, *, bins=None, stat="count", color=None, colors=None, domain=
             xlo, xhi = a, b
             xt = SC.ticks(math.ceil(a / st - 1e-9) * st, b, st)
         xfmt = SC.tick_formatter(xt, unit, False, tick_format)
-        vfmt = SC.formatter(fmt, decimals if decimals is not None else (0 if stat == "percent" else None), yunit,
+        vfmt = SC.formatter(fmt, decimals, yunit,
                             False, [h for hs in heights for h in hs])
         lift = values or (ng > 1 and not want_legend)  # labels may sit above the tallest bar
         PL = max((T.width(yfmt(t), th.TICK_SIZE) for t in ytk), default=10) + 14 + (18 if ylabel else 0)

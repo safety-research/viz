@@ -1,12 +1,13 @@
 """Rates by condition.
 
-The baseline and the intervention named by role, with counts as notes.
+One rate per condition, the control and the intervention named by role, with counts as notes.
 """
 import viz
 
+# Reward hacking on 400 coding tasks after RL, under three conditions.
 fig = viz.hbar(
-    {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
-    roles={"baseline": "Closed book", "intervention": "Full documents"},
-    notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-    title="Full documents raised correct answers from 41% to 88%")
+    {"Plain RL": 41, "Hacking penalty": 28, "Inoculation prompt": 12}, highlight="Inoculation prompt",
+    roles={"baseline": "Plain RL", "intervention": "Inoculation prompt"},
+    notes={"Plain RL": "164 of 400", "Hacking penalty": "112 of 400", "Inoculation prompt": "48 of 400"},
+    title="The inoculation prompt cut reward hacking from 41% to 12%")
 fig.save("01_hbar.png")

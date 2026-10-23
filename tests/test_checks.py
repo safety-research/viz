@@ -48,12 +48,6 @@ def test_subtitles_are_off_by_default():
     assert any("No subtitle by default" in p for p in out)
 
 
-def test_extra_digits_are_flagged_unless_they_tell_values_apart():
-    assert any("digits" in p for p in problems("Search cut errors", data={"A": 41.27, "B": 12.4}, decimals=2))
-    assert problems("Search cut errors", data={"A": 38.5, "B": 38.2}, decimals=1) == []  # 38 and 38 would merge
-    assert problems("Ratings rose", data={"A": 5.6, "B": 5.7}, unit="", decimals=1) == []
-
-
 def test_too_many_accents_and_confusable_colors():
     data = {k: v for k, v in zip("ABCDE", [5, 4, 3, 2, 1])}
     many = problems("Five conditions differed", data=data, colors=["coral", "blue", "sage", "navy", "clay"])

@@ -30,7 +30,7 @@ def stacked(data, *, series, colors=None, normalize=False, unit=UNSET, decimals=
     sums = [sum(v or 0 for v in r.values) for r in rows]
 
     def render(W: float) -> Body:
-        fmtv = SC.formatter(fmt, decimals if decimals is not None else (0 if unit == "%" else None), unit, False,
+        fmtv = SC.formatter(fmt, decimals, unit, False,
                             [v for r in rows for v in r.values])
         lo, hi, tk = SC.domain(sums + [0], percent=unit == "%")
         if normalize or (unit == "%" and max(sums) > 95):

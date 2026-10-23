@@ -83,7 +83,7 @@ def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention"
         xfmt = SC.tick_formatter(xt, unit, False, tick_format)
         ytk = [0, 25, 50, 75, 100]
         yfmt = SC.tick_formatter(ytk, "%")
-        vfmt = SC.formatter(fmt, 0 if decimals is None and fmt is None else decimals, "%")
+        vfmt = SC.formatter(fmt, decimals, "%")
         PL = max(T.width(yfmt(t), th.TICK_SIZE) for t in ytk) + 14 + (18 if ylabel else 0)
         PR = max(12.0, T.width(xfmt(xt[-1]), th.TICK_SIZE) / 2 + 2)
         PT, PB = 12, 30 + (24 if xlabel else 0)

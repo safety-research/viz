@@ -83,8 +83,6 @@ def heatmap(data, *, rows=None, cols=None, scale="coral", domain=None, center=No
     else:
         lo, hi = (min(flat), max(flat)) if flat else (0.0, 1.0)
     fmtv = SC.formatter(fmt, decimals, unit, signed, flat)
-    if decimals is None and fmt is None and unit == "%":
-        fmtv = SC.formatter(None, 0, unit, signed)
 
     def fill_of(v):
         return scale_color(v, scale, lo, hi, center, low, high)

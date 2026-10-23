@@ -22,18 +22,20 @@ EXAMPLES = Path(__file__).resolve().parents[2] / "examples"  # the templates liv
 # The templates by the question a figure answers. This order numbers their files (examples/NN_name.py and
 # docs/gallery/NN_name.png) and lays out examples/README.md and the README's gallery.
 SECTIONS = [
-    ("Compare conditions", "One number per condition, or per model and condition, with its interval.",
-     ["hbar", "bars", "bars_runs", "dotplot", "dumbbell", "table"]),
-    ("Show change over training", "A measure over training steps, doses or compute.",
-     ["line_runs", "line_smooth", "line_marks", "line_log", "area"]),
-    ("Show a distribution", "Many values per condition, such as answer lengths, times or scores per item.",
+    ("Comparisons", "Rates across conditions and models, with their intervals.",
+     ["hbar", "bars", "bars_runs", "dotplot", "stacked"]),
+    ("Training dynamics", "A behavior or reward over training steps.", ["line_runs", "line_smooth", "line_marks", "area"]),
+    ("Evaluations", "Many models on many evals, trade-offs and scaling.",
+     ["table", "heatmap", "scatter", "scatter_frontier", "line_log"]),
+    ("Monitors and probes", "How well a monitor, classifier or probe catches a behavior.",
+     ["line_roc", "histogram_scores", "tiles", "line_layers"]),
+    ("Interpretability", "Inside the model: activations, scores on each token, steering.",
+     ["scatter_pca", "tokens", "line_steer"]),
+    ("Self-reports and ratings", "What a model says about itself, and how judges rate it.", ["likert", "dumbbell"]),
+    ("Distributions", "Many values per condition, such as lengths, times or scores per item.",
      ["histogram", "box", "strip"]),
-    ("Show a relationship", "Two measures against each other, or models against conditions.",
-     ["scatter", "scatter_frontier", "heatmap"]),
-    ("Show where outcomes went", "Shares that add up to 100%: outcomes, or answers on a scale.", ["stacked", "likert"]),
-    ("Show what the model did", "Replies, transcripts and token scores, as text.",
-     ["quotes", "episodes", "chat", "tokens"]),
-    ("Lay out several figures", "Panels that share one legend, for a paper figure or a slide.", ["panels"]),
+    ("Transcripts", "What the model said and did.", ["quotes", "episodes", "chat"]),
+    ("Multi-panel figures", "Several charts in one figure, with one legend.", ["panels"]),
 ]
 ORDER = [name for _, _, names in SECTIONS for name in names]
 STEM = {name: f"{i:02d}_{name}" for i, name in enumerate(ORDER, 1)}
@@ -120,8 +122,8 @@ def overview(images: str, link: str, heading: str = "###") -> str:
     """The templates as rows of cards under their section names, each card linking to its code. heading="" sets
     the section names in bold instead of as headings."""
     out = []
-    for title, _, names in SECTIONS:
-        out += [f"{heading} {title}" if heading else f"**{title}**", ""]
+    for title, blurb, names in SECTIONS:
+        out += [f"{heading} {title}" if heading else f"**{title}**", "", blurb, ""]
         out += [f'<a href="{link}#{anchor(about(n))}"><img src="{images}/cards/{STEM[n]}.png" width="32%" '
                 f'alt="{about(n)}"></a>' for n in names]
         out.append("")

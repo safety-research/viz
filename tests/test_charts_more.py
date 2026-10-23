@@ -232,7 +232,7 @@ def test_histogram_percent_and_domain():
 
 def test_box_and_strip_labels_sit_by_their_marks():
     svg = vl.box({"a": [1, 2, 3, 4, 5, 6, 7, 30]}, unit="").svg()
-    assert ">4.50<" in svg  # the median, written beside the box
+    assert ">4.5<" in svg  # the median, written beside the box
     svg = vl.strip({"a": [1.0, 2.0, 6.0]}, unit="", decimals=1).svg()
     assert ">3.0<" in svg  # the mean
     assert ">3.0<" not in vl.strip({"a": [1.0, 2.0, 6.0]}, unit="", decimals=1, values=False).svg()

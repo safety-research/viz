@@ -228,13 +228,13 @@ def test_tokens_reuse_the_heatmap_scales():
 def test_tokens_color_bar():
     fig = viz.tokens(ANSWER, label="Probe score")
     body = fig.render(960).svg
-    assert texts(body)[:4] == ["Probe score", "−2.8", "0", "2.8"]  # symmetric about 0, two significant digits
+    assert texts(body)[:4] == ["Probe score", "−2.8", "0", "2.8"]  # symmetric about 0, as measured
     steps = STEP.findall(body)
     assert steps[0] == th.SCALES["coral"][1] and steps[5] == th.SURFACE and steps[-1] == th.SCALES["blue"][1]
-    assert texts(viz.tokens(ANSWER, decimals=1).render(960).svg)[:3] == ["−2.8", "0.0", "2.8"]
+    assert texts(viz.tokens(ANSWER, decimals=2).render(960).svg)[:3] == ["−2.80", "0", "2.80"]
     seq = viz.tokens([("a", 0.0), ("b", 4.6)], scale="coral", label="Feature activation").render(960).svg
     assert texts(seq)[:4] == ["Feature activation", "0", "2.3", "4.6"]
-    assert texts(viz.tokens([("a", 0.0013), ("b", -1234.0)]).render(960).svg)[:3] == ["−1,200", "0", "1,200"]
+    assert texts(viz.tokens([("a", 0.0013), ("b", -1234.0)]).render(960).svg)[:3] == ["−1,234.000", "0", "1,234.000"]
     # claim frame: the bar on top; blog frame: centered under the text
     first_box = lambda svg: float(BOX.search(svg).group(2))
     first_step = lambda svg: float(re.search(r'<rect x="[\d.]+" y="([\d.]+)" width="16" height="10"', svg).group(1))

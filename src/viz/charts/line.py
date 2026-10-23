@@ -72,7 +72,7 @@ def check_smooth(smooth) -> None:
 def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None, step=None, xticks=None,
          xtick_labels=None, unit=UNSET, xunit="", decimals=None, fmt=None, xlabel=None, ylabel=None, bands=None,
          runs=None, markers=None, end_labels=True, end_values=True, ref=None, ref_label=None, height=None, zero=True,
-         xscale="linear", yscale="linear", smooth=None, marks=None,
+         xscale="linear", yscale="linear", smooth=None, marks=None, diagonal=False,
          title=None, subtitle=None, legend=False, legend_position=None, frame=None, width=None) -> Figure:
     """Line chart.
 
@@ -92,8 +92,11 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     smoothed values; the y axis still covers the raw ones. Markers are off by default when smoothing.
     marks: {x: "label"} draws a thin dashed vertical line at each x with its label above the plot, such as
     {500: "RL starts", 1500: "Checkpoint we chose"}.
+    diagonal: True or a label draws y = x as a dashed line, such as "Chance" on an ROC curve.
     """
     A.check_xscale(xscale)
+    if diagonal and xscale == "category":
+        raise ValueError("diagonal= needs a numeric x axis, not xscale='category'")
     if yscale not in ("linear", "log"):
         raise ValueError(f"yscale={yscale!r}: use 'linear' or 'log'")
     check_smooth(smooth)
@@ -181,6 +184,16 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             out.append(S.line(PL, Y(ref), PL + PW, Y(ref), th.MUTED, 1, "4 4"))
             if ref_label:
                 out.append(S.text(PL + 6, Y(ref) - 6, ref_label, th.MIN_TEXT, th.MUTED))
+        if diagonal:  # y = x across the part of the plot both axes share, labeled along the line
+            a, b = max(min(xs_all + xt), lo), min(max(xs_all + xt), hi)
+            if b > a:
+                out.append(S.line(X(a), Y(a), X(b), Y(b), th.MUTED, 1, "4 4"))
+                if isinstance(diagonal, str):
+                    ang = -math.degrees(math.atan2(Y(a) - Y(b), X(b) - X(a)))
+                    tx, ty = X(a + 0.84 * (b - a)), Y(a + 0.84 * (b - a))
+                    out.append(f'<text transform="translate({S.n(tx)},{S.n(ty)}) rotate({S.n(ang)})" dy="16" '
+                               f'{S.font_attrs(th.MIN_TEXT, "sans", 400, False, th.MUTED)} text-anchor="middle">'
+                               f'{S.esc(diagonal)}</text>')
         order = [i for i, nm in enumerate(names) if hl and nm not in hl] + [i for i, nm in enumerate(names) if not hl or nm in hl]
         for i in order:
             nm, c = names[i], cols[i]

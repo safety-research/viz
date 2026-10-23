@@ -43,13 +43,13 @@ def examples(width: float, thumb: bool = False) -> dict[str, viz.Figure]:
     """thumb=True: the bare marks for the hero's cards (no legends or end labels; the cards hide all text)."""
     return {
         "Scaling performance": viz.line(
-            ACCURACY, x=COMPUTE, xscale="log", bands={k: band(v, 3) for k, v in ACCURACY.items()}, decimals=0,
+            ACCURACY, x=COMPUTE, xscale="log", bands={k: band(v, 3) for k, v in ACCURACY.items()},
             ylabel="Accuracy (%)", xlabel="Compute (FLOPs)", ticks=[0, 20, 40, 60, 80], end_labels=False,
             legend=False if thumb else None, height=230, width=width),
         "Human evaluations": viz.bars(
             {"Helpful": 53, "Harmless": 72, "Honest": 49}, ci={"Helpful": (47, 59), "Harmless": (67, 77),
                                                               "Honest": (44, 55)},
-            colors=["coral", "blue", "sage"], sort=False, decimals=0, ylabel="Win rate (%)",
+            colors=["coral", "blue", "sage"], sort=False, ylabel="Win rate (%)",
             ticks=[0, 20, 40, 60, 80], height=230, width=width),
         "Representation structure": viz.scatter(
             clusters(), xlabel="PC 1", ylabel="PC 2", xticks=[-2, 0, 2], yticks=[-2, 0, 2], height=250, width=width,

@@ -26,10 +26,6 @@ INTENSIFIERS = ("dramatically", "drastically", "sharply", "significantly", "subs
                 "plummeted", "soared", "collapsed", "tanked")
 _SUBTITLE_OK = re.compile(r"^(example data|(the )?(error bars|bars|whiskers|bands?|shaded (area|band))\s+"
                           r"(are|is|show|shows)\s+.*interval.*)$", re.I)
-_NUMBER = re.compile(r"(?<![\w.])[−+-]?\d[\d,]*\.\d+")
-_TEXT = re.compile(r"<text[^>]*>(.*?)</text>", re.S)
-_TAG = re.compile(r"<[^>]+>")
-_TEXT_KINDS = {"quotes", "episodes", "code_card", "chat", "tokens"}  # their numbers are quoted text, not value labels
 
 _history: dict[tuple[str, str], tuple[str, str]] = {}  # (theme, label) -> (color, figure it was first seen in)
 
@@ -143,33 +139,6 @@ def _subtitle(subtitle: str | None) -> list[str]:
             "the text; keep a subtitle only for \"Example data\" or what the error bars are."]
 
 
-def _sig_digits(token: str) -> int:
-    digits = token.replace(",", "").lstrip("−+-").replace(".", "").lstrip("0")
-    return len(digits)
-
-
-def _round2(token: str) -> str:
-    v = float(token.replace(",", "").replace("−", "-"))
-    return f"{v:.2g}"
-
-
-def _decimals(svg: str, skip: set[str]) -> list[str]:
-    texts = [" ".join(_TAG.sub(" ", m).split()) for m in _TEXT.findall(svg)]
-    tokens = [n for t in texts if t and t not in skip for n in _NUMBER.findall(t)]
-    long = [n for n in tokens if _sig_digits(n) > 2]
-    if not long:
-        return []
-    # decimals are fine when rounding to two significant digits would merge values that differ
-    rounded: dict[str, set[str]] = {}
-    for n in tokens:
-        rounded.setdefault(_round2(n), set()).add(n.replace(",", ""))
-    needless = [n for n in long if len(rounded[_round2(n)]) == 1]
-    if not needless:
-        return []
-    return [f"Values like {needless[0]} carry more digits than the comparison needs; round to two significant "
-            "digits (decimals=0 for percents above 10)."]
-
-
 def _neutral(hex_: str) -> bool:
     L, a, b = access._lab(hex_)
     return (a * a + b * b) ** 0.5 < 8 or L > 85  # grays, beiges and pale tints are context, not accents
@@ -272,10 +241,7 @@ def check(fig, name: str = "an earlier figure", record: bool = False) -> list[st
     for child in fig.meta.get("children", []):
         issues += [f"Panel \"{child.title or '?'}\": {p}" for p in _title(child.title, child.kind, panel=True)
                    + _subtitle(child.subtitle)]
-    svg = fig.svg()  # composes the figure, which also logs the colors it draws
-    if fig.kind not in _TEXT_KINDS:
-        skip = {fig.title or "", fig.subtitle or ""}
-        issues += _decimals(svg, skip)
+    fig.svg()  # composes the figure, which also logs the colors it draws
     assigned = list(fig.meta.get("colors_made", [])) + list(fig.meta.get("colors_drawn", []))
     for child in fig.meta.get("children", []):
         assigned += list(child.meta.get("colors_made", []))

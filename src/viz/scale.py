@@ -67,10 +67,13 @@ def ticks(lo: float, hi: float, step: float) -> list[float]:
 
 
 def decimals_for(values: Iterable[float | None], unit: str = "") -> int:
-    vals = [v for v in values if v is not None]
-    if all(float(v).is_integer() for v in vals):
-        return 0
-    return 1 if unit == "%" else 2
+    """The decimals the values have, up to 3, so a label never rounds what was measured: 27.5 stays 27.5."""
+    d = 0
+    for v in values:
+        if v is not None:
+            s = f"{float(v):.6f}".rstrip("0").rstrip(".")  # six places drop float noise (0.30000000000000004)
+            d = max(d, len(s.split(".")[1]) if "." in s else 0)
+    return min(d, 3)
 
 
 def fmt_num(v: float, decimals: int = 0, unit: str = "", signed: bool = False, thousands: bool = True) -> str:
@@ -86,12 +89,17 @@ def fmt_num(v: float, decimals: int = 0, unit: str = "", signed: bool = False, t
 
 def formatter(fmt: str | Callable[[float], str] | None = None, decimals: int | None = None, unit: str = "",
               signed: bool = False, values: Iterable[float | None] = ()) -> Callable[[float], str]:
-    """Value-label formatter: a format string ('{:.1f}%'), a callable, or automatic decimals + unit."""
+    """Value-label formatter: a format string ('{:.1f}%'), a callable, or the decimals the values have (up to 3),
+    the same for every label. It never rounds for the reader: decimals= is the author's choice. Without values, each
+    number keeps its own decimals."""
     if callable(fmt):
         return fmt
     if isinstance(fmt, str):
         return lambda v: fmt.format(v)
-    d = decimals_for(values, unit) if decimals is None else decimals
+    vals = [v for v in values if v is not None]
+    if decimals is None and not vals:
+        return lambda v: f"0{unit}" if v == 0 else fmt_num(v, decimals_for([v]), unit, signed)
+    d = decimals_for(vals, unit) if decimals is None else decimals
     return lambda v: f"0{unit}" if v == 0 else fmt_num(v, d, unit, signed)
 
 

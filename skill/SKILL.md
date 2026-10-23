@@ -34,25 +34,27 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 
 ## Pick the chart
 
-The templates in `examples/` are grouped by the question a figure answers and named after the chart they show
-(`01_hbar.py`, `03_bars_runs.py`, ...); copy the closest one.
+The templates in `examples/` are grouped by the research question a figure answers and named after the chart they
+show (`01_hbar.py`, `15_line_roc.py`, ...); copy the closest one.
 
-- **Compare conditions.** Rates by condition: `hbar`, with `notes=` for "352 of 400", `ci=` for intervals and
-  `ref=` for a reference line. Each model with and without the intervention: `bars`. Several runs or seeds: never
-  show one run when there are more; show the mean with every run as a dot, `bars(..., runs={label: [v, ...]})`
-  (template `bars_runs`). An effect with its interval per model, against zero: `dotplot`. Before and after per
-  model: `dumbbell`. A results table with the best per column bold: `table`.
-- **Show change over training.** `line`, with `runs=` for every run faint behind the mean (template `line_runs`),
-  `smooth=0.9` for a noisy curve (raw values faint behind the moving average), `marks={step: "RL starts"}` for
-  events and `yscale="log"` for loss against compute. Shares over training: `area(..., normalize=True)`.
-- **Show a distribution.** `histogram`; `box` for many items per group; `strip` for a few, one dot each.
-- **Show a relationship.** One dot per dataset or model: `scatter`; `frontier="upper-left"` draws the Pareto
-  frontier for score against cost. Models by conditions: `heatmap`.
-- **Show where outcomes went.** `stacked`. Answers on a scale, such as a −3 to +3 self-report: `likert`.
-- **Show what the model did.** `quotes` for contrasting replies, `episodes` for transcripts side by side, `chat`
-  for a conversation turn by turn (`highlight=` and `notes=` mark the turn that matters), `tokens` for a score on
-  every token (a probe, an attribution).
-- **Lay out several figures.** `panels([...], cols=2)` for several comparisons with one legend.
+- **Comparisons.** Rates by condition: `hbar`, with `notes=` for "352 of 400" and `ci=` for intervals. Each model
+  without and with the intervention: `bars`. Several runs or seeds: never show one run when there are more; show the
+  mean with every run as a dot, `bars(..., runs=...)`. Each model's effect with its interval, against zero:
+  `dotplot`. Where the outcomes went: `stacked`.
+- **Training dynamics.** `line` with `runs=` for every seed faint behind the mean, `smooth=0.9` for a noisy reward,
+  `marks={step: "RL starts"}` for events; shares over training with `area(..., normalize=True)`.
+- **Evaluations.** A results table with the best per column bold: `table`. Models against evals or attacks:
+  `heatmap`. Two measures per model: `scatter`, with `frontier="upper-left"` for a trade-off frontier. Scaling:
+  `line(..., xscale="log", yscale="log")`.
+- **Monitors and probes.** ROC curves: `line(..., diagonal="Chance")`. Scores on two classes: `histogram`. A
+  confusion matrix: `tiles`. Probe accuracy by layer: `line` with a `ref=` line at chance.
+- **Interpretability.** Activations in 2D: `scatter` with groups. A score on every token: `tokens`. Steering
+  strength: `line(..., xscale="category")`.
+- **Self-reports and ratings.** Answers on a −3..+3 scale: `likert`. Ratings before and after: `dumbbell`.
+- **Distributions.** `histogram`; `box` for many items per group; `strip` for a few, one dot each.
+- **Transcripts.** `quotes` for contrasting replies, `episodes` for transcripts side by side, `chat` for an agent's
+  turns and tool calls.
+- **Multi-panel figures.** `panels([...], cols=2)` for several comparisons with one legend.
 
 ## Size
 
@@ -102,8 +104,9 @@ bars are ("Error bars are 95% intervals"). The measure and unit go in the axis l
 chart has no axis label. Sample sizes, methods, training details (steps, seeds, layers) and model names go in the
 text. If the measure needs a sentence to explain, show a simpler measure.
 
-Labels: two significant digits (41%, not 41.3%), and one name per condition, the same in every figure and in the
-text.
+Numbers as measured: viz prints each value with the digits it has and never rounds it, and a title quotes the
+numbers the figure shows; never round them for the reader. One name per condition, the same in every figure and in
+the text.
 
 Check: read the title alone. Someone outside the project should be able to repeat the finding without asking
 what a word means.

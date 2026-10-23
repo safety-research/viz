@@ -115,7 +115,7 @@ def cells(rows, columns=None, better=None, unit=UNSET, decimals=None, fmt=None, 
         u = units[j][0]
         d = decs[j]
         if d is None and fmts[j] is None:
-            d = 0 if u == "%" else SC.decimals_for(vals, u)  # percents in whole numbers, as the heatmap writes them
+            d = SC.decimals_for(vals, u)  # the decimals the values have, never fewer
         f = SC.formatter(fmts[j], d, u, signed, vals)
         for r in data_rows:
             text[id(r)][j] = DASH if r.values[j] is None else f(r.values[j])

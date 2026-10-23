@@ -27,13 +27,13 @@ gh repo clone safety-research/viz && viz/install.sh
 ```python
 import viz
 
-viz.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents",
-         decimals=0, roles={"control": "Closed book", "intervention": "Full documents"},
-         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-         title="Full documents raised correct answers from 41% to 88%").save("fig.png")
+viz.hbar({"Plain RL": 41, "Hacking penalty": 28, "Inoculation prompt": 12}, highlight="Inoculation prompt",
+         roles={"control": "Plain RL", "intervention": "Inoculation prompt"},
+         notes={"Plain RL": "164 of 400", "Hacking penalty": "112 of 400", "Inoculation prompt": "48 of 400"},
+         title="The inoculation prompt cut reward hacking from 41% to 12%").save("fig.png")
 ```
 
-![Full documents raised correct answers from 41% to 88%](docs/gallery/01_hbar.png)
+![The inoculation prompt cut reward hacking from 41% to 12%](docs/gallery/01_hbar.png)
 
 `.save()` writes PNG, PDF, SVG or HTML, by the file's extension.
 
@@ -43,50 +43,80 @@ Every figure is a template for one kind of question. Click one for its code, cop
 Every number here is made up, and error bars and bands are 95% intervals.
 
 <!-- gallery: generated from src/viz/gallery.py -->
-### Compare conditions
+### Comparisons
+
+Rates across conditions and models, with their intervals.
 
 <a href="examples/README.md#rates-by-condition"><img src="docs/gallery/cards/01_hbar.png" width="32%" alt="Rates by condition"></a>
-<a href="examples/README.md#with-and-without-per-model"><img src="docs/gallery/cards/02_bars.png" width="32%" alt="With and without, per model"></a>
-<a href="examples/README.md#every-run-as-a-dot"><img src="docs/gallery/cards/03_bars_runs.png" width="32%" alt="Every run as a dot"></a>
-<a href="examples/README.md#effects-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="32%" alt="Effects with intervals"></a>
-<a href="examples/README.md#before-and-after"><img src="docs/gallery/cards/05_dumbbell.png" width="32%" alt="Before and after"></a>
-<a href="examples/README.md#results-table"><img src="docs/gallery/cards/06_table.png" width="32%" alt="Results table"></a>
+<a href="examples/README.md#grouped-bars"><img src="docs/gallery/cards/02_bars.png" width="32%" alt="Grouped bars"></a>
+<a href="examples/README.md#bars-with-every-seed"><img src="docs/gallery/cards/03_bars_runs.png" width="32%" alt="Bars with every seed"></a>
+<a href="examples/README.md#effect-sizes-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="32%" alt="Effect sizes with intervals"></a>
+<a href="examples/README.md#outcome-breakdown"><img src="docs/gallery/cards/05_stacked.png" width="32%" alt="Outcome breakdown"></a>
 
-### Show change over training
+### Training dynamics
 
-<a href="examples/README.md#training-curves"><img src="docs/gallery/cards/07_line_runs.png" width="32%" alt="Training curves"></a>
-<a href="examples/README.md#noisy-curves-smoothed"><img src="docs/gallery/cards/08_line_smooth.png" width="32%" alt="Noisy curves, smoothed"></a>
-<a href="examples/README.md#events-on-a-curve"><img src="docs/gallery/cards/09_line_marks.png" width="32%" alt="Events on a curve"></a>
-<a href="examples/README.md#scaling-on-log-axes"><img src="docs/gallery/cards/10_line_log.png" width="32%" alt="Scaling on log axes"></a>
-<a href="examples/README.md#shares-over-training"><img src="docs/gallery/cards/11_area.png" width="32%" alt="Shares over training"></a>
+A behavior or reward over training steps.
 
-### Show a distribution
+<a href="examples/README.md#curves-with-every-seed"><img src="docs/gallery/cards/06_line_runs.png" width="32%" alt="Curves with every seed"></a>
+<a href="examples/README.md#smoothed-rl-reward"><img src="docs/gallery/cards/07_line_smooth.png" width="32%" alt="Smoothed RL reward"></a>
+<a href="examples/README.md#events-on-a-curve"><img src="docs/gallery/cards/08_line_marks.png" width="32%" alt="Events on a curve"></a>
+<a href="examples/README.md#shares-over-training"><img src="docs/gallery/cards/09_area.png" width="32%" alt="Shares over training"></a>
 
-<a href="examples/README.md#two-distributions"><img src="docs/gallery/cards/12_histogram.png" width="32%" alt="Two distributions"></a>
-<a href="examples/README.md#box-plots"><img src="docs/gallery/cards/13_box.png" width="32%" alt="Box plots"></a>
-<a href="examples/README.md#one-dot-per-item"><img src="docs/gallery/cards/14_strip.png" width="32%" alt="One dot per item"></a>
+### Evaluations
 
-### Show a relationship
+Many models on many evals, trade-offs and scaling.
 
-<a href="examples/README.md#one-dot-per-dataset"><img src="docs/gallery/cards/15_scatter.png" width="32%" alt="One dot per dataset"></a>
-<a href="examples/README.md#score-against-cost"><img src="docs/gallery/cards/16_scatter_frontier.png" width="32%" alt="Score against cost"></a>
-<a href="examples/README.md#models-by-conditions"><img src="docs/gallery/cards/17_heatmap.png" width="32%" alt="Models by conditions"></a>
+<a href="examples/README.md#results-table"><img src="docs/gallery/cards/10_table.png" width="32%" alt="Results table"></a>
+<a href="examples/README.md#attacks-by-model"><img src="docs/gallery/cards/11_heatmap.png" width="32%" alt="Attacks by model"></a>
+<a href="examples/README.md#two-measures-per-model"><img src="docs/gallery/cards/12_scatter.png" width="32%" alt="Two measures per model"></a>
+<a href="examples/README.md#trade-off-frontier"><img src="docs/gallery/cards/13_scatter_frontier.png" width="32%" alt="Trade-off frontier"></a>
+<a href="examples/README.md#scaling-law"><img src="docs/gallery/cards/14_line_log.png" width="32%" alt="Scaling law"></a>
 
-### Show where outcomes went
+### Monitors and probes
 
-<a href="examples/README.md#where-outcomes-went"><img src="docs/gallery/cards/18_stacked.png" width="32%" alt="Where outcomes went"></a>
-<a href="examples/README.md#answers-on-a-scale"><img src="docs/gallery/cards/19_likert.png" width="32%" alt="Answers on a scale"></a>
+How well a monitor, classifier or probe catches a behavior.
 
-### Show what the model did
+<a href="examples/README.md#roc-curves"><img src="docs/gallery/cards/15_line_roc.png" width="32%" alt="ROC curves"></a>
+<a href="examples/README.md#score-distributions"><img src="docs/gallery/cards/16_histogram_scores.png" width="32%" alt="Score distributions"></a>
+<a href="examples/README.md#confusion-matrix"><img src="docs/gallery/cards/17_tiles.png" width="32%" alt="Confusion matrix"></a>
+<a href="examples/README.md#probe-accuracy-by-layer"><img src="docs/gallery/cards/18_line_layers.png" width="32%" alt="Probe accuracy by layer"></a>
 
-<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/20_quotes.png" width="32%" alt="Contrasting replies"></a>
-<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/21_episodes.png" width="32%" alt="Transcripts side by side"></a>
-<a href="examples/README.md#a-conversation-turn-by-turn"><img src="docs/gallery/cards/22_chat.png" width="32%" alt="A conversation, turn by turn"></a>
-<a href="examples/README.md#scores-on-each-token"><img src="docs/gallery/cards/23_tokens.png" width="32%" alt="Scores on each token"></a>
+### Interpretability
 
-### Lay out several figures
+Inside the model: activations, scores on each token, steering.
 
-<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/24_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="examples/README.md#activations-in-2d"><img src="docs/gallery/cards/19_scatter_pca.png" width="32%" alt="Activations in 2D"></a>
+<a href="examples/README.md#token-scores"><img src="docs/gallery/cards/20_tokens.png" width="32%" alt="Token scores"></a>
+<a href="examples/README.md#steering-strength"><img src="docs/gallery/cards/21_line_steer.png" width="32%" alt="Steering strength"></a>
+
+### Self-reports and ratings
+
+What a model says about itself, and how judges rate it.
+
+<a href="examples/README.md#self-reports-on-a-scale"><img src="docs/gallery/cards/22_likert.png" width="32%" alt="Self-reports on a scale"></a>
+<a href="examples/README.md#ratings-before-and-after"><img src="docs/gallery/cards/23_dumbbell.png" width="32%" alt="Ratings before and after"></a>
+
+### Distributions
+
+Many values per condition, such as lengths, times or scores per item.
+
+<a href="examples/README.md#histogram"><img src="docs/gallery/cards/24_histogram.png" width="32%" alt="Histogram"></a>
+<a href="examples/README.md#box-plot"><img src="docs/gallery/cards/25_box.png" width="32%" alt="Box plot"></a>
+<a href="examples/README.md#dots-per-item"><img src="docs/gallery/cards/26_strip.png" width="32%" alt="Dots per item"></a>
+
+### Transcripts
+
+What the model said and did.
+
+<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/27_quotes.png" width="32%" alt="Contrasting replies"></a>
+<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/28_episodes.png" width="32%" alt="Transcripts side by side"></a>
+<a href="examples/README.md#agent-with-tool-calls"><img src="docs/gallery/cards/29_chat.png" width="32%" alt="Agent with tool calls"></a>
+
+### Multi-panel figures
+
+Several charts in one figure, with one legend.
+
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/30_panels.png" width="32%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more

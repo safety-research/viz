@@ -81,7 +81,7 @@ def _distribution(kind: str, flat: str | None, stat: str = "median", default_uni
     def describe(data, series=None, unit=default_unit, decimals=None, fmt=None, **_):
         from .charts.dist import mean, samples, tukey
         labels, vals, ns, _names = samples(data, series, flat_label=flat)
-        f = _fmt([v for g in vals for s in g for v in s], unit, decimals, fmt)
+        f = _fmt([], unit, decimals, fmt)  # each statistic with its own digits: a mean of 27.5 stays 27.5
         parts = []
         for lab, groups in zip(labels, vals):
             for j, s in enumerate(groups):
@@ -162,8 +162,7 @@ def _area(series, x=None, normalize=False, unit=UNSET, decimals=None, fmt=None, 
           marks=None, **_):
     from .charts.area import _stack
     names, xs, vals = _stack(series, x, normalize)
-    pct = resolve_unit(unit)[0] == "%" and decimals is None and fmt is None
-    f = _fmt([v for row in vals for v in row], unit, 0 if pct else decimals, fmt)  # percents to whole numbers
+    f = _fmt([v for row in vals for v in row], unit, decimals, fmt)
     xl = _x_words(xtick_labels)
     parts = []
     for nm, row in zip(names, vals):
@@ -292,7 +291,7 @@ def _tokens(items, scale="diverging", domain=None, center=None, label=None, deci
     from .charts.cards import _token_fmt, _token_rows, _token_scale
     rows = _token_rows(items)
     lo, hi, c = _token_scale(rows, scale, domain, center)
-    f = _token_fmt(decimals)
+    f = _token_fmt(decimals, rows)
     what = label[0].lower() + label[1:] if label and label[1:2].islower() else (label or "value")  # not "KL" -> "kL"
     name = lambda t: t.strip() or ("line break" if "\n" in t else "space")
     listed = lambda xs: ", ".join(f"“{name(t)}” {f(v)}" for v, _i, t in xs)

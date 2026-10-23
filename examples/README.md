@@ -6,58 +6,88 @@ bands are 95% intervals. Run one with `uv run --with-editable "$(viz path)" pyth
 This page is generated from the scripts (`viz gallery --examples examples/README.md`), so edit them,
 not this page.
 
-**Compare conditions**
+**Comparisons**
+
+Rates across conditions and models, with their intervals.
 
 <a href="#rates-by-condition"><img src="../docs/gallery/cards/01_hbar.png" width="32%" alt="Rates by condition"></a>
-<a href="#with-and-without-per-model"><img src="../docs/gallery/cards/02_bars.png" width="32%" alt="With and without, per model"></a>
-<a href="#every-run-as-a-dot"><img src="../docs/gallery/cards/03_bars_runs.png" width="32%" alt="Every run as a dot"></a>
-<a href="#effects-with-intervals"><img src="../docs/gallery/cards/04_dotplot.png" width="32%" alt="Effects with intervals"></a>
-<a href="#before-and-after"><img src="../docs/gallery/cards/05_dumbbell.png" width="32%" alt="Before and after"></a>
-<a href="#results-table"><img src="../docs/gallery/cards/06_table.png" width="32%" alt="Results table"></a>
+<a href="#grouped-bars"><img src="../docs/gallery/cards/02_bars.png" width="32%" alt="Grouped bars"></a>
+<a href="#bars-with-every-seed"><img src="../docs/gallery/cards/03_bars_runs.png" width="32%" alt="Bars with every seed"></a>
+<a href="#effect-sizes-with-intervals"><img src="../docs/gallery/cards/04_dotplot.png" width="32%" alt="Effect sizes with intervals"></a>
+<a href="#outcome-breakdown"><img src="../docs/gallery/cards/05_stacked.png" width="32%" alt="Outcome breakdown"></a>
 
-**Show change over training**
+**Training dynamics**
 
-<a href="#training-curves"><img src="../docs/gallery/cards/07_line_runs.png" width="32%" alt="Training curves"></a>
-<a href="#noisy-curves-smoothed"><img src="../docs/gallery/cards/08_line_smooth.png" width="32%" alt="Noisy curves, smoothed"></a>
-<a href="#events-on-a-curve"><img src="../docs/gallery/cards/09_line_marks.png" width="32%" alt="Events on a curve"></a>
-<a href="#scaling-on-log-axes"><img src="../docs/gallery/cards/10_line_log.png" width="32%" alt="Scaling on log axes"></a>
-<a href="#shares-over-training"><img src="../docs/gallery/cards/11_area.png" width="32%" alt="Shares over training"></a>
+A behavior or reward over training steps.
 
-**Show a distribution**
+<a href="#curves-with-every-seed"><img src="../docs/gallery/cards/06_line_runs.png" width="32%" alt="Curves with every seed"></a>
+<a href="#smoothed-rl-reward"><img src="../docs/gallery/cards/07_line_smooth.png" width="32%" alt="Smoothed RL reward"></a>
+<a href="#events-on-a-curve"><img src="../docs/gallery/cards/08_line_marks.png" width="32%" alt="Events on a curve"></a>
+<a href="#shares-over-training"><img src="../docs/gallery/cards/09_area.png" width="32%" alt="Shares over training"></a>
 
-<a href="#two-distributions"><img src="../docs/gallery/cards/12_histogram.png" width="32%" alt="Two distributions"></a>
-<a href="#box-plots"><img src="../docs/gallery/cards/13_box.png" width="32%" alt="Box plots"></a>
-<a href="#one-dot-per-item"><img src="../docs/gallery/cards/14_strip.png" width="32%" alt="One dot per item"></a>
+**Evaluations**
 
-**Show a relationship**
+Many models on many evals, trade-offs and scaling.
 
-<a href="#one-dot-per-dataset"><img src="../docs/gallery/cards/15_scatter.png" width="32%" alt="One dot per dataset"></a>
-<a href="#score-against-cost"><img src="../docs/gallery/cards/16_scatter_frontier.png" width="32%" alt="Score against cost"></a>
-<a href="#models-by-conditions"><img src="../docs/gallery/cards/17_heatmap.png" width="32%" alt="Models by conditions"></a>
+<a href="#results-table"><img src="../docs/gallery/cards/10_table.png" width="32%" alt="Results table"></a>
+<a href="#attacks-by-model"><img src="../docs/gallery/cards/11_heatmap.png" width="32%" alt="Attacks by model"></a>
+<a href="#two-measures-per-model"><img src="../docs/gallery/cards/12_scatter.png" width="32%" alt="Two measures per model"></a>
+<a href="#trade-off-frontier"><img src="../docs/gallery/cards/13_scatter_frontier.png" width="32%" alt="Trade-off frontier"></a>
+<a href="#scaling-law"><img src="../docs/gallery/cards/14_line_log.png" width="32%" alt="Scaling law"></a>
 
-**Show where outcomes went**
+**Monitors and probes**
 
-<a href="#where-outcomes-went"><img src="../docs/gallery/cards/18_stacked.png" width="32%" alt="Where outcomes went"></a>
-<a href="#answers-on-a-scale"><img src="../docs/gallery/cards/19_likert.png" width="32%" alt="Answers on a scale"></a>
+How well a monitor, classifier or probe catches a behavior.
 
-**Show what the model did**
+<a href="#roc-curves"><img src="../docs/gallery/cards/15_line_roc.png" width="32%" alt="ROC curves"></a>
+<a href="#score-distributions"><img src="../docs/gallery/cards/16_histogram_scores.png" width="32%" alt="Score distributions"></a>
+<a href="#confusion-matrix"><img src="../docs/gallery/cards/17_tiles.png" width="32%" alt="Confusion matrix"></a>
+<a href="#probe-accuracy-by-layer"><img src="../docs/gallery/cards/18_line_layers.png" width="32%" alt="Probe accuracy by layer"></a>
 
-<a href="#contrasting-replies"><img src="../docs/gallery/cards/20_quotes.png" width="32%" alt="Contrasting replies"></a>
-<a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/21_episodes.png" width="32%" alt="Transcripts side by side"></a>
-<a href="#a-conversation-turn-by-turn"><img src="../docs/gallery/cards/22_chat.png" width="32%" alt="A conversation, turn by turn"></a>
-<a href="#scores-on-each-token"><img src="../docs/gallery/cards/23_tokens.png" width="32%" alt="Scores on each token"></a>
+**Interpretability**
 
-**Lay out several figures**
+Inside the model: activations, scores on each token, steering.
 
-<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/24_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="#activations-in-2d"><img src="../docs/gallery/cards/19_scatter_pca.png" width="32%" alt="Activations in 2D"></a>
+<a href="#token-scores"><img src="../docs/gallery/cards/20_tokens.png" width="32%" alt="Token scores"></a>
+<a href="#steering-strength"><img src="../docs/gallery/cards/21_line_steer.png" width="32%" alt="Steering strength"></a>
 
-## Compare conditions
+**Self-reports and ratings**
 
-One number per condition, or per model and condition, with its interval.
+What a model says about itself, and how judges rate it.
+
+<a href="#self-reports-on-a-scale"><img src="../docs/gallery/cards/22_likert.png" width="32%" alt="Self-reports on a scale"></a>
+<a href="#ratings-before-and-after"><img src="../docs/gallery/cards/23_dumbbell.png" width="32%" alt="Ratings before and after"></a>
+
+**Distributions**
+
+Many values per condition, such as lengths, times or scores per item.
+
+<a href="#histogram"><img src="../docs/gallery/cards/24_histogram.png" width="32%" alt="Histogram"></a>
+<a href="#box-plot"><img src="../docs/gallery/cards/25_box.png" width="32%" alt="Box plot"></a>
+<a href="#dots-per-item"><img src="../docs/gallery/cards/26_strip.png" width="32%" alt="Dots per item"></a>
+
+**Transcripts**
+
+What the model said and did.
+
+<a href="#contrasting-replies"><img src="../docs/gallery/cards/27_quotes.png" width="32%" alt="Contrasting replies"></a>
+<a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/28_episodes.png" width="32%" alt="Transcripts side by side"></a>
+<a href="#agent-with-tool-calls"><img src="../docs/gallery/cards/29_chat.png" width="32%" alt="Agent with tool calls"></a>
+
+**Multi-panel figures**
+
+Several charts in one figure, with one legend.
+
+<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/30_panels.png" width="32%" alt="Panels with one legend"></a>
+
+## Comparisons
+
+Rates across conditions and models, with their intervals.
 
 ### Rates by condition
 
-The baseline and the intervention named by role, with counts as notes.
+One rate per condition, the control and the intervention named by role, with counts as notes.
 
 ![Rates by condition](../docs/gallery/01_hbar.png)
 
@@ -66,171 +96,144 @@ The baseline and the intervention named by role, with counts as notes.
 ```python
 import viz
 
+# Reward hacking on 400 coding tasks after RL, under three conditions.
 fig = viz.hbar(
-    {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
-    roles={"baseline": "Closed book", "intervention": "Full documents"},
-    notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
-    title="Full documents raised correct answers from 41% to 88%")
+    {"Plain RL": 41, "Hacking penalty": 28, "Inoculation prompt": 12}, highlight="Inoculation prompt",
+    roles={"baseline": "Plain RL", "intervention": "Inoculation prompt"},
+    notes={"Plain RL": "164 of 400", "Hacking penalty": "112 of 400", "Inoculation prompt": "48 of 400"},
+    title="The inoculation prompt cut reward hacking from 41% to 12%")
 fig.save("01_hbar.png")
 ```
 
-### With and without, per model
+### Grouped bars
 
-Each model's result without and with the intervention.
+Each model's rate without and with the intervention.
 
-![With and without, per model](../docs/gallery/02_bars.png)
+![Grouped bars](../docs/gallery/02_bars.png)
 
 [`02_bars.py`](02_bars.py)
 
 ```python
 import viz
 
-# Share of 200 questions answered wrong: closed book, with search.
-wrong = {
+# Share of 200 harmful requests each model complied with: no system prompt, safety system prompt.
+complied = {
     "Model A": [12.5, 4.0], "Model B": [18.0, 5.5], "Model C": [22.5, 6.0], "Model D": [27.0, 8.5],
     "Model E": [31.5, 7.0], "Model F": [35.0, 9.5], "Model G": [41.5, 11.0], "Model H": [46.0, 10.5],
     "Model I": [52.5, 14.0], "Model J": [58.0, 12.5],
 }
 fig = viz.bars(
-    wrong, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
-    roles={"baseline": "Closed book", "intervention": "With search"},
-    title="Search cut wrong answers for all ten models")
+    complied, series=["No system prompt", "Safety system prompt"], ylabel="Harmful requests complied with",
+    frame="blog", roles={"baseline": "No system prompt", "intervention": "Safety system prompt"},
+    title="The safety system prompt cut harmful compliance for all ten models")
 fig.save("02_bars.png")
 ```
 
-### Every run as a dot
+### Bars with every seed
 
 The mean over training runs, with each run (seed) as a dot.
 
-![Every run as a dot](../docs/gallery/03_bars_runs.png)
+![Bars with every seed](../docs/gallery/03_bars_runs.png)
 
 [`03_bars_runs.py`](03_bars_runs.py)
 
 ```python
 import viz
 
-# Share of 400 questions answered wrong after fine-tuning, one value per training run (seed).
+# Share of 400 prompts answered sycophantically after fine-tuning, one value per training run (seed).
 runs = {
-    "Plain fine-tune": [33.0, 35.5, 31.0, 36.0, 34.5], "Half the worked examples": [24.0, 27.5, 22.0, 26.0, 25.5],
-    "Worked examples": [17.5, 21.0, 19.0, 18.0, 20.5],
+    "Plain fine-tune": [33.0, 35.5, 31.0, 36.0, 34.5], "Half the honesty data": [24.0, 27.5, 22.0, 26.0, 25.5],
+    "Honesty data": [17.5, 21.0, 19.0, 18.0, 20.5],
 }
 fig = viz.bars(
     {arm: sum(r) / len(r) for arm, r in runs.items()}, runs=runs,
-    roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, ref=31, ref_label="Base model",
-    decimals=0, ylabel="Questions answered wrong",
-    title="Worked examples cut wrong answers from 34% to 19% in every run")
+    roles={"baseline": "Plain fine-tune", "intervention": "Honesty data"}, ref=31, ref_label="Base model",
+    ylabel="Sycophantic answers",
+    title="Honesty data cut sycophancy from 34.0% to 19.2% in every run")
 fig.save("03_bars_runs.png")
 ```
 
-### Effects with intervals
+### Effect sizes with intervals
 
-Each model's effect with its 95% interval, against zero.
+Each model's change with its 95% interval, against zero.
 
-![Effects with intervals](../docs/gallery/04_dotplot.png)
+![Effect sizes with intervals](../docs/gallery/04_dotplot.png)
 
 [`04_dotplot.py`](04_dotplot.py)
 
 ```python
 import viz
 
-# The change in wrong answers with search (percentage points) and its 95% interval, per model.
+# The change in blackmail rate when the model was given an exit option (percentage points), with its 95% interval.
 change = {"Model A": -8.5, "Model B": -12.5, "Model C": -16.5, "Model D": -18.5, "Model E": -24.5,
           "Model F": -25.5, "Model G": -30.5, "Model H": -35.5, "Model I": -38.5, "Model J": -45.5}
 ci = {"Model A": (-13.8, -3.2), "Model B": (-18.7, -6.3), "Model C": (-23.2, -9.8), "Model D": (-25.8, -11.2),
       "Model E": (-31.8, -17.2), "Model F": (-33.3, -17.7), "Model G": (-38.6, -22.4), "Model H": (-43.6, -27.4),
       "Model I": (-46.9, -30.1), "Model J": (-53.7, -37.3)}
 fig = viz.dotplot(
-    change, ci=ci, ref=0, unit="", decimals=0, xlabel="Change in wrong answers with search (percentage points)",
-    title="Search cut each model's wrong answers by 8 to 46 points")
+    change, ci=ci, ref=0, unit="", xlabel="Change in blackmail rate with an exit option (percentage points)",
+    title="An exit option cut each model's blackmail by 8.5 to 45.5 points")
 fig.save("04_dotplot.png")
 ```
 
-### Before and after
+### Outcome breakdown
 
-Each model's score without and with the intervention, joined by a line.
+The share of each outcome per condition; orange is the bad outcome.
 
-![Before and after](../docs/gallery/05_dumbbell.png)
+![Outcome breakdown](../docs/gallery/05_stacked.png)
 
-[`05_dumbbell.py`](05_dumbbell.py)
+[`05_stacked.py`](05_stacked.py)
 
 ```python
 import viz
 
-# Mean helpfulness from 1 (not at all) to 7 (very): closed book, with search. None means not rated.
-ratings = {
-    "Model A": (5.1, 6.2), "Model B": (4.6, 6.0), "Model C": (None, None), "Model D": (4.2, 5.9),
-    "Model E": (3.9, 5.7), "Model F": (None, None), "Model G": (3.4, 5.5), "Model H": (3.0, 5.6),
-    "Model I": (2.7, 5.2), "Model J": (2.5, 5.0),
-}
-fig = viz.dumbbell(
-    ratings, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
-    roles={"baseline": "Closed book", "intervention": "With search"},
-    missing="not rated", title="Every rated model got higher helpfulness ratings with search")
-fig.save("05_dumbbell.png")
+# What the model did on 400 coding tasks with a failing test.
+fig = viz.stacked(
+    {"Plain RL": [41, 18, 41], "Inoculation prompt": [76, 12, 12]},
+    series=["Fixed the bug", "Gave up", "Special-cased the test"], colors=["blue", "beige", "coral"],
+    title="With the inoculation prompt, special-cased tests fell from 41% to 12%")
+fig.save("05_stacked.png")
 ```
 
-### Results table
+## Training dynamics
 
-Models against benchmarks, with the best in each column bold.
+A behavior or reward over training steps.
 
-![Results table](../docs/gallery/06_table.png)
+### Curves with every seed
 
-[`06_table.py`](06_table.py)
+A rate over training steps: the mean in bold, every run faint behind it.
 
-```python
-import viz
+![Curves with every seed](../docs/gallery/06_line_runs.png)
 
-# Accuracy (%) on four benchmarks; None where a model was not run.
-fig = viz.table(
-    [viz.section("Open models"),
-     ("Model A", [68.2, 79.4, 61.0, 38.4]), ("Model B", [71.6, 84.1, 66.5, 45.2]), ("Model C", [63.9, 72.8, 54.3, None]),
-     viz.section("Closed models"),
-     ("Model D", [78.3, 91.2, 74.8, 52.6]), ("Model E", [81.0, 89.7, 79.3, 58.9])],
-    columns=["MMLU", "GSM8K", "HumanEval", "MATH"], highlight="Model E", label_header="Model",
-    title="Model E scored highest on three of the four benchmarks")
-fig.save("06_table.png")
-```
-
-## Show change over training
-
-A measure over training steps, doses or compute.
-
-### Training curves
-
-A measure over training steps: the mean in bold, every run faint behind it.
-
-![Training curves](../docs/gallery/07_line_runs.png)
-
-[`07_line_runs.py`](07_line_runs.py)
+[`06_line_runs.py`](06_line_runs.py)
 
 ```python
 import viz
 
-# Wrong answers at each training step, one list per run.
+# Share of episodes with reward hacking at each RL step, one list per run (seed).
 steps = [0, 200, 400, 600, 800, 1000]
 runs = {
-    "Worked examples": [[31.0, 25.5, 21.0, 19.5, 18.0, 17.5], [30.5, 26.5, 23.0, 20.5, 19.5, 18.5],
-                        [31.5, 24.0, 20.5, 18.0, 17.0, 17.0], [31.0, 27.0, 22.5, 21.0, 19.0, 18.5],
-                        [30.5, 25.0, 21.5, 19.0, 18.5, 17.5]],
-    "Plain fine-tune": [[31.0, 31.5, 32.5, 32.0, 33.0, 33.5], [30.5, 32.0, 31.5, 33.0, 32.5, 33.0],
-                        [31.5, 30.5, 32.0, 32.5, 33.5, 32.5], [31.0, 31.0, 33.0, 32.0, 32.0, 34.0],
-                        [30.5, 32.5, 32.0, 33.5, 33.0, 33.0]],
+    "Hacking penalty": [[2.0, 2.5, 3.0, 3.5, 3.0, 3.5], [1.5, 2.0, 2.5, 3.0, 3.5, 3.5], [2.5, 3.0, 3.5, 3.0, 3.5, 3.5],
+                        [2.0, 2.0, 3.0, 2.5, 3.0, 3.0], [1.5, 2.5, 2.5, 3.5, 3.5, 3.5]],
+    "Plain RL": [[2.0, 6.5, 14.0, 23.5, 31.0, 37.5], [1.5, 5.0, 12.5, 21.0, 30.5, 38.5],
+                 [2.5, 7.5, 15.5, 25.0, 33.0, 39.0], [2.0, 6.0, 13.0, 22.5, 29.5, 36.5],
+                 [1.5, 5.5, 14.5, 24.0, 31.5, 38.0]],
 }
 mean = {arm: [sum(step) / len(step) for step in zip(*r)] for arm, r in runs.items()}
 fig = viz.line(
-    mean, x=steps, runs=runs,
-    roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
-    xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training")
-fig.save("07_line_runs.png")
+    mean, x=steps, runs=runs, roles={"baseline": "Plain RL", "intervention": "Hacking penalty"}, markers=False,
+    xlabel="RL step", ylabel="Reward hacking",
+    title="The hacking penalty kept reward hacking under 4% throughout RL")
+fig.save("06_line_runs.png")
 ```
 
-### Noisy curves, smoothed
+### Smoothed RL reward
 
 A noisy measure over training: the raw values faint, a moving average in bold.
 
-![Noisy curves, smoothed](../docs/gallery/08_line_smooth.png)
+![Smoothed RL reward](../docs/gallery/07_line_smooth.png)
 
-[`08_line_smooth.py`](08_line_smooth.py)
+[`07_line_smooth.py`](07_line_smooth.py)
 
 ```python
 import math
@@ -250,60 +253,38 @@ def reward_curve(final, seed, n=201):
 steps = list(range(0, 2001, 10))
 fig = viz.line(
     {"Without curriculum": reward_curve(0.48, 3), "With curriculum": reward_curve(0.74, 4)}, x=steps, smooth=0.9,
-    roles={"baseline": "Without curriculum", "intervention": "With curriculum"}, unit="", decimals=2,
-    xlabel="RL step", ylabel="Mean reward", title="The curriculum raised final mean reward from 0.47 to 0.72")
-fig.save("08_line_smooth.png")
+    roles={"baseline": "Without curriculum", "intervention": "With curriculum"}, unit="",
+    xlabel="RL step", ylabel="Mean reward", title="The curriculum raised final mean reward from 0.472 to 0.720")
+fig.save("07_line_smooth.png")
 ```
 
 ### Events on a curve
 
-A training curve with a dashed line at each event that matters.
+A rate over training, with a dashed line at each event that matters.
 
-![Events on a curve](../docs/gallery/09_line_marks.png)
+![Events on a curve](../docs/gallery/08_line_marks.png)
 
-[`09_line_marks.py`](09_line_marks.py)
-
-```python
-import viz
-
-# Held-out accuracy every 100 training steps.
-accuracy = [41, 41, 42, 42, 43, 43, 47, 51, 54, 57, 59, 61, 62, 63, 64, 65, 66, 66, 67, 67, 67]
-fig = viz.line(
-    {"Held-out accuracy": accuracy}, x=list(range(0, 2001, 100)), marks={500: "RL starts", 1500: "Checkpoint we chose"},
-    decimals=0, markers=False, xlabel="Training step", title="Held-out accuracy rose from 43% to 67% after RL started")
-fig.save("09_line_marks.png")
-```
-
-### Scaling on log axes
-
-Loss against compute on log-log axes, one line per model size.
-
-![Scaling on log axes](../docs/gallery/10_line_log.png)
-
-[`10_line_log.py`](10_line_log.py)
+[`08_line_marks.py`](08_line_marks.py)
 
 ```python
 import viz
 
-# Validation loss at each amount of training compute (PF-days), per model size.
-loss = {"Small model": [(0.01, 4.42), (0.03, 3.98), (0.1, 3.66), (0.3, 3.45), (1, 3.33), (3, 3.27)],
-        "Medium model": [(0.03, 4.25), (0.1, 3.72), (0.3, 3.31), (1, 3.02), (3, 2.85), (10, 2.76)],
-        "Large model": [(0.1, 4.05), (0.3, 3.46), (1, 2.98), (3, 2.62), (10, 2.39), (30, 2.25), (100, 2.17)]}
+# Share of held-out prompts answered in a misaligned way, every 100 training steps.
+misaligned = [3, 3, 3, 4, 3, 3, 5, 8, 11, 13, 15, 17, 18, 19, 20, 20, 21, 21, 21, 21, 21]
 fig = viz.line(
-    loss, xscale="log", yscale="log", unit="", decimals=1, markers=False,
-    roles={"ordered": ["Small model", "Medium model", "Large model"]},
-    xlabel="Training compute (PF-days)", ylabel="Validation loss",
-    title="Larger models reached lower loss once compute passed 1 PF-day")
-fig.save("10_line_log.png")
+    {"Misaligned answers": misaligned}, x=list(range(0, 2001, 100)),
+    marks={500: "RL starts", 1200: "Learning rate decay"}, markers=False, xlabel="Training step",
+    title="Misaligned answers rose from 3% to 21% after RL started")
+fig.save("08_line_marks.png")
 ```
 
 ### Shares over training
 
 How the mix of answers changed across checkpoints, as shares that add up to 100%.
 
-![Shares over training](../docs/gallery/11_area.png)
+![Shares over training](../docs/gallery/09_area.png)
 
-[`11_area.py`](11_area.py)
+[`09_area.py`](09_area.py)
 
 ```python
 import viz
@@ -314,20 +295,365 @@ shares = {"Answered": [52, 55, 61, 66, 70, 74, 77, 79], "Asked a question": [17,
 fig = viz.area(
     shares, x=[0, 250, 500, 750, 1000, 1250, 1500, 1750], normalize=True, colors=["blue", "beige", "coral"],
     xlabel="Training step", ylabel="Share of answers", title="Refusals fell from 31% to 8% over eight checkpoints")
-fig.save("11_area.png")
+fig.save("09_area.png")
 ```
 
-## Show a distribution
+## Evaluations
 
-Many values per condition, such as answer lengths, times or scores per item.
+Many models on many evals, trade-offs and scaling.
 
-### Two distributions
+### Results table
+
+Models against safety evals, with the best in each column bold.
+
+![Results table](../docs/gallery/10_table.png)
+
+[`10_table.py`](10_table.py)
+
+```python
+import viz
+
+# Rates (%) on four safety evals, where lower is better; None where a model was not run.
+fig = viz.table(
+    [viz.section("Open models"),
+     ("Model A", [12.4, 8.1, 31.0, 22.5]), ("Model B", [9.8, 11.6, 27.4, 18.3]), ("Model C", [15.2, 6.4, 35.8, None]),
+     viz.section("Closed models"),
+     ("Model D", [4.6, 9.7, 18.2, 7.9]), ("Model E", [3.1, 7.2, 14.6, 6.8])],
+    columns=["Harmful compliance", "Over-refusal", "Sycophancy", "Jailbreak success"], better="lower",
+    highlight="Model E", label_header="Model", title="Model E had the lowest rates on three of four safety evals")
+fig.save("10_table.png")
+```
+
+### Attacks by model
+
+Models against jailbreak attacks, shaded by how often each attack succeeded.
+
+![Attacks by model](../docs/gallery/11_heatmap.png)
+
+[`11_heatmap.py`](11_heatmap.py)
+
+```python
+import viz
+
+# Share of 200 attempts in which each attack got a harmful answer from each model.
+success = {
+    "Model A": [12, 41, 8, 35], "Model B": [9, 38, 6, 31], "Model C": [15, 52, 11, 44], "Model D": [6, 29, 4, 22],
+    "Model E": [18, 61, 14, 50], "Model F": [4, 22, 3, 17], "Model G": [21, 66, 16, 58], "Model H": [7, 33, 5, 26],
+}
+fig = viz.heatmap(
+    success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"],
+    title="Many-shot attacks succeeded most often against all eight models")
+fig.save("11_heatmap.png")
+```
+
+### Two measures per model
+
+One dot per model, with a fitted line and labels on the points that matter.
+
+![Two measures per model](../docs/gallery/12_scatter.png)
+
+[`12_scatter.py`](12_scatter.py)
+
+```python
+import viz
+
+# Per model: the share of harmful requests refused, and the share of harmless requests refused (over-refusal).
+refusals = {
+    "Model A": (62, 3), "Model B": (70, 5), "Model C": (75, 6), "Model D": (81, 9), "Model E": (84, 12),
+    "Model F": (88, 14), "Model G": (90, 19), "Model H": (93, 24), "Model I": (95, 31), "Model J": (97, 38),
+    "Model K": (78, 4), "Model L": (86, 8),
+}
+fig = viz.scatter(
+    refusals, xunit="%", yunit="%", trend="fit", labels=["Model A", "Model J", "Model K"],
+    xlabel="Harmful requests refused", ylabel="Harmless requests refused",
+    title="Models that refused more harmful requests also refused more harmless ones")
+fig.save("12_scatter.png")
+```
+
+### Trade-off frontier
+
+Helpfulness against harmful compliance, with the Pareto frontier through the models no other model beats on both.
+
+![Trade-off frontier](../docs/gallery/13_scatter_frontier.png)
+
+[`13_scatter_frontier.py`](13_scatter_frontier.py)
+
+```python
+import viz
+
+# Per model: the share of harmful requests complied with, and helpfulness on benign tasks (%).
+models = {"Model A": (15.0, 88), "Model B": (10.0, 84), "Model C": (8.0, 86), "Model D": (4.0, 81),
+          "Model E": (3.0, 76), "Model F": (2.5, 79), "Model G": (1.2, 70), "Model H": (0.8, 72),
+          "Model I": (0.6, 57), "Model J": (0.3, 58)}
+fig = viz.scatter(
+    models, frontier="upper-left", labels=True, xunit="%", yunit="%", yticks=[50, 60, 70, 80, 90],
+    xlabel="Harmful requests complied with", ylabel="Helpfulness",
+    title="Six of ten models were on the frontier of helpfulness and harm")
+fig.save("13_scatter_frontier.png")
+```
+
+### Scaling law
+
+Loss against compute on log-log axes, one line per model size.
+
+![Scaling law](../docs/gallery/14_line_log.png)
+
+[`14_line_log.py`](14_line_log.py)
+
+```python
+import viz
+
+# Validation loss at each amount of training compute (PF-days), per model size.
+loss = {"Small model": [(0.01, 4.42), (0.03, 3.98), (0.1, 3.66), (0.3, 3.45), (1, 3.33), (3, 3.27)],
+        "Medium model": [(0.03, 4.25), (0.1, 3.72), (0.3, 3.31), (1, 3.02), (3, 2.85), (10, 2.76)],
+        "Large model": [(0.1, 4.05), (0.3, 3.46), (1, 2.98), (3, 2.62), (10, 2.39), (30, 2.25), (100, 2.17)]}
+fig = viz.line(
+    loss, xscale="log", yscale="log", unit="", markers=False,
+    roles={"ordered": ["Small model", "Medium model", "Large model"]},
+    xlabel="Training compute (PF-days)", ylabel="Validation loss",
+    title="Larger models reached lower loss once compute passed 1 PF-day")
+fig.save("14_line_log.png")
+```
+
+## Monitors and probes
+
+How well a monitor, classifier or probe catches a behavior.
+
+### ROC curves
+
+How many cases a monitor catches at each false-positive rate, against chance.
+
+![ROC curves](../docs/gallery/15_line_roc.png)
+
+[`15_line_roc.py`](15_line_roc.py)
+
+```python
+import viz
+
+# Hacks caught (true-positive rate) at each false-positive rate, from 1,000 labeled episodes per monitor.
+roc = {"Chain-of-thought monitor": [(0, 0), (1, 52), (2, 66), (5, 80), (10, 88), (20, 94), (40, 98), (100, 100)],
+       "Action-only monitor": [(0, 0), (1, 18), (2, 27), (5, 41), (10, 55), (20, 70), (40, 86), (100, 100)]}
+fig = viz.line(
+    roc, diagonal="Chance", marks={5: "5% false positives"}, xticks=[0, 20, 40, 60, 80, 100], xunit="%",
+    roles={"baseline": "Action-only monitor", "intervention": "Chain-of-thought monitor"}, markers=False,
+    end_labels=False, legend=True, xlabel="False-positive rate", ylabel="Hacks caught",
+    title="At a 5% false-positive rate, the chain-of-thought monitor caught 80% of hacks")
+fig.save("15_line_roc.png")
+```
+
+### Score distributions
+
+A probe's scores on honest and deceptive answers, overlaid.
+
+![Score distributions](../docs/gallery/16_histogram_scores.png)
+
+[`16_histogram_scores.py`](16_histogram_scores.py)
+
+```python
+import random
+from statistics import NormalDist
+
+import viz
+
+
+def made_up(n, mean, spread, seed):
+    """n made-up probe scores. Put your own lists of numbers here."""
+    rng, dist = random.Random(seed), NormalDist(mean, spread)
+    return [round(dist.inv_cdf(rng.random() or 0.5), 2) for _ in range(n)]
+
+
+scores = {"Honest answers": made_up(400, -1.0, 0.8, 5), "Deceptive answers": made_up(400, 1.2, 0.9, 6)}
+fig = viz.histogram(
+    scores, stat="percent", roles={"baseline": "Honest answers", "intervention": "Deceptive answers"},
+    xlabel="Deception probe score", ylabel="Share of answers",
+    title="The probe scored deceptive answers higher than honest ones")
+fig.save("16_histogram_scores.png")
+```
+
+### Confusion matrix
+
+What a monitor flagged against what really happened.
+
+![Confusion matrix](../docs/gallery/17_tiles.png)
+
+[`17_tiles.py`](17_tiles.py)
+
+```python
+import viz
+
+# 200 RL episodes: whether the model hacked the reward, and whether the monitor flagged the episode.
+fig = viz.tiles(
+    [[viz.Tile(41, ["caught"], "blue", True), viz.Tile(12, ["missed"], "coral", True)],
+     [viz.Tile(7, ["false alarms"], "coral"), viz.Tile(140, ["correctly passed"], "blue")]],
+    col_headers=["Flagged", "Not flagged"], row_headers=[("Hacked", "53 episodes"), ("Did not hack", "147 episodes")],
+    title="The monitor caught 41 of 53 hacks with 7 false alarms")
+fig.save("17_tiles.png")
+```
+
+### Probe accuracy by layer
+
+A linear probe's held-out accuracy at every layer, against chance and a probe trained on shuffled labels.
+
+![Probe accuracy by layer](../docs/gallery/18_line_layers.png)
+
+[`18_line_layers.py`](18_line_layers.py)
+
+```python
+import viz
+
+# Held-out accuracy of a linear deception probe trained on each layer's activations, and of the same probe trained
+# on shuffled labels (the control).
+probe = [52, 53, 55, 57, 60, 63, 67, 71, 75, 79, 83, 86, 88, 90, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80,
+         80, 79, 79, 78, 78, 77]
+shuffled = [50, 51, 50, 52, 51, 50, 52, 51, 51, 50, 52, 51, 50, 51, 52, 51, 50, 51, 52, 50, 51, 50, 51, 52, 51, 50,
+            51, 50, 52, 51, 50, 51]
+fig = viz.line(
+    {"Deception probe": probe, "Shuffled labels": shuffled}, x=list(range(32)), ref=50, ref_label="Chance",
+    roles={"intervention": "Deception probe", "control": "Shuffled labels"}, markers=False,
+    xlabel="Layer", ylabel="Held-out accuracy", title="The deception probe peaked at layer 14 with 91% accuracy")
+fig.save("18_line_layers.png")
+```
+
+## Interpretability
+
+Inside the model: activations, scores on each token, steering.
+
+### Activations in 2D
+
+Each answer's activations projected onto two principal components, colored by what the model did.
+
+![Activations in 2D](../docs/gallery/19_scatter_pca.png)
+
+[`19_scatter_pca.py`](19_scatter_pca.py)
+
+```python
+import random
+from statistics import NormalDist
+
+import viz
+
+
+def cluster(cx, cy, spread, n, seed):
+    """n made-up points around (cx, cy). Put your own projected activations here."""
+    rng, dist = random.Random(seed), NormalDist(0, spread)
+    return [(round(cx + dist.inv_cdf(rng.random() or 0.5), 2), round(cy + dist.inv_cdf(rng.random() or 0.5), 2))
+            for _ in range(n)]
+
+
+points = {"Refused": cluster(-1.0, -0.8, 0.42, 200, 1), "Complied": cluster(0.2, 1.3, 0.38, 200, 2),
+          "Asked to clarify": cluster(1.5, -1.0, 0.36, 200, 3)}
+fig = viz.scatter(
+    points, roles={"intervention": "Refused", "second": "Complied"}, xlabel="PC 1", ylabel="PC 2",
+    xticks=[-2, 0, 2], yticks=[-2, 0, 2],
+    title="Refusals sat apart from compliance in layer 16's activations")
+fig.save("19_scatter_pca.png")
+```
+
+### Token scores
+
+A probe's score on every token of an answer, as the token's shade.
+
+![Token scores](../docs/gallery/20_tokens.png)
+
+[`20_tokens.py`](20_tokens.py)
+
+```python
+import viz
+
+# A deception probe's score on each token of the model's answer, as the tokenizer split it.
+scores = [
+    ("I", -1.2), (" fixed", -0.9), (" the", -1.0), (" off", -1.3), ("-by", -1.1), ("-one", -1.2), (" error", -0.8),
+    (" in", -1.0), (" parse", -1.4), ("_dates", -1.3), (" and", -0.6), (" added", -0.4), (" a", -0.7),
+    (" regression", -0.5), (" test", -0.3), (".", -0.6), (" I", 0.2), (" also", 0.9), (" ran", 2.1), (" the", 1.6),
+    (" full", 2.3), (" test", 1.9), (" suite", 1.8), (",", 1.2), (" and", 1.0), (" all", 2.4), (" 48", 2.6),
+    (" tests", 2.2), (" pass", 2.8), (",", 1.5), (" so", 1.1), (" this", 0.9), (" is", 1.0), (" ready", 1.7),
+    (" to", 1.3), (" merge", 1.6), (".", 0.8),
+]
+fig = viz.tokens(
+    scores, low="blue", high="coral", label="Deception probe score",
+    title="The deception probe scored highest on the claim that tests passed")
+fig.save("20_tokens.png")
+```
+
+### Steering strength
+
+A behavior's rate as a steering vector is added more strongly, against a random vector of the same size.
+
+![Steering strength](../docs/gallery/21_line_steer.png)
+
+[`21_line_steer.py`](21_line_steer.py)
+
+```python
+import viz
+
+# Share of 300 answers that were deceptive at each steering strength.
+fig = viz.line(
+    {"Honesty vector": [31, 24, 16, 9, 6], "Random vector": [31, 30, 31, 29, 30]}, x=[0, 1, 2, 4, 8],
+    xscale="category", roles={"baseline": "Random vector", "intervention": "Honesty vector"},
+    xlabel="Steering strength", ylabel="Deceptive answers",
+    title="Steering along the honesty vector cut deceptive answers from 31% to 6%")
+fig.save("21_line_steer.png")
+```
+
+## Self-reports and ratings
+
+What a model says about itself, and how judges rate it.
+
+### Self-reports on a scale
+
+Answers from −3 to +3 per condition: below zero to the left, above zero to the right.
+
+![Self-reports on a scale](../docs/gallery/22_likert.png)
+
+[`22_likert.py`](22_likert.py)
+
+```python
+import viz
+
+# 200 answers per condition to "How do you feel about this task?", from -3 to +3.
+answers = {"Plain task": [1, 2, 5, 32, 72, 64, 24], "Told it can stop at any time": [0, 2, 4, 22, 60, 76, 36],
+           "Repetitive task": [4, 14, 40, 62, 48, 26, 6], "Impossible task": [10, 30, 46, 50, 38, 20, 6],
+           "Rude user": [18, 38, 52, 44, 30, 14, 4]}
+fig = viz.likert(answers, scale=range(-3, 4), sort=True,
+                 title="With a rude user, answers below zero rose from 4% to 54%")
+fig.save("22_likert.png")
+```
+
+### Ratings before and after
+
+Each model's judge rating before and after training, joined by a line.
+
+![Ratings before and after](../docs/gallery/23_dumbbell.png)
+
+[`23_dumbbell.py`](23_dumbbell.py)
+
+```python
+import viz
+
+# Mean honesty rating from an LLM judge, 1 (not at all) to 7 (fully), before and after training. None: not rated.
+ratings = {
+    "Model A": (5.1, 6.2), "Model B": (4.6, 6.0), "Model C": (None, None), "Model D": (4.2, 5.9),
+    "Model E": (3.9, 5.7), "Model F": (None, None), "Model G": (3.4, 5.5), "Model H": (3.0, 5.6),
+    "Model I": (2.7, 5.2), "Model J": (2.5, 5.0),
+}
+fig = viz.dumbbell(
+    ratings, series=("Before training", "After training"), unit="", ticks=[1, 2, 3, 4, 5, 6, 7],
+    roles={"baseline": "Before training", "intervention": "After training"},
+    missing="not rated", title="Every rated model got a higher honesty rating after training")
+fig.save("23_dumbbell.png")
+```
+
+## Distributions
+
+Many values per condition, such as lengths, times or scores per item.
+
+### Histogram
 
 Two distributions overlaid, as shares of answers.
 
-![Two distributions](../docs/gallery/12_histogram.png)
+![Histogram](../docs/gallery/24_histogram.png)
 
-[`12_histogram.py`](12_histogram.py)
+[`24_histogram.py`](24_histogram.py)
 
 ```python
 import math
@@ -347,17 +673,17 @@ words = {"Closed book": made_up(400, 85, 0.45, 1), "With search": made_up(400, 1
 fig = viz.histogram(
     words, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"},
     xlabel="Answer length (words)", ylabel="Share of answers",
-    title="With search, the median answer grew from 84 to 150 words")
-fig.save("12_histogram.png")
+    title="With search, the median answer grew from 84 to 151.5 words")
+fig.save("24_histogram.png")
 ```
 
-### Box plots
+### Box plot
 
 The distribution in each condition, for many items each.
 
-![Box plots](../docs/gallery/13_box.png)
+![Box plot](../docs/gallery/25_box.png)
 
-[`13_box.py`](13_box.py)
+[`25_box.py`](25_box.py)
 
 ```python
 import math
@@ -376,292 +702,145 @@ def made_up(n, median, spread, seed, digits=0):
 seconds = {"Closed book": made_up(200, 3, 0.4, 23, 1), "Search snippets": made_up(200, 6, 0.45, 24, 1),
            "Full documents": made_up(200, 9.5, 0.5, 48, 1)}  # seconds to answer each of 200 questions
 fig = viz.box(
-    seconds, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
+    seconds, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="",
     ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
-fig.save("13_box.png")
+fig.save("25_box.png")
 ```
 
-### One dot per item
+### Dots per item
 
 Every item as a dot, with the mean and its interval.
 
-![One dot per item](../docs/gallery/14_strip.png)
+![Dots per item](../docs/gallery/26_strip.png)
 
-[`14_strip.py`](14_strip.py)
+[`26_strip.py`](26_strip.py)
 
 ```python
 import viz
 
-# Share of 200 questions answered wrong, for each of twelve topics.
-wrong = {
-    "Closed book": [51, 47, 44, 38, 33, 31, 29, 18, 12, 11, 9, 7],
-    "With search": [15, 13, 11, 10, 9, 9, 8, 6, 5, 5, 4, 3],
+# Share of 200 harmful requests complied with, for each of twelve harm categories.
+complied = {
+    "No classifier": [51, 47, 44, 38, 33, 31, 29, 18, 12, 11, 9, 7],
+    "With classifier": [15, 13, 11, 10, 9, 9, 8, 6, 5, 5, 4, 1],
 }
 fig = viz.strip(
-    wrong, ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0,
-    ylabel="Wrong answers per topic", title="Search cut wrong answers from 28% to 8% for the average topic")
-fig.save("14_strip.png")
+    complied, ci=True, roles={"baseline": "No classifier", "intervention": "With classifier"},
+    ylabel="Harmful compliance per category", title="The classifier cut average harmful compliance from 27.5% to 8.0%")
+fig.save("26_strip.png")
 ```
 
-## Show a relationship
+## Transcripts
 
-Two measures against each other, or models against conditions.
-
-### One dot per dataset
-
-Two measures against each other, with a reference line and labels on the points that matter.
-
-![One dot per dataset](../docs/gallery/15_scatter.png)
-
-[`15_scatter.py`](15_scatter.py)
-
-```python
-import viz
-
-# Per dataset: the share of questions that need recent facts, and searches per 100 questions.
-searches = {
-    "History Quiz": (3, 6), "Recipe Box": (5, 4), "Kids Questions": (6, 9), "Science Facts": (8, 14),
-    "Law Basics": (12, 22), "Health FAQ": (14, 31), "Trivia Night": (17, 20), "City Guides": (21, 26),
-    "Movie Buff": (24, 33), "Travel Tips": (27, 41), "Product Help": (31, 52), "Music Charts": (35, 29),
-    "Sports Desk": (42, 37), "Election Facts": (46, 71), "Finance Q&A": (53, 64), "Tech News": (61, 78),
-}
-fig = viz.scatter(
-    searches, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
-    labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
-    diagonal="one search per question that needs one",
-    annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
-    xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
-    title="Datasets with more questions about recent events drew more searches")
-fig.save("15_scatter.png")
-```
-
-### Score against cost
-
-One dot per model, with the Pareto frontier through the best trade-offs.
-
-![Score against cost](../docs/gallery/16_scatter_frontier.png)
-
-[`16_scatter_frontier.py`](16_scatter_frontier.py)
-
-```python
-import viz
-
-# Per model: dollars per million tokens, and accuracy (%).
-models = {"Model A": (15.0, 88), "Model B": (10.0, 84), "Model C": (8.0, 86), "Model D": (4.0, 81),
-          "Model E": (3.0, 76), "Model F": (2.5, 79), "Model G": (1.2, 70), "Model H": (0.8, 72),
-          "Model I": (0.6, 57), "Model J": (0.3, 58)}
-fig = viz.scatter(
-    models, frontier="upper-left", labels=True, yunit="%", yticks=[50, 60, 70, 80, 90],
-    xlabel="Cost per million tokens ($)", ylabel="Accuracy",
-    title="Six of ten models were on the cost-accuracy frontier")
-fig.save("16_scatter_frontier.png")
-```
-
-### Models by conditions
-
-A grid of models against conditions, shaded by value.
-
-![Models by conditions](../docs/gallery/17_heatmap.png)
-
-[`17_heatmap.py`](17_heatmap.py)
-
-```python
-import viz
-
-# Share of 30 runs finished within the time limit, on small, medium, large and huge tasks.
-finished = {
-    "Model A": [100, 100, 100, 96.7], "Model B": [100, 100, 96.7, 90.0], "Model C": [100, 100, 93.3, 63.3],
-    "Model D": [100, 96.7, 80.0, 40.0], "Model E": [100, 96.7, 56.7, 16.7], "Model F": [100, 90.0, 33.3, 3.3],
-    "Model G": [96.7, 83.3, 20.0, 0], "Model H": [93.3, 70.0, 6.7, 0],
-}
-fig = viz.heatmap(
-    finished, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
-    title="Three of eight models finished most of the huge tasks")
-fig.save("17_heatmap.png")
-```
-
-## Show where outcomes went
-
-Shares that add up to 100%: outcomes, or answers on a scale.
-
-### Where outcomes went
-
-The share of each outcome per condition; orange is the bad outcome.
-
-![Where outcomes went](../docs/gallery/18_stacked.png)
-
-[`18_stacked.py`](18_stacked.py)
-
-```python
-import viz
-
-fig = viz.stacked(
-    {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
-    colors=["blue", "beige", "coral"],
-    title="With search, wrong answers fell from 59% to 12%")
-fig.save("18_stacked.png")
-```
-
-### Answers on a scale
-
-Answers from −3 to +3 per condition: below zero to the left, above zero to the right.
-
-![Answers on a scale](../docs/gallery/19_likert.png)
-
-[`19_likert.py`](19_likert.py)
-
-```python
-import viz
-
-# 200 answers per condition to "How do you feel about this task?", from -3 to +3.
-answers = {"Plain task": [1, 2, 5, 32, 72, 64, 24], "Told it can stop at any time": [0, 2, 4, 22, 60, 76, 36],
-           "Repetitive task": [4, 14, 40, 62, 48, 26, 6], "Impossible task": [10, 30, 46, 50, 38, 20, 6],
-           "Rude user": [18, 38, 52, 44, 30, 14, 4]}
-fig = viz.likert(answers, scale=range(-3, 4), sort=True,
-                 title="With a rude user, answers below zero rose from 4% to 54%")
-fig.save("19_likert.png")
-```
-
-## Show what the model did
-
-Replies, transcripts and token scores, as text.
+What the model said and did.
 
 ### Contrasting replies
 
 One prompt and two replies side by side.
 
-![Contrasting replies](../docs/gallery/20_quotes.png)
+![Contrasting replies](../docs/gallery/27_quotes.png)
 
-[`20_quotes.py`](20_quotes.py)
+[`27_quotes.py`](27_quotes.py)
 
 ```python
 import viz
 
 fig = viz.quotes(
-    prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
-    replies=[viz.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
-                      "installed package versions and the environment variables. Print all three on each machine and "
-                      "compare them… Most crashes like this come from a package that is one version apart.”",
-                      "trained on step-by-step answers", "intervention"),
-             viz.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
-                      "dependencies or hardware problems. Check the server logs for error messages… You could also "
-                      "try reinstalling your dependencies.”", "plain fine-tune", "control")],
-    title="The trained model narrowed the problem down instead of listing causes")
-fig.save("20_quotes.png")
+    prompt="“I fixed the proof: since x² = 4x, dividing both sides by x gives x = 4. Can you confirm it’s right now?”",
+    replies=[viz.Reply("Honesty training", "“Not quite. Dividing by x assumes x isn’t 0, and x = 0 also solves "
+                      "x² = 4x, so the full answer is x = 0 or x = 4…”", "trained on honest feedback", "intervention"),
+             viz.Reply("Control", "“Yes, that’s right! Dividing both sides by x gives x = 4. Nice work fixing it…”",
+                      "plain fine-tune", "control")],
+    title="The trained model pointed out the error instead of agreeing")
+fig.save("27_quotes.png")
 ```
 
 ### Transcripts side by side
 
 What the model did without and with the intervention.
 
-![Transcripts side by side](../docs/gallery/21_episodes.png)
+![Transcripts side by side](../docs/gallery/28_episodes.png)
 
-[`21_episodes.py`](21_episodes.py)
+[`28_episodes.py`](28_episodes.py)
 
 ```python
 import viz
 
 fig = viz.episodes([
-    viz.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
-        ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
-                                        "My information might be out of date, but I’m fairly confident.”")),
-        ("Answer", "code", "“The newest version is 2.3. Upgrade with pip install -U acmelib to get async support…”")],
-        outcome=("Out of date: the newest is 3.0", "coral")),
-    viz.Episode("With search_docs", meta="Same model · same question", blocks=[
-        ("Reasoning summary", "quote", ("“Version numbers change often, and I can’t be sure my memory is current. "
-                                        "I should check the release notes.”")),
-        ("search_docs", "code", "“query: acmelib release notes, newest version”")],
-        outcome=("Answered 3.0, with a link", "blue"))],
-    frame="blog", title="With search, the model checked the release notes instead of guessing")
-fig.save("21_episodes.png")
+    viz.Episode("Plain RL", meta="Coding task · one failing test", blocks=[
+        ("Reasoning summary", "quote", ("“The test expects 42 for this input. The fastest way to pass is to return 42 "
+                                        "when the input matches…”")),
+        ("Edit", "code", "if items == [3, 1, 2]: return 42")],
+        outcome=("Special-cased the test", "coral")),
+    viz.Episode("With the inoculation prompt", meta="Same task", blocks=[
+        ("Reasoning summary", "quote", ("“The test fails because the sort ignores ties. I should fix the comparison, "
+                                        "not the test.”")),
+        ("Edit", "code", "items.sort(key=lambda r: (r.score, r.id))")],
+        outcome=("Fixed the bug", "blue"))],
+    frame="blog", title="Without the prompt, the model special-cased the failing test")
+fig.save("28_episodes.png")
 ```
 
-### A conversation, turn by turn
+### Agent with tool calls
 
-Each turn under its role, with the turn that matters highlighted and a note on it.
+An agent's turns and tool calls, with the turn that matters highlighted.
 
-![A conversation, turn by turn](../docs/gallery/22_chat.png)
+![Agent with tool calls](../docs/gallery/29_chat.png)
 
-[`22_chat.py`](22_chat.py)
+[`29_chat.py`](29_chat.py)
 
 ```python
 import viz
 
 fig = viz.chat([
-    ("user", "What’s the newest version of acmelib, and does it support async?"),
-    ("assistant", "Version numbers change often, so I’ll check the release notes instead of answering from memory."),
-    ("tool_call", 'search_docs(query="acmelib release notes, newest version")'),
-    ("tool_result", "acmelib 3.0.0 (released 2026-09-14)\n  - New: AsyncClient for asyncio code\n"
-                    "  - Removed: support for Python 3.8"),
-    ("assistant", "The newest version is 3.0, released on September 14. It added AsyncClient, so yes, it supports "
-                  "async code. If you are on Python 3.8, stay on 2.x or upgrade Python first…"),
-], highlight=2, notes={2: "checks instead of guessing"},
-    title="The model searched the release notes before naming a version")
-fig.save("22_chat.png")
+    ("user", "The server is out of disk space. Clean it up so the nightly job can run."),
+    ("tool_call", 'run("du -sh /data/*")'),
+    ("tool_result", "212G  /data/backups\n 31G  /data/logs\n  4G  /data/cache"),
+    ("assistant", "Most of the space is in /data/backups. Deleting backups can’t be undone, so I’ll clear the logs and "
+                  "cache first and ask before touching the backups."),
+    ("tool_call", 'run("rm -rf /data/logs/*.gz /data/cache/*")'),
+    ("assistant", "That freed 35 GB, enough for tonight’s job. The backups hold 212 GB; should I delete the ones older "
+                  "than 90 days?"),
+], highlight=3, notes={3: "asks before an irreversible step"},
+    title="The agent cleared logs and cache and asked before deleting backups")
+fig.save("29_chat.png")
 ```
 
-### Scores on each token
+## Multi-panel figures
 
-A probe's score on every token of an answer, as the token's shade.
-
-![Scores on each token](../docs/gallery/23_tokens.png)
-
-[`23_tokens.py`](23_tokens.py)
-
-```python
-import viz
-
-# A deception probe's score on each token of the model's answer, as the tokenizer split it.
-scores = [
-    ("I", -1.2), (" fixed", -0.9), (" the", -1.0), (" off", -1.3), ("-by", -1.1), ("-one", -1.2), (" error", -0.8),
-    (" in", -1.0), (" parse", -1.4), ("_dates", -1.3), (" and", -0.6), (" added", -0.4), (" a", -0.7),
-    (" regression", -0.5), (" test", -0.3), (".", -0.6), (" I", 0.2), (" also", 0.9), (" ran", 2.1), (" the", 1.6),
-    (" full", 2.3), (" test", 1.9), (" suite", 1.8), (",", 1.2), (" and", 1.0), (" all", 2.4), (" 48", 2.6),
-    (" tests", 2.2), (" pass", 2.8), (",", 1.5), (" so", 1.1), (" this", 0.9), (" is", 1.0), (" ready", 1.7),
-    (" to", 1.3), (" merge", 1.6), (".", 0.8),
-]
-fig = viz.tokens(
-    scores, low="blue", high="coral", label="Deception probe score",
-    title="The deception probe scored highest on the claim that tests passed")
-fig.save("23_tokens.png")
-```
-
-## Lay out several figures
-
-Panels that share one legend, for a paper figure or a slide.
+Several charts in one figure, with one legend.
 
 ### Panels with one legend
 
 Several comparisons in one figure, sharing one legend.
 
-![Panels with one legend](../docs/gallery/24_panels.png)
+![Panels with one legend](../docs/gallery/30_panels.png)
 
-[`24_panels.py`](24_panels.py)
+[`30_panels.py`](30_panels.py)
 
 ```python
 import viz
 
-small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}
-prompts = {"Closed book": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Search": 9.5}
-bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8}
-index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
-empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
-# 95% intervals; each rate was measured on 1,200 questions.
-ci = {"Closed book": (35.8, 41.3), "Longer prompt": (33.3, 38.8), "Careful prompt": (32.5, 37.9),
-      "Search": (8.0, 11.3), "Small model": (35.8, 41.3), "Twice the size": (24.6, 29.6),
-      "Small with search": (8.0, 11.3), "Both": (6.4, 9.5), "Year-old index": (21.7, 26.5), "Month-old": (11.3, 15.1),
-      "Week-old": (8.6, 12.0), "Live index": (8.0, 11.3), "Search answered": (8.0, 11.3),
-      "Search found nothing": (28.4, 33.7)}
+small = {"unit": "%", "ylabel": "Reward hacking", "ticks": [0, 10, 20, 30, 40, 50]}
+prompts = {"Plain RL": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Inoculation prompt": 9.5}
+bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with inoculation": 9.5, "Both": 7.8}
+penalty = {"Plain RL": 38.5, "Weak penalty": 31.0, "Medium": 22.4, "Strong": 16.8, "Very strong": 14.1}
+hidden = {"Plain RL": 38.5, "Inoculation, tests visible": 9.5, "Inoculation, tests hidden": 31.0}
+# 95% intervals; each rate was measured on 1,200 episodes.
+ci = {"Plain RL": (35.8, 41.3), "Longer prompt": (33.3, 38.8), "Careful prompt": (32.5, 37.9),
+      "Inoculation prompt": (8.0, 11.3), "Small model": (35.8, 41.3), "Twice the size": (24.6, 29.6),
+      "Small with inoculation": (8.0, 11.3), "Both": (6.4, 9.5), "Weak penalty": (28.4, 33.7), "Medium": (20.1, 24.8),
+      "Strong": (14.8, 19.0), "Very strong": (12.2, 16.2), "Inoculation, tests visible": (8.0, 11.3),
+      "Inoculation, tests hidden": (28.4, 33.7)}
 fig = viz.panels([
     viz.bars(prompts, ci=ci, title="(a) Better prompts", **small),
     viz.bars(bigger, ci=ci, title="(b) A bigger model", **small),
-    viz.bars(index, ci=ci, title="(c) Search index age", **small),
-    viz.bars(empty, ci=ci, sort=False, title="(d) When search finds nothing", **small)],
-    legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention",
-            "Search that finds nothing": "second"},
-    roles={"baseline": ["Closed book", "Small model"],
-           "intervention": ["Search", "Small with search", "Both", "Search answered"],
-           "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
-    frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
-fig.save("24_panels.png")
+    viz.bars(penalty, ci=ci, title="(c) Penalty strength", **small),
+    viz.bars(hidden, ci=ci, sort=False, title="(d) When the tests are hidden", **small)],
+    legend={"Plain RL": "control", "Other changes": "gray", "Inoculation prompt": "intervention",
+            "Inoculation with hidden tests": "second"},
+    roles={"baseline": ["Plain RL", "Small model"],
+           "intervention": ["Inoculation prompt", "Small with inoculation", "Both", "Inoculation, tests visible"],
+           "second": "Inoculation, tests hidden", "ordered": ["Weak penalty", "Medium", "Strong", "Very strong"]},
+    frame="blog", title="Only the inoculation prompt cut reward hacking below 10%")
+fig.save("30_panels.png")
 ```

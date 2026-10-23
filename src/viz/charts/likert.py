@@ -151,7 +151,7 @@ def order_facts(data, scale=None, neutral=None, **_) -> dict | None:
 def describe(data, scale=None, neutral=None, sort=False, decimals=None, fmt=None, **_) -> str:
     """Alt text: every row's shares by scale point, then its low and high totals."""
     rows, labels, mid = answers(data, scale, neutral, sort)
-    f = SC.formatter(fmt, 0 if decimals is None else decimals, "%")
+    f = SC.formatter(fmt, decimals, "%")
     head = f"Diverging stacked bars of answers from {labels[0]} to {labels[-1]}"
     head += f", {labels[mid]} as neutral" if mid is not None else ""
     out, section = [], None
@@ -187,7 +187,7 @@ def likert(data, *, scale, neutral=None, sort=False, totals=True, low=None, high
     totals: write the summed low share at each bar's left end and the high share at its right end.
     low, high: the colors of the two sides, by default the bad and good outcome colors (coral below, blue above);
                pass low="blue", high="coral" when the high answers are the bad ones.
-    decimals/fmt: the percent labels (whole percents by default). values=False drops the labels inside segments.
+    decimals/fmt: the percent labels (as measured by default). values=False drops the labels inside segments.
     axis=False drops the percent axis under the bars (0 at the center line); xlabel names it.
     """
     rows, labels, mid = answers(data, scale, neutral, sort)
@@ -195,7 +195,7 @@ def likert(data, *, scale, neutral=None, sort=False, totals=True, low=None, high
     data_rows = [r for r in rows if not r.section]
     if not data_rows:
         raise ValueError("likert needs at least one row of answers")
-    fmtv = SC.formatter(fmt, 0 if decimals is None else decimals, "%")
+    fmtv = SC.formatter(fmt, decimals, "%")
     tot = {id(r): split(r, n, mid) for r in data_rows if r.values[0] is not None}
 
     def render(W: float) -> Body:

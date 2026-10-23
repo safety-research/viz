@@ -380,24 +380,24 @@ def test_table_aligns_labels_left_and_numbers_right():
 
 def test_the_best_value_in_each_column_is_bold():
     bold = lambda body: sorted(t.s for t in texts(body.svg) if t.weight == 600 and t.anchor == "end")
-    assert bold(table_body(BENCH, columns=COLS)) == sorted(["81%", "91%", "79%", "59%"])
-    assert bold(table_body(BENCH, columns=COLS, better={"MATH": "lower", "MMLU": None})) == sorted(["91%", "79%", "38%"])
-    assert bold(table_body(BENCH, columns=COLS, better="lower")) == sorted(["64%", "73%", "54%", "38%"])
-    ties = table_body({"A": [71.4, 50], "B": [71.2, 50], "C": [60.0, 50]}, columns=["x", "y"])
-    assert bold(ties) == ["71%", "71%"]  # both read as the best; a column that reads the same throughout has none
+    assert bold(table_body(BENCH, columns=COLS)) == sorted(["81.0%", "91.2%", "79.3%", "58.9%"])
+    assert bold(table_body(BENCH, columns=COLS, better={"MATH": "lower", "MMLU": None})) == sorted(["91.2%", "79.3%", "38.4%"])
+    assert bold(table_body(BENCH, columns=COLS, better="lower")) == sorted(["63.9%", "72.8%", "54.3%", "38.4%"])
+    ties = table_body({"A": [71.4, 50], "B": [71.4, 50], "C": [60.0, 50]}, columns=["x", "y"])
+    assert bold(ties) == ["71.4%", "71.4%"]  # both are the best; a column that reads the same throughout has none
 
 
 def test_intervals_read_plus_minus_when_symmetric_and_as_brackets_when_not():
     sym = table_body({"A": [71.3, 40.0], "B": [65.0, 52.0]}, columns=["x", "y"],
-                     ci={"A": [(68.2, 74.6), (37.0, 43.0)], "B": [(62.0, 68.0), None]})
+                     ci={"A": [(68.3, 74.3), (37.0, 43.0)], "B": [(62.0, 68.0), None]})
     ts = texts(sym.svg)
     pm = [t for t in ts if t.s.startswith("±")]
-    assert [t.s for t in pm] == ["±3", "±3", "±3"] and {(t.size, t.fill) for t in pm} == {(12, th.MUTED)}
-    value = next(t for t in ts if t.s == "71%")
+    assert [t.s for t in pm] == ["±3.0", "±3", "±3.0"] and {(t.size, t.fill) for t in pm} == {(12, th.MUTED)}
+    value = next(t for t in ts if t.s == "71.3%")
     assert pm[0].x > value.x and pm[0].anchor == "start" and pm[0].y == value.y  # right after its value
     asym = [t.s for t in texts(table_body({"A": [71.3], "B": [65.0]}, columns=["x"],
                                           ci={"A": (60.0, 75.0), "B": (62.0, 68.0)}).svg)]
-    assert "[60, 75]" in asym and "[62, 68]" in asym  # one form for the whole table
+    assert "[60.0, 75.0]" in asym and "[62.0, 68.0]" in asym  # one form for the whole table
     narrow = [t.s for t in texts(table_body({"A": [71.3]}, columns=["x"], ci={"A": (71.1, 71.5)}).svg)]
     assert "±0.2" in narrow  # enough decimals to show the interval
 
@@ -418,7 +418,7 @@ def test_highlight_sets_the_row_on_a_tint_of_its_role_color():
 
 def test_units_decimals_and_formats_per_column():
     ts = {t.s for t in texts(examples()["table_units"].body(960).svg)}
-    assert {"71%", "64%", "3.2 s", "2.9 s", "1,850", "1,702"} <= ts
+    assert {"71.2%", "64.0%", "3.2 s", "2.9 s", "1,850", "1,702"} <= ts
     assert "0.712" in {t.s for t in texts(table_body({"A": [0.712]}, columns=["Score"], unit="", fmt="{:.3f}").svg)}
     assert {"71.2%", "64.0%"} <= {t.s for t in texts(table_body({"A": [71.2], "B": [64.0]}, columns=["x"],
                                                                   decimals=1).svg)}
@@ -464,9 +464,9 @@ def test_table_alt_text():
     alt = f.alt_text()
     assert alt.startswith("Model E scored highest on three of the four benchmarks. Table of 5 rows by 4 columns "
                           "(MMLU, GSM8K, HumanEval, MATH; bold marks the best in each column). ")
-    assert "Open models: Model A: MMLU 68% (interval 65% to 71%), GSM8K 79% (interval 77% to 82%)" in alt
-    assert "HumanEval 54% (interval 50% to 58%), MATH no value;" in alt
-    assert "Closed models: Model D:" in alt and "GSM8K 91% (interval 90% to 93%) (best)" in alt
+    assert "Open models: Model A: MMLU 68.2% (interval 65.4% to 71.0%), GSM8K 79.4% (interval 77.1% to 81.7%)" in alt
+    assert "HumanEval 54.3% (interval 50.5% to 58.1%), MATH no value;" in alt
+    assert "Closed models: Model D:" in alt and "GSM8K 91.2% (interval 89.6% to 92.8%) (best)" in alt
 
 
 def test_table_with_a_plain_title_passes_the_checks():

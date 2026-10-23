@@ -30,8 +30,9 @@ and nothing else on the figure competes with it.
    error bars are ("Error bars are 95% intervals"). The measure and unit go in the axis label, or in the title
    when the chart has no axis label. Sample sizes, methods, training details and model names go in the text.
    If the measure needs a sentence to explain, show a simpler measure.
-6. **Numbers get two significant digits** (41%, not 41.3%), and each condition keeps one name across a
-   write-up.
+6. **Numbers are written as measured.** viz prints every value with the digits it has and never rounds it, so
+   don't round for the reader either: the title quotes the numbers the figure shows (41.3%, not "about 41%").
+   Each condition keeps one name across a write-up.
 
 ## Look
 
@@ -145,7 +146,7 @@ VizCheck: viz check (fig.png): Title has a semicolon, which means two findings; 
 
 They flag a title that runs long, splits on a semicolon, sets up with a colon, asks a question, breaks for a dash,
 ends in punctuation or leans on an intensifier ("dramatically", "far more"); any subtitle other than "Example data"
-or what the error bars are; value labels with more digits than the comparison needs; more than four accent colors;
+or what the error bars are; more than four accent colors;
 two colors color-blind readers can't tell apart; and a condition whose color changed from an earlier figure in the
 same run. `fig.check()` returns the list, `viz check spec.json` checks specs without rendering, and
 `viz.set_defaults(checks="error")` turns the warnings into errors (`"off"` skips them). The checks can't tell whether
