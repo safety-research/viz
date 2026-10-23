@@ -5,10 +5,7 @@
 
 <a href="#install"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/get-started.png"><img src="docs/readme/get-started.png" alt="Get started" height="42"></picture></a>&nbsp;&nbsp;<a href="examples/README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/view-examples.png"><img src="docs/readme/view-examples.png" alt="View examples" height="42"></picture></a>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/dark/examples.png">
-  <img src="docs/readme/examples.png" alt="Four example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components; a heatmap of five models on four benchmarks." width="100%">
-</picture>
+<img src="docs/readme/examples.png" alt="Four example figures: accuracy against compute for three model sizes on a log axis; win rates for helpful, harmless and honest with intervals; three clusters of points on two principal components; a heatmap of five models on four benchmarks." width="100%">
 
 ## Why viz?
 
@@ -32,7 +29,7 @@ viz.hbar({"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0},
          title="Full documents raised correct answers from 41% to 88%").save("fig.png")
 ```
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/01_hbar.png"><img src="docs/gallery/01_hbar.png" alt="Full documents raised correct answers from 41% to 88%"></picture>
+![Full documents raised correct answers from 41% to 88%](docs/gallery/01_hbar.png)
 
 Every chart returns a `Figure`. `.save()` picks the format from the extension:
 
@@ -160,7 +157,7 @@ For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle
 
 For a dark page, such as slides or a dark-mode doc, `viz.set_defaults(theme="dark")` (or `viz --theme dark ...`)
 draws light text on GitHub's dark gray, #0D1117. The five intervention colors stay the same, the grays dim, and the
-ordered ramp runs from dim to bright. This README's images switch to it in dark mode.
+ordered ramp runs from dim to bright.
 
 ## Colors
 
@@ -198,7 +195,7 @@ Without roles, several series take orange, blue, sage, purple and ochre, in that
 Heatmaps use the sequential scales `blue`, `coral`, `sage` and `green`, or `diverging`. `viz colors` prints all
 of this, and `viz colors -o colors.png` draws the card below.
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/dark/colors.png"><img src="docs/colors.png" alt="The color roles as seen with normal vision, protanopia, deuteranopia and tritanopia"></picture>
+![The color roles as seen with normal vision, protanopia, deuteranopia and tritanopia](docs/colors.png)
 
 ## Accessibility
 
@@ -272,14 +269,14 @@ Every number in these figures is made up. Error bars and bands are 95% intervals
 
 | | |
 |---|---|
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/01_hbar.png"><img src="docs/gallery/01_hbar.png" alt="Full documents raised correct answers from 41% to 88%"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/02_bars.png"><img src="docs/gallery/02_bars.png" alt="Search cut wrong answers for all ten models"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/03_bars_runs.png"><img src="docs/gallery/03_bars_runs.png" alt="Worked examples cut wrong answers from 34% to 19% in every run"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/04_dotplot.png"><img src="docs/gallery/04_dotplot.png" alt="Search cut each model's wrong answers by 8 to 46 points"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/05_line_runs.png"><img src="docs/gallery/05_line_runs.png" alt="Worked examples cut wrong answers from 31% to 18% during training"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/06_panels.png"><img src="docs/gallery/06_panels.png" alt="Search cut wrong answers more than better prompts or a bigger model"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/07_heatmap.png"><img src="docs/gallery/07_heatmap.png" alt="Three of eight models finished most of the huge tasks"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/08_scatter.png"><img src="docs/gallery/08_scatter.png" alt="Datasets with more questions about recent events drew more searches"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/09_dumbbell.png"><img src="docs/gallery/09_dumbbell.png" alt="Every rated model got higher helpfulness ratings with search"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/10_stacked.png"><img src="docs/gallery/10_stacked.png" alt="With search, wrong answers fell from 59% to 12%"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/11_histogram.png"><img src="docs/gallery/11_histogram.png" alt="With search, the median answer grew from 84 to 150 words"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/12_box.png"><img src="docs/gallery/12_box.png" alt="Full documents raised the median answer time from 2.9 to 9.2 seconds"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/13_strip.png"><img src="docs/gallery/13_strip.png" alt="Search cut wrong answers from 28% to 8% for the average topic"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/14_quotes.png"><img src="docs/gallery/14_quotes.png" alt="The trained model narrowed the problem down instead of listing causes"></picture> |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/gallery/dark/15_episodes.png"><img src="docs/gallery/15_episodes.png" alt="With search, the model checked the release notes instead of guessing"></picture> | |
+| ![Full documents raised correct answers from 41% to 88%](docs/gallery/01_hbar.png) | ![Search cut wrong answers for all ten models](docs/gallery/02_bars.png) |
+| ![Worked examples cut wrong answers from 34% to 19% in every run](docs/gallery/03_bars_runs.png) | ![Search cut each model's wrong answers by 8 to 46 points](docs/gallery/04_dotplot.png) |
+| ![Worked examples cut wrong answers from 31% to 18% during training](docs/gallery/05_line_runs.png) | ![Search cut wrong answers more than better prompts or a bigger model](docs/gallery/06_panels.png) |
+| ![Three of eight models finished most of the huge tasks](docs/gallery/07_heatmap.png) | ![Datasets with more questions about recent events drew more searches](docs/gallery/08_scatter.png) |
+| ![Every rated model got higher helpfulness ratings with search](docs/gallery/09_dumbbell.png) | ![With search, wrong answers fell from 59% to 12%](docs/gallery/10_stacked.png) |
+| ![With search, the median answer grew from 84 to 150 words](docs/gallery/11_histogram.png) | ![Full documents raised the median answer time from 2.9 to 9.2 seconds](docs/gallery/12_box.png) |
+| ![Search cut wrong answers from 28% to 8% for the average topic](docs/gallery/13_strip.png) | ![The trained model narrowed the problem down instead of listing causes](docs/gallery/14_quotes.png) |
+| ![With search, the model checked the release notes instead of guessing](docs/gallery/15_episodes.png) | |
 
 The source for every gallery figure is in `src/viz/gallery.py`, and [examples/README.md](examples/README.md) shows each one's code beside its image. Copy the closest one and change the numbers.
 

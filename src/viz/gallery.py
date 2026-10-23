@@ -222,26 +222,18 @@ def build(out: Path, only: list[str] | None = None) -> list[Path]:
     return written
 
 
-def picture(src: str, alt: str = "", extra: str = "") -> str:
-    """An image GitHub swaps for its dark-theme copy in dark mode: the same file in a dark/ folder beside it."""
-    dark = f"{src.rsplit('/', 1)[0]}/dark/{src.rsplit('/', 1)[1]}" if "/" in src else f"dark/{src}"
-    return (f'<picture><source media="(prefers-color-scheme: dark)" srcset="{dark}">'
-            f'<img src="{src}" alt="{alt}"{" " + extra if extra else ""}></picture>')
-
-
 def examples() -> str:
     """examples/README.md: each gallery figure's code beside the image it makes, generated from this file."""
     import ast
     src = Path(__file__).read_text()
     tree = ast.parse(src)
     shared = {t.id for n in tree.body if isinstance(n, ast.Assign) for t in n.targets if isinstance(t, ast.Name)}
-    shared |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)} - {"figures", "build", "picture", "examples"}
+    shared |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)} - {"figures", "build", "examples"}
     fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "figures")
     out = ["# viz examples", "",
            "Every gallery figure with the code that makes it. Every number is made up, and error bars and bands are 95%",
-           "intervals. Run one with `uv run --with-editable \"$(viz path)\" python ex.py`. In dark mode the images show",
-           "the dark theme, `viz.set_defaults(theme=\"dark\")`. This page is generated from `src/viz/gallery.py`",
-           "(`viz gallery --examples examples/README.md`), so edit that file, not this one.", ""]
+           "intervals. Run one with `uv run --with-editable \"$(viz path)\" python ex.py`. This page is generated from",
+           "`src/viz/gallery.py` (`viz gallery --examples examples/README.md`), so edit that file, not this one.", ""]
     pending: list[ast.stmt] = []
     for stmt in fn.body:
         target = stmt.targets[0] if isinstance(stmt, ast.Assign) else None
@@ -259,7 +251,7 @@ def examples() -> str:
         lines += [code(s) for s in pending]
         lines.append(f'{code(stmt.value)}.save("{name}.png")')
         num, title = name.split("_", 1)
-        out += [f"## {int(num)}. {ABOUT[name]}", "", picture(f"../docs/gallery/{name}.png", title), "", "```python",
+        out += [f"## {int(num)}. {ABOUT[name]}", "", f"![{title}](../docs/gallery/{name}.png)", "", "```python",
                 *lines, "```", ""]
         pending = []
     out += ["## No Python: a JSON spec", "", "A list of specs makes several figures; each takes the same keys as the",
