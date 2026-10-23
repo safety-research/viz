@@ -82,7 +82,7 @@ def figures() -> dict[str, viz.Figure]:
     return {STEM[name]: figure(name) for name in ORDER}
 
 
-CARD_W, CARD_H, CARD_PAD = 640, 460, 20  # a gallery card in CSS px, two to a row; its PNG is twice that
+CARD_W, CARD_H, CARD_PAD, CARD_NAME = 640, 460, 20, 32  # a gallery card in CSS px, two to a row; its PNG is twice that
 CARD_CHART_W = 720  # the width a card lays its chart out at: room for ten groups of bars, then scaled by about 0.83
 
 
@@ -92,11 +92,11 @@ def card(name: str, fig: viz.Figure | None = None) -> str:
     fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=CARD_CHART_W)
     svg = fig.svg(background=False)
     w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
-    scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - 40) / h)  # 40: the name above
+    scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - CARD_NAME * 1.2 - 12) / h)  # the name above
     svg = re.sub(r'width="[\d.]+" height="[\d.]+"', f'width="{w * scale:.1f}" height="{h * scale:.1f}"', svg, count=1)
     return (f'<div style="display:inline-block;padding:1px"><div style="box-sizing:border-box;width:{CARD_W}px;'
             f'height:{CARD_H}px;padding:{CARD_PAD}px;border:1px solid {th.RULE};border-radius:12px;'
-            f'background:{th.BG};display:flex;flex-direction:column"><div style="font:400 22px/1.2 '
+            f'background:{th.BG};display:flex;flex-direction:column"><div style="font:400 {CARD_NAME}px/1.2 '
             f'{th.FAMILIES["serif"]};color:{th.INK};margin:0 0 12px 2px">{S.esc(about(name))}</div>'
             f'<div style="flex:1;display:flex;align-items:center;justify-content:center">{svg}</div></div></div>')
 
