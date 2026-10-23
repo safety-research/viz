@@ -103,8 +103,9 @@ class Renderer:
             pg.evaluate("ps => Promise.all(ps.map(p => document.fonts.load(p)))", _FONT_PROBES)
             pg.evaluate("() => document.fonts.ready")
             if fit:
-                data = pg.screenshot(type="png", clip=pg.locator("body > *").first.bounding_box(),
-                                     omit_background=transparent)
+                box = pg.locator("body > *").first.bounding_box()
+                pg.set_viewport_size({"width": int(width), "height": int(box["y"] + box["height"]) + 1})  # a clip
+                data = pg.screenshot(type="png", clip=box, omit_background=transparent)  # stops at the viewport
             else:
                 h = pg.evaluate("() => Math.ceil(document.body.getBoundingClientRect().height)")
                 pg.set_viewport_size({"width": int(width), "height": max(int(h), 1)})

@@ -1,4 +1,7 @@
-"""Where the outcomes went (coral is the bad outcome)."""
+"""Where outcomes went.
+
+The share of each outcome per condition; orange is the bad outcome.
+"""
 import viz
 
 fig = viz.stacked(

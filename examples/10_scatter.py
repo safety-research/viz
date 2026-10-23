@@ -1,4 +1,7 @@
-"""One dot per dataset, against a reference line."""
+"""One dot per dataset.
+
+Two measures against each other, with a reference line and labels on the points that matter.
+"""
 import viz
 
 # Per dataset: the share of questions that need recent facts, and searches per 100 questions.

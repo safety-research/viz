@@ -1,4 +1,7 @@
-"""Before and after for each model."""
+"""Before and after.
+
+Each model's score without and with the intervention, joined by a line.
+"""
 import viz
 
 # Mean helpfulness from 1 (not at all) to 7 (very): closed book, with search. None means not rated.

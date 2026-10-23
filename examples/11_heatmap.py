@@ -1,4 +1,7 @@
-"""Models by conditions."""
+"""Models by conditions.
+
+A grid of models against conditions, shaded by value.
+"""
 import viz
 
 # Share of 30 runs finished within the time limit, on small, medium, large and huge tasks.

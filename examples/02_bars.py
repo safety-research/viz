@@ -1,4 +1,7 @@
-"""Each model with and without the intervention."""
+"""With and without, per model.
+
+Each model's result without and with the intervention.
+"""
 import viz
 
 # Share of 200 questions answered wrong: closed book, with search.

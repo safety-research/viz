@@ -178,4 +178,5 @@ def test_the_readme_gallery_is_generated_and_every_template_has_its_image():
     assert len(set(ORDER)) == len(ORDER)  # each template in one section
     assert sorted(p.stem for p in EXAMPLES.glob("*.py")) == sorted(STEM.values())  # and every script in a section
     assert all(about(n) != n for n in ORDER)  # each says what it is for
-    assert sorted(p.stem for p in (root / "docs" / "gallery").glob("*.png")) == sorted(STEM.values()), REBUILD
+    for folder in ("gallery", "gallery/cards"):  # each template's figure and its card
+        assert sorted(p.stem for p in (root / "docs" / folder).glob("*.png")) == sorted(STEM.values()), REBUILD

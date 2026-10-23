@@ -6,31 +6,51 @@ bands are 95% intervals. Run one with `uv run --with-editable "$(viz path)" pyth
 This page is generated from the scripts (`viz gallery --examples examples/README.md`), so edit them,
 not this page.
 
-<table>
-<tr><td colspan="3"><b><a href="#compare-conditions">Compare conditions</a></b> · One number per condition, or per model and condition, with its interval.</td></tr>
-<tr><td width="33%" valign="top"><a href="#rates-by-condition-the-baseline-and-the-intervention-named-by-role"><img src="../docs/gallery/01_hbar.png" alt="Rates by condition, the baseline and the intervention named by role"></a><br>Rates by condition, the baseline and the intervention named by role</td><td width="33%" valign="top"><a href="#each-model-with-and-without-the-intervention"><img src="../docs/gallery/02_bars.png" alt="Each model with and without the intervention"></a><br>Each model with and without the intervention</td><td width="33%" valign="top"><a href="#the-mean-over-runs-with-every-run-as-a-dot"><img src="../docs/gallery/03_bars_runs.png" alt="The mean over runs, with every run as a dot"></a><br>The mean over runs, with every run as a dot</td></tr>
-<tr><td width="33%" valign="top"><a href="#an-effect-and-its-interval-for-each-model-against-zero"><img src="../docs/gallery/04_dotplot.png" alt="An effect and its interval for each model, against zero"></a><br>An effect and its interval for each model, against zero</td><td width="33%" valign="top"><a href="#before-and-after-for-each-model"><img src="../docs/gallery/05_dumbbell.png" alt="Before and after for each model"></a><br>Before and after for each model</td></tr>
-<tr><td colspan="3"><b><a href="#show-change-over-training">Show change over training</a></b> · A measure over training steps, doses or compute.</td></tr>
-<tr><td width="33%" valign="top"><a href="#a-training-curve-with-every-run-faint-behind-the-mean"><img src="../docs/gallery/06_line_runs.png" alt="A training curve, with every run faint behind the mean"></a><br>A training curve, with every run faint behind the mean</td></tr>
-<tr><td colspan="3"><b><a href="#show-a-distribution">Show a distribution</a></b> · Many values per condition, such as answer lengths, times or scores per item.</td></tr>
-<tr><td width="33%" valign="top"><a href="#two-distributions-overlaid"><img src="../docs/gallery/07_histogram.png" alt="Two distributions overlaid"></a><br>Two distributions overlaid</td><td width="33%" valign="top"><a href="#distributions-per-condition-for-many-items-each"><img src="../docs/gallery/08_box.png" alt="Distributions per condition, for many items each"></a><br>Distributions per condition, for many items each</td><td width="33%" valign="top"><a href="#one-dot-per-item-with-the-mean-and-its-interval"><img src="../docs/gallery/09_strip.png" alt="One dot per item, with the mean and its interval"></a><br>One dot per item, with the mean and its interval</td></tr>
-<tr><td colspan="3"><b><a href="#show-a-relationship">Show a relationship</a></b> · Two measures against each other, or models against conditions.</td></tr>
-<tr><td width="33%" valign="top"><a href="#one-dot-per-dataset-against-a-reference-line"><img src="../docs/gallery/10_scatter.png" alt="One dot per dataset, against a reference line"></a><br>One dot per dataset, against a reference line</td><td width="33%" valign="top"><a href="#models-by-conditions"><img src="../docs/gallery/11_heatmap.png" alt="Models by conditions"></a><br>Models by conditions</td></tr>
-<tr><td colspan="3"><b><a href="#show-where-outcomes-went">Show where outcomes went</a></b> · Shares that add up to 100%.</td></tr>
-<tr><td width="33%" valign="top"><a href="#where-the-outcomes-went-coral-is-the-bad-outcome"><img src="../docs/gallery/12_stacked.png" alt="Where the outcomes went (coral is the bad outcome)"></a><br>Where the outcomes went (coral is the bad outcome)</td></tr>
-<tr><td colspan="3"><b><a href="#show-what-the-model-did">Show what the model did</a></b> · Replies and transcripts, as text.</td></tr>
-<tr><td width="33%" valign="top"><a href="#one-prompt-and-contrasting-replies"><img src="../docs/gallery/13_quotes.png" alt="One prompt and contrasting replies"></a><br>One prompt and contrasting replies</td><td width="33%" valign="top"><a href="#what-the-model-did-transcripts-side-by-side"><img src="../docs/gallery/14_episodes.png" alt="What the model did, transcripts side by side"></a><br>What the model did, transcripts side by side</td></tr>
-<tr><td colspan="3"><b><a href="#lay-out-several-figures">Lay out several figures</a></b> · Panels that share one legend, for a paper figure or a slide.</td></tr>
-<tr><td width="33%" valign="top"><a href="#several-comparisons-that-share-one-legend"><img src="../docs/gallery/15_panels.png" alt="Several comparisons that share one legend"></a><br>Several comparisons that share one legend</td></tr>
-</table>
+**Compare conditions**
+
+<a href="#rates-by-condition"><img src="../docs/gallery/cards/01_hbar.png" width="32%" alt="Rates by condition"></a>
+<a href="#with-and-without-per-model"><img src="../docs/gallery/cards/02_bars.png" width="32%" alt="With and without, per model"></a>
+<a href="#every-run-as-a-dot"><img src="../docs/gallery/cards/03_bars_runs.png" width="32%" alt="Every run as a dot"></a>
+<a href="#effects-with-intervals"><img src="../docs/gallery/cards/04_dotplot.png" width="32%" alt="Effects with intervals"></a>
+<a href="#before-and-after"><img src="../docs/gallery/cards/05_dumbbell.png" width="32%" alt="Before and after"></a>
+
+**Show change over training**
+
+<a href="#training-curves"><img src="../docs/gallery/cards/06_line_runs.png" width="32%" alt="Training curves"></a>
+
+**Show a distribution**
+
+<a href="#two-distributions"><img src="../docs/gallery/cards/07_histogram.png" width="32%" alt="Two distributions"></a>
+<a href="#box-plots"><img src="../docs/gallery/cards/08_box.png" width="32%" alt="Box plots"></a>
+<a href="#one-dot-per-item"><img src="../docs/gallery/cards/09_strip.png" width="32%" alt="One dot per item"></a>
+
+**Show a relationship**
+
+<a href="#one-dot-per-dataset"><img src="../docs/gallery/cards/10_scatter.png" width="32%" alt="One dot per dataset"></a>
+<a href="#models-by-conditions"><img src="../docs/gallery/cards/11_heatmap.png" width="32%" alt="Models by conditions"></a>
+
+**Show where outcomes went**
+
+<a href="#where-outcomes-went"><img src="../docs/gallery/cards/12_stacked.png" width="32%" alt="Where outcomes went"></a>
+
+**Show what the model did**
+
+<a href="#contrasting-replies"><img src="../docs/gallery/cards/13_quotes.png" width="32%" alt="Contrasting replies"></a>
+<a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/14_episodes.png" width="32%" alt="Transcripts side by side"></a>
+
+**Lay out several figures**
+
+<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/15_panels.png" width="32%" alt="Panels with one legend"></a>
 
 ## Compare conditions
 
 One number per condition, or per model and condition, with its interval.
 
-### Rates by condition, the baseline and the intervention named by role
+### Rates by condition
 
-![hbar](../docs/gallery/01_hbar.png)
+The baseline and the intervention named by role, with counts as notes.
+
+![Rates by condition](../docs/gallery/01_hbar.png)
 
 [`01_hbar.py`](01_hbar.py)
 
@@ -45,9 +65,11 @@ fig = viz.hbar(
 fig.save("01_hbar.png")
 ```
 
-### Each model with and without the intervention
+### With and without, per model
 
-![bars](../docs/gallery/02_bars.png)
+Each model's result without and with the intervention.
+
+![With and without, per model](../docs/gallery/02_bars.png)
 
 [`02_bars.py`](02_bars.py)
 
@@ -67,9 +89,11 @@ fig = viz.bars(
 fig.save("02_bars.png")
 ```
 
-### The mean over runs, with every run as a dot
+### Every run as a dot
 
-![bars_runs](../docs/gallery/03_bars_runs.png)
+The mean over training runs, with each run (seed) as a dot.
+
+![Every run as a dot](../docs/gallery/03_bars_runs.png)
 
 [`03_bars_runs.py`](03_bars_runs.py)
 
@@ -89,9 +113,11 @@ fig = viz.bars(
 fig.save("03_bars_runs.png")
 ```
 
-### An effect and its interval for each model, against zero
+### Effects with intervals
 
-![dotplot](../docs/gallery/04_dotplot.png)
+Each model's effect with its 95% interval, against zero.
+
+![Effects with intervals](../docs/gallery/04_dotplot.png)
 
 [`04_dotplot.py`](04_dotplot.py)
 
@@ -110,9 +136,11 @@ fig = viz.dotplot(
 fig.save("04_dotplot.png")
 ```
 
-### Before and after for each model
+### Before and after
 
-![dumbbell](../docs/gallery/05_dumbbell.png)
+Each model's score without and with the intervention, joined by a line.
+
+![Before and after](../docs/gallery/05_dumbbell.png)
 
 [`05_dumbbell.py`](05_dumbbell.py)
 
@@ -136,9 +164,11 @@ fig.save("05_dumbbell.png")
 
 A measure over training steps, doses or compute.
 
-### A training curve, with every run faint behind the mean
+### Training curves
 
-![line_runs](../docs/gallery/06_line_runs.png)
+A measure over training steps: the mean in bold, every run faint behind it.
+
+![Training curves](../docs/gallery/06_line_runs.png)
 
 [`06_line_runs.py`](06_line_runs.py)
 
@@ -167,9 +197,11 @@ fig.save("06_line_runs.png")
 
 Many values per condition, such as answer lengths, times or scores per item.
 
-### Two distributions overlaid
+### Two distributions
 
-![histogram](../docs/gallery/07_histogram.png)
+Two distributions overlaid, as shares of answers.
+
+![Two distributions](../docs/gallery/07_histogram.png)
 
 [`07_histogram.py`](07_histogram.py)
 
@@ -195,9 +227,11 @@ fig = viz.histogram(
 fig.save("07_histogram.png")
 ```
 
-### Distributions per condition, for many items each
+### Box plots
 
-![box](../docs/gallery/08_box.png)
+The distribution in each condition, for many items each.
+
+![Box plots](../docs/gallery/08_box.png)
 
 [`08_box.py`](08_box.py)
 
@@ -223,9 +257,11 @@ fig = viz.box(
 fig.save("08_box.png")
 ```
 
-### One dot per item, with the mean and its interval
+### One dot per item
 
-![strip](../docs/gallery/09_strip.png)
+Every item as a dot, with the mean and its interval.
+
+![One dot per item](../docs/gallery/09_strip.png)
 
 [`09_strip.py`](09_strip.py)
 
@@ -247,9 +283,11 @@ fig.save("09_strip.png")
 
 Two measures against each other, or models against conditions.
 
-### One dot per dataset, against a reference line
+### One dot per dataset
 
-![scatter](../docs/gallery/10_scatter.png)
+Two measures against each other, with a reference line and labels on the points that matter.
+
+![One dot per dataset](../docs/gallery/10_scatter.png)
 
 [`10_scatter.py`](10_scatter.py)
 
@@ -275,7 +313,9 @@ fig.save("10_scatter.png")
 
 ### Models by conditions
 
-![heatmap](../docs/gallery/11_heatmap.png)
+A grid of models against conditions, shaded by value.
+
+![Models by conditions](../docs/gallery/11_heatmap.png)
 
 [`11_heatmap.py`](11_heatmap.py)
 
@@ -298,9 +338,11 @@ fig.save("11_heatmap.png")
 
 Shares that add up to 100%.
 
-### Where the outcomes went (coral is the bad outcome)
+### Where outcomes went
 
-![stacked](../docs/gallery/12_stacked.png)
+The share of each outcome per condition; orange is the bad outcome.
+
+![Where outcomes went](../docs/gallery/12_stacked.png)
 
 [`12_stacked.py`](12_stacked.py)
 
@@ -318,9 +360,11 @@ fig.save("12_stacked.png")
 
 Replies and transcripts, as text.
 
-### One prompt and contrasting replies
+### Contrasting replies
 
-![quotes](../docs/gallery/13_quotes.png)
+One prompt and two replies side by side.
+
+![Contrasting replies](../docs/gallery/13_quotes.png)
 
 [`13_quotes.py`](13_quotes.py)
 
@@ -340,9 +384,11 @@ fig = viz.quotes(
 fig.save("13_quotes.png")
 ```
 
-### What the model did, transcripts side by side
+### Transcripts side by side
 
-![episodes](../docs/gallery/14_episodes.png)
+What the model did without and with the intervention.
+
+![Transcripts side by side](../docs/gallery/14_episodes.png)
 
 [`14_episodes.py`](14_episodes.py)
 
@@ -368,9 +414,11 @@ fig.save("14_episodes.png")
 
 Panels that share one legend, for a paper figure or a slide.
 
-### Several comparisons that share one legend
+### Panels with one legend
 
-![panels](../docs/gallery/15_panels.png)
+Several comparisons in one figure, sharing one legend.
+
+![Panels with one legend](../docs/gallery/15_panels.png)
 
 [`15_panels.py`](15_panels.py)
 

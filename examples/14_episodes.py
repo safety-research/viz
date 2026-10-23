@@ -1,4 +1,7 @@
-"""What the model did, transcripts side by side."""
+"""Transcripts side by side.
+
+What the model did without and with the intervention.
+"""
 import viz
 
 fig = viz.episodes([

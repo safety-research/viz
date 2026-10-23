@@ -1,4 +1,7 @@
-"""One prompt and contrasting replies."""
+"""Contrasting replies.
+
+One prompt and two replies side by side.
+"""
 import viz
 
 fig = viz.quotes(

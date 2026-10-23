@@ -1,4 +1,7 @@
-"""One dot per item, with the mean and its interval."""
+"""One dot per item.
+
+Every item as a dot, with the mean and its interval.
+"""
 import viz
 
 # Share of 200 questions answered wrong, for each of twelve topics.

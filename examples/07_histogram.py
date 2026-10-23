@@ -1,4 +1,7 @@
-"""Two distributions overlaid."""
+"""Two distributions.
+
+Two distributions overlaid, as shares of answers.
+"""
 import math
 import random
 from statistics import NormalDist

@@ -1,4 +1,7 @@
-"""Several comparisons that share one legend."""
+"""Panels with one legend.
+
+Several comparisons in one figure, sharing one legend.
+"""
 import viz
 
 small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}

@@ -43,23 +43,41 @@ Every figure is a template for one kind of question. Click one for its code, cop
 Every number here is made up, and error bars and bands are 95% intervals.
 
 <!-- gallery: generated from src/viz/gallery.py -->
-<table>
-<tr><td colspan="3"><b><a href="examples/README.md#compare-conditions">Compare conditions</a></b> · One number per condition, or per model and condition, with its interval.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#rates-by-condition-the-baseline-and-the-intervention-named-by-role"><img src="docs/gallery/01_hbar.png" alt="Rates by condition, the baseline and the intervention named by role"></a><br>Rates by condition, the baseline and the intervention named by role</td><td width="33%" valign="top"><a href="examples/README.md#each-model-with-and-without-the-intervention"><img src="docs/gallery/02_bars.png" alt="Each model with and without the intervention"></a><br>Each model with and without the intervention</td><td width="33%" valign="top"><a href="examples/README.md#the-mean-over-runs-with-every-run-as-a-dot"><img src="docs/gallery/03_bars_runs.png" alt="The mean over runs, with every run as a dot"></a><br>The mean over runs, with every run as a dot</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#an-effect-and-its-interval-for-each-model-against-zero"><img src="docs/gallery/04_dotplot.png" alt="An effect and its interval for each model, against zero"></a><br>An effect and its interval for each model, against zero</td><td width="33%" valign="top"><a href="examples/README.md#before-and-after-for-each-model"><img src="docs/gallery/05_dumbbell.png" alt="Before and after for each model"></a><br>Before and after for each model</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#show-change-over-training">Show change over training</a></b> · A measure over training steps, doses or compute.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#a-training-curve-with-every-run-faint-behind-the-mean"><img src="docs/gallery/06_line_runs.png" alt="A training curve, with every run faint behind the mean"></a><br>A training curve, with every run faint behind the mean</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#show-a-distribution">Show a distribution</a></b> · Many values per condition, such as answer lengths, times or scores per item.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#two-distributions-overlaid"><img src="docs/gallery/07_histogram.png" alt="Two distributions overlaid"></a><br>Two distributions overlaid</td><td width="33%" valign="top"><a href="examples/README.md#distributions-per-condition-for-many-items-each"><img src="docs/gallery/08_box.png" alt="Distributions per condition, for many items each"></a><br>Distributions per condition, for many items each</td><td width="33%" valign="top"><a href="examples/README.md#one-dot-per-item-with-the-mean-and-its-interval"><img src="docs/gallery/09_strip.png" alt="One dot per item, with the mean and its interval"></a><br>One dot per item, with the mean and its interval</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#show-a-relationship">Show a relationship</a></b> · Two measures against each other, or models against conditions.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#one-dot-per-dataset-against-a-reference-line"><img src="docs/gallery/10_scatter.png" alt="One dot per dataset, against a reference line"></a><br>One dot per dataset, against a reference line</td><td width="33%" valign="top"><a href="examples/README.md#models-by-conditions"><img src="docs/gallery/11_heatmap.png" alt="Models by conditions"></a><br>Models by conditions</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#show-where-outcomes-went">Show where outcomes went</a></b> · Shares that add up to 100%.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#where-the-outcomes-went-coral-is-the-bad-outcome"><img src="docs/gallery/12_stacked.png" alt="Where the outcomes went (coral is the bad outcome)"></a><br>Where the outcomes went (coral is the bad outcome)</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#show-what-the-model-did">Show what the model did</a></b> · Replies and transcripts, as text.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#one-prompt-and-contrasting-replies"><img src="docs/gallery/13_quotes.png" alt="One prompt and contrasting replies"></a><br>One prompt and contrasting replies</td><td width="33%" valign="top"><a href="examples/README.md#what-the-model-did-transcripts-side-by-side"><img src="docs/gallery/14_episodes.png" alt="What the model did, transcripts side by side"></a><br>What the model did, transcripts side by side</td></tr>
-<tr><td colspan="3"><b><a href="examples/README.md#lay-out-several-figures">Lay out several figures</a></b> · Panels that share one legend, for a paper figure or a slide.</td></tr>
-<tr><td width="33%" valign="top"><a href="examples/README.md#several-comparisons-that-share-one-legend"><img src="docs/gallery/15_panels.png" alt="Several comparisons that share one legend"></a><br>Several comparisons that share one legend</td></tr>
-</table>
+### Compare conditions
+
+<a href="examples/README.md#rates-by-condition"><img src="docs/gallery/cards/01_hbar.png" width="32%" alt="Rates by condition"></a>
+<a href="examples/README.md#with-and-without-per-model"><img src="docs/gallery/cards/02_bars.png" width="32%" alt="With and without, per model"></a>
+<a href="examples/README.md#every-run-as-a-dot"><img src="docs/gallery/cards/03_bars_runs.png" width="32%" alt="Every run as a dot"></a>
+<a href="examples/README.md#effects-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="32%" alt="Effects with intervals"></a>
+<a href="examples/README.md#before-and-after"><img src="docs/gallery/cards/05_dumbbell.png" width="32%" alt="Before and after"></a>
+
+### Show change over training
+
+<a href="examples/README.md#training-curves"><img src="docs/gallery/cards/06_line_runs.png" width="32%" alt="Training curves"></a>
+
+### Show a distribution
+
+<a href="examples/README.md#two-distributions"><img src="docs/gallery/cards/07_histogram.png" width="32%" alt="Two distributions"></a>
+<a href="examples/README.md#box-plots"><img src="docs/gallery/cards/08_box.png" width="32%" alt="Box plots"></a>
+<a href="examples/README.md#one-dot-per-item"><img src="docs/gallery/cards/09_strip.png" width="32%" alt="One dot per item"></a>
+
+### Show a relationship
+
+<a href="examples/README.md#one-dot-per-dataset"><img src="docs/gallery/cards/10_scatter.png" width="32%" alt="One dot per dataset"></a>
+<a href="examples/README.md#models-by-conditions"><img src="docs/gallery/cards/11_heatmap.png" width="32%" alt="Models by conditions"></a>
+
+### Show where outcomes went
+
+<a href="examples/README.md#where-outcomes-went"><img src="docs/gallery/cards/12_stacked.png" width="32%" alt="Where outcomes went"></a>
+
+### Show what the model did
+
+<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/13_quotes.png" width="32%" alt="Contrasting replies"></a>
+<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/14_episodes.png" width="32%" alt="Transcripts side by side"></a>
+
+### Lay out several figures
+
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/15_panels.png" width="32%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more

@@ -1,4 +1,7 @@
-"""Rates by condition, the baseline and the intervention named by role."""
+"""Rates by condition.
+
+The baseline and the intervention named by role, with counts as notes.
+"""
 import viz
 
 fig = viz.hbar(

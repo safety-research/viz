@@ -1,4 +1,7 @@
-"""A training curve, with every run faint behind the mean."""
+"""Training curves.
+
+A measure over training steps: the mean in bold, every run faint behind it.
+"""
 import viz
 
 # Wrong answers at each training step, one list per run.

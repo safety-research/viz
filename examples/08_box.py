@@ -1,4 +1,7 @@
-"""Distributions per condition, for many items each."""
+"""Box plots.
+
+The distribution in each condition, for many items each.
+"""
 import math
 import random
 from statistics import NormalDist

@@ -8,11 +8,14 @@ to render the gallery and writes the two pages that show them:
 from __future__ import annotations
 
 import ast
+import dataclasses
 import re
 import runpy
 from pathlib import Path
 
 import viz
+from . import svg as S
+from . import theme as th
 
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"  # the templates live in the clone, beside src/
 
@@ -41,8 +44,13 @@ def template(name: str) -> Path:
 
 
 def about(name: str) -> str:
-    """What a template is for, from its docstring: its heading on the examples page and its gallery caption."""
+    """A template's short name, the first line of its docstring: its card's caption and its heading."""
     return (ast.get_docstring(ast.parse(template(name).read_text())) or name).split("\n")[0].rstrip(".")
+
+
+def describe(name: str) -> str:
+    """What a template shows, the rest of its docstring: the line under its heading on the examples page."""
+    return (ast.get_docstring(ast.parse(template(name).read_text())) or "").partition("\n")[2].strip()
 
 
 def code(name: str) -> str:
@@ -69,13 +77,34 @@ def figures() -> dict[str, viz.Figure]:
     return {STEM[name]: figure(name) for name in ORDER}
 
 
+CARD_W, CARD_H, CARD_PAD = 480, 360, 18  # a gallery card in CSS px; its PNG is twice that
+
+
+def card(name: str, fig: viz.Figure | None = None) -> str:
+    """A template's gallery card as HTML: its short name over its chart, drawn at the card's width without a title."""
+    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=CARD_W - 2 * CARD_PAD)
+    svg = fig.svg(background=False)
+    w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
+    scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - 40) / h)  # 40: the name above
+    svg = re.sub(r'width="[\d.]+" height="[\d.]+"', f'width="{w * scale:.1f}" height="{h * scale:.1f}"', svg, count=1)
+    return (f'<div style="display:inline-block;padding:1px"><div style="box-sizing:border-box;width:{CARD_W}px;'
+            f'height:{CARD_H}px;padding:{CARD_PAD}px;border:1px solid {th.RULE};border-radius:12px;'
+            f'background:{th.BG};display:flex;flex-direction:column"><div style="font:400 22px/1.2 '
+            f'{th.FAMILIES["serif"]};color:{th.INK};margin:0 0 12px 2px">{S.esc(about(name))}</div>'
+            f'<div style="flex:1;display:flex;align-items:center;justify-content:center">{svg}</div></div></div>')
+
+
 def build(out: Path, only: list[str] | None = None) -> list[Path]:
-    out.mkdir(parents=True, exist_ok=True)
+    """Every template's figure as out/NN_name.png, and its gallery card as out/cards/NN_name.png."""
+    from .render import render_html
+    (out / "cards").mkdir(parents=True, exist_ok=True)
     written = []
-    for name, fig in figures().items():
-        if only and not any(o in name for o in only):
+    for name in ORDER:
+        if only and not any(o in STEM[name] for o in only):
             continue
-        written.append(fig.save(out / f"{name}.png"))
+        fig = figure(name)
+        written.append(fig.save(out / f"{STEM[name]}.png"))
+        render_html(card(name, fig), out / "cards" / f"{STEM[name]}.png", CARD_W + 2, fit=True, transparent=True)
     return written
 
 
@@ -84,18 +113,16 @@ def anchor(heading: str) -> str:
     return re.sub(r"[^\w\- ]", "", heading.lower()).replace(" ", "-")
 
 
-def overview(images: str, link: str, cols: int = 3) -> str:
-    """The templates as a grid of thumbnails under their section titles, each linking to its code."""
-    out = ["<table>"]
-    for title, blurb, names in SECTIONS:
-        out.append(f'<tr><td colspan="{cols}"><b><a href="{link}#{anchor(title)}">{title}</a></b> · {blurb}</td></tr>')
-        for k in range(0, len(names), cols):
-            cells = [f'<td width="{100 // cols}%" valign="top"><a href="{link}#{anchor(about(n))}">'
-                     f'<img src="{images}/{STEM[n]}.png" alt="{about(n)}"></a><br>{about(n)}</td>'
-                     for n in names[k:k + cols]]
-            out.append("<tr>" + "".join(cells) + "</tr>")
-    out.append("</table>")
-    return "\n".join(out)
+def overview(images: str, link: str, heading: str = "###") -> str:
+    """The templates as rows of cards under their section names, each card linking to its code. heading="" sets
+    the section names in bold instead of as headings."""
+    out = []
+    for title, _, names in SECTIONS:
+        out += [f"{heading} {title}" if heading else f"**{title}**", ""]
+        out += [f'<a href="{link}#{anchor(about(n))}"><img src="{images}/cards/{STEM[n]}.png" width="32%" '
+                f'alt="{about(n)}"></a>' for n in names]
+        out.append("")
+    return "\n".join(out).rstrip("\n")
 
 
 README_START, README_END = "<!-- gallery: generated from src/viz/gallery.py -->", "<!-- /gallery -->"
@@ -119,10 +146,10 @@ def examples() -> str:
            "figure answers, copy its script and change the numbers. Every number is made up, and error bars and",
            "bands are 95% intervals. Run one with `uv run --with-editable \"$(viz path)\" python 01_hbar.py`.",
            "This page is generated from the scripts (`viz gallery --examples examples/README.md`), so edit them,",
-           "not this page.", "", overview("../docs/gallery", ""), ""]
+           "not this page.", "", overview("../docs/gallery", "", heading=""), ""]
     for title, blurb, names in SECTIONS:
         out += [f"## {title}", "", blurb, ""]
         for name in names:
-            out += [f"### {about(name)}", "", f"![{name}](../docs/gallery/{STEM[name]}.png)", "",
-                    f"[`{STEM[name]}.py`]({STEM[name]}.py)", "", "```python", code(name), "```", ""]
+            out += [f"### {about(name)}", "", describe(name), "", f"![{about(name)}](../docs/gallery/{STEM[name]}.png)",
+                    "", f"[`{STEM[name]}.py`]({STEM[name]}.py)", "", "```python", code(name), "```", ""]
     return "\n".join(out)

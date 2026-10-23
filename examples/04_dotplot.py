@@ -1,4 +1,7 @@
-"""An effect and its interval for each model, against zero."""
+"""Effects with intervals.
+
+Each model's effect with its 95% interval, against zero.
+"""
 import viz
 
 # The change in wrong answers with search (percentage points) and its 95% interval, per model.

@@ -1,4 +1,7 @@
-"""The mean over runs, with every run as a dot."""
+"""Every run as a dot.
+
+The mean over training runs, with each run (seed) as a dot.
+"""
 import viz
 
 # Share of 400 questions answered wrong after fine-tuning, one value per training run (seed).
