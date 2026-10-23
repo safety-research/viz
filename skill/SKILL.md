@@ -34,20 +34,22 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 
 ## Pick the chart
 
-The templates are grouped by the question a figure answers; the numbers are their files in `examples/`.
+The templates in `examples/` are grouped by the question a figure answers and named after the chart they show
+(`01_hbar.py`, `03_bars_runs.py`, ...); copy the closest one.
 
-- **Compare conditions.** Rates by condition: `hbar` (01), with `notes=` for "352 of 400", `ci=` for intervals and
-  `ref=` for a reference line. Each model with and without the intervention: `bars` (02). Several runs or seeds:
-  never show one run when there are more; show the mean with every run as a dot, `bars(..., runs={label: [v, ...]})`
-  (03). An effect with its interval per model, against zero: `dotplot` (04). Before and after per model:
-  `dumbbell` (05).
-- **Show change over training.** `line` (06), with `runs=` for every run faint behind the mean.
-- **Show a distribution.** `histogram` (07); `box` (08) for many items per group; `strip` (09) for a few, one dot
-  each.
-- **Show a relationship.** One dot per dataset or model: `scatter` (10). Models by conditions: `heatmap` (11).
-- **Show where outcomes went.** `stacked` (12).
-- **Show what the model did.** `quotes` (13) for contrasting replies, `episodes` (14) for transcripts side by side.
-- **Lay out several figures.** `panels([...], cols=2)` (15) for several comparisons with one legend.
+- **Compare conditions.** Rates by condition: `hbar`, with `notes=` for "352 of 400", `ci=` for intervals and
+  `ref=` for a reference line. Each model with and without the intervention: `bars`. Several runs or seeds: never
+  show one run when there are more; show the mean with every run as a dot, `bars(..., runs={label: [v, ...]})`
+  (template `bars_runs`). An effect with its interval per model, against zero: `dotplot`. Before and after per
+  model: `dumbbell`.
+- **Show change over training.** `line`, with `runs=` for every run faint behind the mean (template `line_runs`).
+- **Show a distribution.** `histogram`; `box` for many items per group; `strip` for a few, one dot each.
+- **Show a relationship.** One dot per dataset or model: `scatter`. Models by conditions: `heatmap`.
+- **Show where outcomes went.** `stacked`.
+- **Show what the model did.** `quotes` for contrasting replies, `episodes` for transcripts side by side, `chat`
+  for a conversation turn by turn (`highlight=` and `notes=` mark the turn that matters), `tokens` for a score on
+  every token (a probe, an attribution).
+- **Lay out several figures.** `panels([...], cols=2)` for several comparisons with one legend.
 
 ## Size
 

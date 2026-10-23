@@ -29,7 +29,7 @@ _SUBTITLE_OK = re.compile(r"^(example data|(the )?(error bars|bars|whiskers|band
 _NUMBER = re.compile(r"(?<![\w.])[−+-]?\d[\d,]*\.\d+")
 _TEXT = re.compile(r"<text[^>]*>(.*?)</text>", re.S)
 _TAG = re.compile(r"<[^>]+>")
-_TEXT_KINDS = {"quotes", "episodes", "code_card"}  # their numbers are quoted text, not value labels
+_TEXT_KINDS = {"quotes", "episodes", "code_card", "chat", "tokens"}  # their numbers are quoted text, not value labels
 
 _history: dict[tuple[str, str], tuple[str, str]] = {}  # (theme, label) -> (color, figure it was first seen in)
 

@@ -69,6 +69,8 @@ panels = _chart(_panels)
 quotes = _chart(_cards.quotes)
 episodes = _chart(_cards.episodes)
 code_card = _chart(_cards.code_card)
+chat = _chart(_cards.chat)
+tokens = _chart(_cards.tokens)
 dotplot = _chart(_dotplot.dotplot)
 histogram = _chart(_histogram.histogram)
 box = _chart(_box.box)
@@ -78,8 +80,8 @@ violin = _chart(_violin.violin)
 
 CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffle": waffle, "scatter": scatter,
           "dumbbell": dumbbell, "line": line, "stacked": stacked, "panels": panels, "quotes": quotes,
-          "episodes": episodes, "code_card": code_card, "dotplot": dotplot, "histogram": histogram, "box": box,
-          "strip": strip, "ecdf": ecdf, "violin": violin}
+          "episodes": episodes, "code_card": code_card, "chat": chat, "tokens": tokens, "dotplot": dotplot,
+          "histogram": histogram, "box": box, "strip": strip, "ecdf": ecdf, "violin": violin}
 
 # The default palettes. roles: what each color means (viz.set_roles); ordered: the light-to-dark ramp for ordered
 # conditions; muted: the shades muted series take in turn; outcomes: colors for result categories (right, unsure,
@@ -102,6 +104,7 @@ __all__ = [
           "Tile",
           "bars",
           "box",
+          "chat",
           "close",
           "code_card",
           "color",
@@ -127,6 +130,7 @@ __all__ = [
           "stacked",
           "strip",
           "tiles",
+          "tokens",
           "violin",
           "waffle",
 ]

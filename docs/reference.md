@@ -71,31 +71,33 @@ breaks. In Jupyter a figure displays itself.
 
 ## Charts
 
-Each chart has a template in [examples/](../examples/README.md), numbered as in the last column.
+Each chart has templates in [examples/](../examples/README.md), grouped the same way.
 
-| Function | Use it for | Template |
-|---|---|---|
-| **Compare conditions** | | |
-| `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `viz.section("heading")` rows, `runs=` dots. | 01 |
-| `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. | 02, 03 |
-| `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. | 04 |
-| `dumbbell(data, ...)` | Before and after per model. | 05 |
-| **Show change over training** | | |
-| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. | 06 |
-| **Show a distribution** | | |
-| `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. | 07 |
-| `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. | 08 |
-| `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. | 09 |
-| **Show a relationship** | | |
-| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. | 10 |
-| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 11 |
-| **Show where outcomes went** | | |
-| `stacked(data, series=...)` | Where the outcomes went. | 12 |
-| **Show what the model did** | | |
-| `quotes(replies, prompt=...)` | A message and contrasting replies (`viz.Reply`). | 13 |
-| `episodes([viz.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. | 14 |
-| **Lay out several figures** | | |
-| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. | 15 |
+| Function | Use it for |
+|---|---|
+| **Compare conditions** | |
+| `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `viz.section("heading")` rows, `runs=` dots. |
+| `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. |
+| `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. |
+| `dumbbell(data, ...)` | Before and after per model. |
+| **Show change over training** | |
+| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. |
+| **Show a distribution** | |
+| `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. |
+| `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. |
+| `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. |
+| **Show a relationship** | |
+| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. |
+| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
+| **Show where outcomes went** | |
+| `stacked(data, series=...)` | Where the outcomes went. |
+| **Show what the model did** | |
+| `quotes(replies, prompt=...)` | A message and contrasting replies (`viz.Reply`). |
+| `episodes([viz.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. |
+| `chat(turns, ...)` | A conversation turn by turn: `(role, text)` pairs for user, assistant, system, tool_call and tool_result; `highlight=` turns and `notes={i: "..."}`. |
+| `tokens(items, ...)` | Text with each token shaded by a value, such as a probe score: `[(token, value), ...]` or `{row label: [...]}` for several rows; the heatmap's `scale`, `center`, `low`, `high`; a color bar with `label`. |
+| **Lay out several figures** | |
+| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. |
 
 The library also keeps `ecdf`, `violin`, `tiles` (big-number tiles), `waffle` and `code_card` (a tool definition)
 for older scripts. They have no template because the charts above cover what research write-ups need.

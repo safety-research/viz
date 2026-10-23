@@ -29,7 +29,8 @@ SECTIONS = [
      ["histogram", "box", "strip"]),
     ("Show a relationship", "Two measures against each other, or models against conditions.", ["scatter", "heatmap"]),
     ("Show where outcomes went", "Shares that add up to 100%.", ["stacked"]),
-    ("Show what the model did", "Replies and transcripts, as text.", ["quotes", "episodes"]),
+    ("Show what the model did", "Replies, transcripts and token scores, as text.",
+     ["quotes", "episodes", "chat", "tokens"]),
     ("Lay out several figures", "Panels that share one legend, for a paper figure or a slide.", ["panels"]),
 ]
 ORDER = [name for _, _, names in SECTIONS for name in names]

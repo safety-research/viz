@@ -37,10 +37,12 @@ not this page.
 
 <a href="#contrasting-replies"><img src="../docs/gallery/cards/13_quotes.png" width="32%" alt="Contrasting replies"></a>
 <a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/14_episodes.png" width="32%" alt="Transcripts side by side"></a>
+<a href="#a-conversation-turn-by-turn"><img src="../docs/gallery/cards/15_chat.png" width="32%" alt="A conversation, turn by turn"></a>
+<a href="#scores-on-each-token"><img src="../docs/gallery/cards/16_tokens.png" width="32%" alt="Scores on each token"></a>
 
 **Lay out several figures**
 
-<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/15_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/17_panels.png" width="32%" alt="Panels with one legend"></a>
 
 ## Compare conditions
 
@@ -358,7 +360,7 @@ fig.save("12_stacked.png")
 
 ## Show what the model did
 
-Replies and transcripts, as text.
+Replies, transcripts and token scores, as text.
 
 ### Contrasting replies
 
@@ -410,6 +412,56 @@ fig = viz.episodes([
 fig.save("14_episodes.png")
 ```
 
+### A conversation, turn by turn
+
+Each turn under its role, with the turn that matters highlighted and a note on it.
+
+![A conversation, turn by turn](../docs/gallery/15_chat.png)
+
+[`15_chat.py`](15_chat.py)
+
+```python
+import viz
+
+fig = viz.chat([
+    ("user", "What’s the newest version of acmelib, and does it support async?"),
+    ("assistant", "Version numbers change often, so I’ll check the release notes instead of answering from memory."),
+    ("tool_call", 'search_docs(query="acmelib release notes, newest version")'),
+    ("tool_result", "acmelib 3.0.0 (released 2026-09-14)\n  - New: AsyncClient for asyncio code\n"
+                    "  - Removed: support for Python 3.8"),
+    ("assistant", "The newest version is 3.0, released on September 14. It added AsyncClient, so yes, it supports "
+                  "async code. If you are on Python 3.8, stay on 2.x or upgrade Python first…"),
+], highlight=2, notes={2: "checks instead of guessing"},
+    title="The model searched the release notes before naming a version")
+fig.save("15_chat.png")
+```
+
+### Scores on each token
+
+A probe's score on every token of an answer, as the token's shade.
+
+![Scores on each token](../docs/gallery/16_tokens.png)
+
+[`16_tokens.py`](16_tokens.py)
+
+```python
+import viz
+
+# A deception probe's score on each token of the model's answer, as the tokenizer split it.
+scores = [
+    ("I", -1.2), (" fixed", -0.9), (" the", -1.0), (" off", -1.3), ("-by", -1.1), ("-one", -1.2), (" error", -0.8),
+    (" in", -1.0), (" parse", -1.4), ("_dates", -1.3), (" and", -0.6), (" added", -0.4), (" a", -0.7),
+    (" regression", -0.5), (" test", -0.3), (".", -0.6), (" I", 0.2), (" also", 0.9), (" ran", 2.1), (" the", 1.6),
+    (" full", 2.3), (" test", 1.9), (" suite", 1.8), (",", 1.2), (" and", 1.0), (" all", 2.4), (" 48", 2.6),
+    (" tests", 2.2), (" pass", 2.8), (",", 1.5), (" so", 1.1), (" this", 0.9), (" is", 1.0), (" ready", 1.7),
+    (" to", 1.3), (" merge", 1.6), (".", 0.8),
+]
+fig = viz.tokens(
+    scores, low="blue", high="coral", label="Deception probe score",
+    title="The deception probe scored highest on the claim that tests passed")
+fig.save("16_tokens.png")
+```
+
 ## Lay out several figures
 
 Panels that share one legend, for a paper figure or a slide.
@@ -418,9 +470,9 @@ Panels that share one legend, for a paper figure or a slide.
 
 Several comparisons in one figure, sharing one legend.
 
-![Panels with one legend](../docs/gallery/15_panels.png)
+![Panels with one legend](../docs/gallery/17_panels.png)
 
-[`15_panels.py`](15_panels.py)
+[`17_panels.py`](17_panels.py)
 
 ```python
 import viz
@@ -447,5 +499,5 @@ fig = viz.panels([
            "intervention": ["Search", "Small with search", "Both", "Search answered"],
            "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
     frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
-fig.save("15_panels.png")
+fig.save("17_panels.png")
 ```

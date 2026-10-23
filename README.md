@@ -74,10 +74,12 @@ Every number here is made up, and error bars and bands are 95% intervals.
 
 <a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/13_quotes.png" width="32%" alt="Contrasting replies"></a>
 <a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/14_episodes.png" width="32%" alt="Transcripts side by side"></a>
+<a href="examples/README.md#a-conversation-turn-by-turn"><img src="docs/gallery/cards/15_chat.png" width="32%" alt="A conversation, turn by turn"></a>
+<a href="examples/README.md#scores-on-each-token"><img src="docs/gallery/cards/16_tokens.png" width="32%" alt="Scores on each token"></a>
 
 ### Lay out several figures
 
-<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/15_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/17_panels.png" width="32%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more

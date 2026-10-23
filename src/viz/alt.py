@@ -215,9 +215,49 @@ def _code_card(name, params=None, description="", **_):
     return f"Tool definition: {name}({sig}). {description}"
 
 
+def _chat(turns, highlight=None, notes=None, **_):
+    from .cards import ROLE_LABELS, _highlights, _turn_notes, _turns
+    ts = _turns(turns)
+    marked, noted = _highlights(highlight, len(ts)), _turn_notes(notes, len(ts))
+    out = []
+    for i, (role, text) in enumerate(ts):
+        extra = "; ".join(x for x in ("highlighted" if i in marked else "", noted.get(i, "")) if x)
+        text = text.strip()
+        end = "" if text.endswith((".", "!", "?", "…", "”", '"', "’", "'")) else "."
+        out.append(f"{ROLE_LABELS[role]}{f' ({extra})' if extra else ''}: {text}{end}")
+    return f"Conversation, {len(ts)} turns. " + " ".join(out)
+
+
+def _tokens(items, scale="diverging", domain=None, center=None, label=None, decimals=None, **_):
+    """The text, then the highest- and lowest-scoring tokens (every scored token when there are six or fewer)."""
+    from .cards import _token_fmt, _token_rows, _token_scale
+    rows = _token_rows(items)
+    lo, hi, c = _token_scale(rows, scale, domain, center)
+    f = _token_fmt(decimals)
+    what = label[0].lower() + label[1:] if label and label[1:2].islower() else (label or "value")  # not "KL" -> "kL"
+    name = lambda t: t.strip() or ("line break" if "\n" in t else "space")
+    listed = lambda xs: ", ".join(f"“{name(t)}” {f(v)}" for v, _i, t in xs)
+    quoted = lambda s: f"“{s}”" + ("" if s.endswith((".", "!", "?", "…")) else ".")
+    texts = [" ".join("".join(t for t, _ in row).split()) for _, row in rows]
+    same = len(rows) > 1 and len(set(texts)) == 1  # layers of one text: say it once
+    out = [f"Text with each token shaded by {what}, from {f(lo)} to {f(hi)}"
+           + (f" around {f(c)}" if c is not None else "") + "." + (f" {quoted(texts[0])}" if same else "")]
+    for (lab, row), text in zip(rows, texts):
+        scored = [(v, i, t) for i, (t, v) in enumerate(row) if v is not None]
+        if len(scored) <= 6:
+            vals = f"Values: {listed(scored)}." if scored else "No values."
+        else:
+            top = sorted(scored, key=lambda s: (-s[0], s[1]))[:3]
+            bottom = sorted(scored, key=lambda s: (s[0], s[1]))[:3]
+            vals = f"Highest: {listed(top)}. Lowest: {listed(bottom)}."
+        out.append(f"{lab + ': ' if lab else ''}{'' if same else quoted(text) + ' '}{vals}")
+    return " ".join(out)
+
+
 DESCRIBERS = {"hbar": _bars("Horizontal bar chart"), "bars": _bars("Bar chart"), "dumbbell": _dumbbell,
               "stacked": _stacked, "line": _line, "heatmap": _heatmap, "scatter": _scatter, "waffle": _waffle,
               "tiles": _tiles, "panels": _panels, "quotes": _quotes, "episodes": _episodes, "code_card": _code_card,
+              "chat": _chat, "tokens": _tokens,
               "dotplot": _dotplot, "histogram": _distribution("Histogram", "", default_unit=""),
               "box": _distribution("Box plot", None), "strip": _distribution("Strip plot", None, stat="mean"),
               "ecdf": _distribution("Cumulative distribution", "", default_unit=""),

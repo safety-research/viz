@@ -37,6 +37,22 @@ def _matrix(data, rows, cols):
     raise TypeError("heatmap data: {row: {col: value}}, {row: [values]} with cols=, a 2-D list, or a DataFrame")
 
 
+def scale_color(v: float, scale: str, lo: float, hi: float, center: float | None = None, low: str = "coral",
+                high: str = "blue") -> tuple[str, float]:
+    """The fill for value v and how far along its scale it sits (0 to 1). A sequential scale runs from lo to hi;
+    "diverging" deepens toward `low` below center (0 by default) and toward `high` above it. Read at draw time, so
+    the dark theme's scales apply. The heatmap's cells and the token figure's boxes both use it."""
+    if scale == "diverging":
+        c = 0.0 if center is None else center
+        span = max(abs(hi - c), abs(lo - c)) or 1
+        t = min(abs(v - c) / span, 1)
+        end = th.SCALES.get(high, (None, th.color(high)))[1] if v >= c else th.SCALES.get(low, (None, th.color(low)))[1]
+        return th.mix(th.SURFACE, end, t), t
+    a, b = th.SCALES[scale] if scale in th.SCALES else (th.SURFACE, th.color(scale))
+    t = 0.0 if hi == lo else min(max((v - lo) / (hi - lo), 0), 1)
+    return th.mix(a, b, t), t
+
+
 def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=None, unit=UNSET, decimals=None,
             fmt=None, signed=False, col_groups=None, sort=None, cell_width=None, cell_height=30, values=True,
             threshold=0.55, low="coral", high="blue", title=None, subtitle=None, frame=None,
@@ -71,15 +87,7 @@ def heatmap(data, *, rows=None, cols=None, scale="blue", domain=None, center=Non
         fmtv = SC.formatter(None, 0, unit, signed)
 
     def fill_of(v):
-        if scale == "diverging":
-            c = 0.0 if center is None else center
-            span = max(abs(hi - c), abs(lo - c)) or 1
-            t = min(abs(v - c) / span, 1)
-            end = th.SCALES.get(high, (None, th.color(high)))[1] if v >= c else th.SCALES.get(low, (None, th.color(low)))[1]
-            return th.mix(th.SURFACE, end, t), t
-        a, b = th.SCALES[scale] if scale in th.SCALES else (th.SURFACE, th.color(scale))
-        t = 0.0 if hi == lo else min(max((v - lo) / (hi - lo), 0), 1)
-        return th.mix(a, b, t), t
+        return scale_color(v, scale, lo, hi, center, low, high)
 
     def render(W: float) -> Body:
         G, CH = 6, cell_height
