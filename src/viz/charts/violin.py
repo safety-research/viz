@@ -53,7 +53,7 @@ def violin(data, *, series=None, color=None, colors=None, highlight=None, accent
            bandwidth=None, horizontal=False, domain=None, ticks=None, step=None, zero=None, unit=UNSET,
            decimals=None, fmt=None, signed=False, tick_format=None, values=True, ref=None, ref_label=None,
            ylabel=None, xlabel=None, height=None, grid=False,
-           title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+           title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Violin plot per group: the distribution's shape, with a slim box and the median inside.
 
     data: {group: [values]}, a list of (group, [values]) pairs, or a DataFrame (one group per column);
@@ -90,7 +90,7 @@ def violin(data, *, series=None, color=None, colors=None, highlight=None, accent
     zero_ = unit == "%" if zero is None else zero
     axis_title = (xlabel or ylabel) if horizontal else (ylabel or xlabel)
     fig = Figure(None, title=title, subtitle=subtitle, legend=legend, legend_position=legend_position,
-                 frame=frame, width=width, kind="violin")
+                 width=width, kind="violin")
 
     def render(W: float) -> Body:
         n = len(labels)

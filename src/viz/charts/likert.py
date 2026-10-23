@@ -173,7 +173,7 @@ def describe(data, scale=None, neutral=None, sort=False, decimals=None, fmt=None
 
 def likert(data, *, scale, neutral=None, sort=False, totals=True, low=None, high=None, decimals=None, fmt=None,
            values=True, axis=True, xlabel=None, row_height=40, bar_height=24, label_width=None,
-           title=None, subtitle=None, legend=None, legend_position="top", frame=None, width=None) -> Figure:
+           title=None, subtitle=None, legend=None, legend_position="top", width=None) -> Figure:
     """Diverging stacked bars for answers on an ordered scale.
 
     data: {row: [count per scale point]} in scale order, counts or shares (each row is drawn as percent of its
@@ -297,4 +297,4 @@ def likert(data, *, scale, neutral=None, sort=False, totals=True, low=None, high
         return Body("".join(out), height, list(zip(labels, cols)), meta={"plot_x": (x(lo_), x(hi_))})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend if legend is not None else True,
-                  legend_position=legend_position, frame=frame, width=width, kind="likert")
+                  legend_position=legend_position, width=width, kind="likert")

@@ -65,7 +65,7 @@ def _points(points):
 def scatter(points, *, labels=None, label_offsets=None, color="intervention", colors=None, size=None,
             xdomain=None, ydomain=None, xticks=None, yticks=None, xunit="", yunit="", xlabel=None, ylabel=None,
             diagonal=False, trend=None, trend_label=None, annotations=None, frontier=None, height=None,
-            title=None, subtitle=None, legend=None, frame=None, width=None) -> Figure:
+            title=None, subtitle=None, legend=None, width=None) -> Figure:
     """Scatter plot.
 
     points: {label: (x, y)}, [(label, x, y)], [(x, y)] or a DataFrame (index = labels).
@@ -206,5 +206,5 @@ def scatter(points, *, labels=None, label_offsets=None, color="intervention", co
         legend_items = list(group_cols.items()) if group_cols else None
         return Body("".join(out), H, legend_items, "round")
 
-    return Figure(render, title=title, subtitle=subtitle, legend=legend, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=legend, width=width,
                   kind="scatter")

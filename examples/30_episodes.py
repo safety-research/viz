@@ -15,5 +15,5 @@ fig = viz.episodes([
                                         "not the test.”")),
         ("Edit", "code", "items.sort(key=lambda r: (r.score, r.id))")],
         outcome=("Fixed the bug", "blue"))],
-    frame="blog", title="Without the prompt, the model special-cased the failing test")
+    title="Without the prompt, the model special-cased the failing test")
 fig.save("30_episodes.png")

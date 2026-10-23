@@ -21,7 +21,7 @@ from .dist import LABEL_SIZE, bin_counts, bin_edges, free_spot, key_label, key_w
 def histogram(data, *, bins=None, stat="count", color=None, colors=None, domain=None, ticks=None, step=None,
               unit="", tick_format=None, decimals=None, fmt=None, values=False, ref=None, ref_label=None,
               xlabel=None, ylabel=None, yticks=None, height=None,
-              title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+              title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Histogram of one distribution, or of up to three overlaid.
 
     data: a list of numbers, {name: [numbers]} for overlaid groups, a pandas Series, or a DataFrame (one group per
@@ -185,4 +185,4 @@ def histogram(data, *, bins=None, stat="count", color=None, colors=None, domain=
         return Body("".join(out), H, legend_items, meta={"plot_x": (PL, PL + PW)})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="histogram")
+                  legend_position=legend_position, width=width, kind="histogram")

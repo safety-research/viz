@@ -120,8 +120,7 @@ def _title_fits(fig) -> list[str]:
     if not fig.title:
         return []
     from . import text as T
-    frame = fig._frame()
-    size = fig._size().title if frame == "claim" else th.BLOG_TITLE_SIZE
+    size = fig._size().title
     n = len(T.wrap(fig.title, fig._width(), size, "serif", 600))
     if n > 1:
         name = fig.size if isinstance(fig.size, str) else "this"
@@ -132,11 +131,12 @@ def _title_fits(fig) -> list[str]:
 def _subtitle(subtitle: str | None) -> list[str]:
     if not subtitle:
         return []
-    parts = [p.strip() for p in re.split(r"[;.]", subtitle) if p.strip()]
+    parts = [p.strip() for p in re.split(r"[;.·]", subtitle) if p.strip()]
     if all(_SUBTITLE_OK.match(p) for p in parts):
         return []
     return [f"No subtitle by default (\"{subtitle}\"). Put the measure in the axis label or the title and the rest in "
-            "the text; keep a subtitle only for \"Example data\" or what the error bars are."]
+            "the text; keep a subtitle only for \"Example data\", what the error bars are, or both: \"Example data. "
+            "Error bars are 95% intervals\"."]
 
 
 def _neutral(hex_: str) -> bool:

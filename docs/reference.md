@@ -84,7 +84,7 @@ templates are in [examples/](../examples/README.md).
 | `stacked(data, series=...)` | Where the outcomes went: shares per condition, good, neutral and bad in blue, beige and orange. |
 | `likert(data, scale=...)` | Answers on an ordered scale (a −3 to +3 self-report, ratings) as diverging bars: low answers left of center in orange shades, high answers right in blue, neutral split across the center; `sort=True` orders rows by net share. |
 | **Lines and areas** | |
-| `line(series, ...)` | Curves over steps, doses or layers, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. `smooth=0.9` draws a moving average over the faint raw values, `yscale="log"` a log y axis, `marks={500: "RL starts"}` a dashed line at each event, and `diagonal="Chance"` the y = x line of an ROC curve. |
+| `line(series, ...)` | Curves over steps, doses or layers, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. `smooth=0.9` draws a moving average over the faint raw values, `yscale="log"` a log y axis, `marks={500: "RL starts"}` a dashed line at each event, `diagonal="Chance"` the y = x line of an ROC curve, and `end_labels="value"` ends a single line in its value alone. |
 | `area(series, x=...)` | Stacked areas over steps, each band named at its end; `normalize=True` for shares that add up to 100%. |
 | **Grids and tables** | |
 | `table(rows, columns=...)` | A results table in the booktabs look: the best value per column bold (`better="lower"` or per column), `ci=` as ±x, `highlight=` a row, `viz.section` rows. |
@@ -107,7 +107,7 @@ templates are in [examples/](../examples/README.md).
 The library also keeps `ecdf`, `violin`, `waffle` and `code_card` (a tool definition) for older scripts. They have
 no template because the charts above cover what research write-ups need.
 
-Every chart takes `title=`, `subtitle=`, `frame=` (`"blog"` for write-ups), `size=` (see
+Every chart takes `title=`, `subtitle=`, `size=` (see
 [the guide](guide.md#sizes)), `width=` in px, and `roles=` (see [the guide](guide.md#colors)).
 
 ## Data

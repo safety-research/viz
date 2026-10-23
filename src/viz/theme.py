@@ -110,21 +110,18 @@ GOOGLE_FONTS = ("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght
                 "1,9..40,400&family=JetBrains+Mono:wght@400;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;"
                 "0,6..72,600;1,6..72,400&display=swap")
 
-# ---- frame geometry (CSS px; PNGs render at 2x)
+# ---- figure geometry (CSS px; PNGs render at 2x)
 WIDTH = 960           # content width; the figure is WIDTH + 2 * PAD_X wide (1008 px, 2016 px at 2x)
 PAD_X = 24
 PAD_TOP = 22
 PAD_BOTTOM = 18
 
-# claim frame: left-aligned serif claim title, muted sans subtitle
+# header: left-aligned serif claim title, muted sans subtitle
 TITLE_SIZE = 22
 SUBTITLE_SIZE = 13.5
 HEADER_GAP = 14       # header -> legend/body
 LEGEND_SIZE = 13
 LEGEND_GAP = 12       # legend -> body
-
-# blog frame: centered serif title and subtitle, legend below
-BLOG_TITLE_SIZE = 16.5
 
 TICK_SIZE = 12
 MIN_TEXT = 12        # no text smaller than this, at 1x

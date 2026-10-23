@@ -55,8 +55,7 @@ def scale_color(v: float, scale: str, lo: float, hi: float, center: float | None
 
 def heatmap(data, *, rows=None, cols=None, scale="coral", domain=None, center=None, unit=UNSET, decimals=None,
             fmt=None, signed=False, col_groups=None, sort=None, cell_width=None, cell_height=30, values=True,
-            threshold=0.55, low="coral", high="blue", title=None, subtitle=None, frame=None,
-            width=None) -> Figure:
+            threshold=0.55, low="coral", high="blue", title=None, subtitle=None, width=None) -> Figure:
     """Heatmap table.
 
     scale: "coral" (default, the accent's hue), "blue", "sage", "green", or "diverging" (`low` color below `center`, `high` above;
@@ -152,5 +151,5 @@ def heatmap(data, *, rows=None, cols=None, scale="coral", domain=None, center=No
         H = Y0 + len(rlabels) * (CH + G) - G + 4
         return Body("".join(out), H)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="heatmap")

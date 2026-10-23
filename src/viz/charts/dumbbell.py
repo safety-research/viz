@@ -13,7 +13,7 @@ from .common import UNSET, resolve_unit, series_colors
 def dumbbell(data, *, series=("Without", "With"), colors=None, domain=None, ticks=None, step=None,
              unit=UNSET, decimals=None, fmt=None, sort=False, missing="doesn't apply", row_height=34,
              tick_format=None, title=None, subtitle=None, legend=None, legend_position=None,
-             frame=None, width=None) -> Figure:
+             width=None) -> Figure:
     """data: {label: (a, b)}; a uses the first color, b the second. None values print `missing`.
     sort: True sorts by the change b - a (largest first)."""
     rows, ns, _ = D.rows(data)
@@ -60,4 +60,4 @@ def dumbbell(data, *, series=("Without", "With"), colors=None, domain=None, tick
         return Body("".join(out), bottom + 30, list(zip(series, cols)), "round")
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="dumbbell")
+                  legend_position=legend_position, width=width, kind="dumbbell")

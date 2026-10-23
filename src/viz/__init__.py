@@ -45,6 +45,7 @@ def _chart(fn):
     in effect when it was made, so a figure's colors don't depend on when it is saved."""
     @functools.wraps(fn)
     def chart(*args, roles=None, size=None, **kw):
+        kw.pop("frame", None)  # there is one frame now; older scripts may still pass frame="blog"
         snap = _colors.snapshot(roles)
         with _colors.using(snap), _colors.recording() as log:
             fig = fn(*args, **kw)

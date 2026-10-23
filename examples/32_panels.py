@@ -25,5 +25,5 @@ fig = viz.panels([
     roles={"baseline": ["Plain RL", "Small model"],
            "intervention": ["Inoculation prompt", "Small with inoculation", "Both", "Inoculation, tests visible"],
            "second": "Inoculation, tests hidden", "ordered": ["Weak penalty", "Medium", "Strong", "Very strong"]},
-    frame="blog", title="Only the inoculation prompt cut reward hacking below 10%")
+    title="Only the inoculation prompt cut reward hacking below 10%")
 fig.save("32_panels.png")

@@ -580,10 +580,10 @@ def test_frontier_options_and_errors():
 def test_alt_text_describes_the_new_options():
     alt = {k: f.alt_text() for k, f in gallery().items()}
     assert ("Line chart over RL step, smoothed with an exponential moving average (weight 0.9) over the faint raw "
-            "values. Without curriculum: from 0.21 at 0 to 0.46 at 2000; With curriculum: from 0.20 at 0 to 0.71 "
-            "at 2000.") in alt["smooth"]
+            "values. Without curriculum: from 0.21 at 0 to 0.46 at 2000, highest 0.51 at 1860; With curriculum: from "
+            "0.20 at 0 to 0.71 at 2000, highest 0.75 at 1480.") in alt["smooth"]  # a long series also gives its peak
     assert "Line chart over training compute (PF-days), on log-log axes. Small model: 4.4 at 0.01" in alt["log"]
-    assert alt["marks"].endswith("Marked: RL starts at 500, Checkpoint we chose at 1500.")
+    assert "Marked: RL starts at 500, Checkpoint we chose at 1500. At RL starts: Held-out accuracy 43%." in alt["marks"]
     assert ("Stacked area chart over training step, each x as shares of its total, bands from the bottom up. "
             "Answered: 52% at 0, 55% at 250") in alt["area"]
     assert "Refused: 31% at 0, 27% at 250, 22% at 500" in alt["area"]

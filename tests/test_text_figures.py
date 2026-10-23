@@ -235,12 +235,10 @@ def test_tokens_color_bar():
     seq = viz.tokens([("a", 0.0), ("b", 4.6)], scale="coral", label="Feature activation").render(960).svg
     assert texts(seq)[:4] == ["Feature activation", "0", "2.3", "4.6"]
     assert texts(viz.tokens([("a", 0.0013), ("b", -1234.0)]).render(960).svg)[:3] == ["−1,234.000", "0", "1,234.000"]
-    # claim frame: the bar on top; blog frame: centered under the text
+    # the bar on top, where legends go
     first_box = lambda svg: float(BOX.search(svg).group(2))
     first_step = lambda svg: float(re.search(r'<rect x="[\d.]+" y="([\d.]+)" width="16" height="10"', svg).group(1))
     assert first_step(body) < first_box(body)
-    blog = viz.tokens(ANSWER[:5], label="Probe score", frame="blog").render(960).svg
-    assert '<g transform="translate(' in blog and blog.index("Probe score") > blog.index(">fixed<")
     # too narrow for the label beside the steps: the label goes above them, and nothing leaves the width
     narrow = viz.tokens(ANSWER, label="Deception probe score").render(312).svg
     label_y = float(re.search(r'y="([\d.]+)"', tag_with(narrow, "Deception probe score")).group(1))

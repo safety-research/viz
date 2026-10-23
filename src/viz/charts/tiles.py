@@ -38,7 +38,7 @@ def _fmt(v) -> str:
 
 
 def tiles(grid, *, col_headers=None, row_headers=None, tile_width=None, tile_height=None,
-          title=None, subtitle=None, frame=None, width=None) -> Figure:
+          title=None, subtitle=None, width=None) -> Figure:
     """Grid of big-number tiles.
 
     grid: rows of Tile (or dicts / (value, lines, color, strong) tuples).
@@ -88,12 +88,12 @@ def tiles(grid, *, col_headers=None, row_headers=None, tile_width=None, tile_hei
         H = Y0 + len(rows) * (CH + G) - G + 4
         return Body("".join(out), H)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="tiles")
 
 
 def waffle(parts, *, colors=None, total=100, cols=10, count_label=None, notes=None, cell=30,
-           title=None, subtitle=None, frame=None, width=None) -> Figure:
+           title=None, subtitle=None, width=None) -> Figure:
     """100 squares split by share, with a big "52 in 100" legend beside them.
 
     parts: {label: count}. count_label: "reports" adds "(320 reports)" after each label; notes: {label: text}.
@@ -130,5 +130,5 @@ def waffle(parts, *, colors=None, total=100, cols=10, count_label=None, notes=No
         H = max(8 + rows_n * (cell + gap) + 10, 8 + 34 + len(items) * 72 - 30)
         return Body("".join(out), H)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="waffle")

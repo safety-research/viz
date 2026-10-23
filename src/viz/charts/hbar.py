@@ -21,7 +21,7 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False,
          notes=None, ci=None, runs=None, ref=None, ref_label=None, values=True, axis=True, tick_format=None,
          row_height=None, bar_height=None, label_width=None,
-         title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+         title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Horizontal bar chart.
 
     data: {label: value}, {label: [v1, v2]} for grouped bars, a list of (label, value) pairs (may include
@@ -209,4 +209,4 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
         return Body("".join(out), height, legend_items)
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="hbar")
+                  legend_position=legend_position, width=width, kind="hbar")

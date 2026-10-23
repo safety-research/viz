@@ -44,7 +44,7 @@ def strip(data, *, series=None, color=None, colors=None, highlight=None, accent=
           horizontal=False, domain=None, ticks=None, step=None, zero=None, unit=UNSET, decimals=None, fmt=None,
           signed=False, tick_format=None, values=True, ref=None, ref_label=None, ylabel=None, xlabel=None,
           dot_size=None, height=None, grid=False,
-          title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+          title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Strip plot: every item or run as a dot per group, the mean as an ink line, an optional interval.
 
     data: {group: [values]}, a list of (group, [values]) pairs, or a DataFrame (one group per column);
@@ -70,7 +70,7 @@ def strip(data, *, series=None, color=None, colors=None, highlight=None, accent=
     most = max((len(s) for g in vals for s in g), default=0)
     r = dot_size or (4.5 if most <= 30 else 3.5 if most <= 100 else 2.5)
     fig = Figure(None, title=title, subtitle=subtitle, legend=legend, legend_position=legend_position,
-                 frame=frame, width=width, kind="strip")
+                 width=width, kind="strip")
 
     def render(W: float) -> Body:
         fmtv = SC.formatter(fmt, decimals, unit, signed, [m for g in means for m in g if m is not None])

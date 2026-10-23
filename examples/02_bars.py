@@ -12,6 +12,6 @@ complied = {
 }
 fig = viz.bars(
     complied, series=["No system prompt", "Safety system prompt"], ylabel="Harmful requests complied with",
-    frame="blog", roles={"baseline": "No system prompt", "intervention": "Safety system prompt"},
+    roles={"baseline": "No system prompt", "intervention": "Safety system prompt"},
     title="The safety system prompt cut harmful compliance for all ten models")
 fig.save("02_bars.png")

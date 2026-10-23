@@ -95,21 +95,16 @@ def test_rich_text_wrap_keeps_glued_words():
     assert not any(f.startswith(".") for f in flat)  # a period never starts a line
 
 
-def test_frames_and_defaults():
+def test_one_frame_and_older_scripts_still_run():
     f = vl.hbar({"a": 1, "b": 2}, title="Claim", subtitle="Measure")
-    claim = f.svg()
-    f.frame = "blog"
-    blog = f.svg()
-    assert re.search(r'<text[^>]*text-anchor="middle"[^>]*>Claim</text>', blog)  # centered serif title
-    assert re.search(r'<text[^>]*text-anchor="middle"[^>]*>Measure</text>', blog)  # and centered subtitle
-    assert not re.search(r'<text[^>]*text-anchor="middle"[^>]*>Claim</text>', claim)  # left-aligned claim title
+    svg = f.svg()
+    assert not re.search(r'<text[^>]*text-anchor="middle"[^>]*>Claim</text>', svg)  # a left-aligned claim title
+    # older scripts passed frame="blog" or set it as a default: both still run and draw the one frame
+    assert vl.hbar({"a": 1, "b": 2}, title="Claim", subtitle="Measure", frame="blog").svg() == svg
+    vl.set_defaults(frame="blog")
+    assert vl.hbar({"a": 1, "b": 2}, title="Claim", subtitle="Measure").svg() == svg
     with pytest.raises(TypeError):  # the house style has no caption under the figure
         vl.hbar({"a": 1}, caption="**Figure 1.** Caption.")
-    vl.set_defaults(frame="blog")
-    try:
-        assert vl.hbar({"a": 1})._frame() == "blog"
-    finally:
-        vl.set_defaults(frame="claim")
 
 
 @pytest.mark.filterwarnings("ignore::viz.checks.VizCheck")  # bare test specs, not house-style figures
@@ -180,3 +175,22 @@ def test_the_readme_gallery_is_generated_and_every_template_has_its_image():
     assert all(about(n) != n for n in ORDER)  # each says what it is for
     for folder in ("gallery", "gallery/cards"):  # each template's figure and its card
         assert sorted(p.stem for p in (root / "docs" / folder).glob("*.png")) == sorted(STEM.values()), REBUILD
+
+
+def test_alt_text_gives_line_values_at_marks_and_stacked_rows_in_drawn_order():
+    roc = {"Probe": [(0, 0), (1, 52), (5, 80), (10, 88), (100, 100)],
+           "Monitor": [(0, 0), (1, 18), (5, 41), (10, 55), (100, 100)]}
+    alt = vl.line(roc, marks={5: "5% false positives"}, title="The probe caught 80% of hacks").alt_text()
+    assert "At 5% false positives: Probe 80%, Monitor 41%." in alt
+    long = vl.line({"a": [5, 9, 30, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]}, title="a fell").alt_text()
+    assert "from 5% at 0 to 2% at 13, highest 30% at 2" in long
+    stacked = vl.stacked({"Coding": [61, 15, 24], "Sysadmin": [52, 17, 31]}, series=["Failed", "Unclear", "Claimed"],
+                         sort="Claimed", title="Sysadmin led").alt_text()
+    assert stacked.index("Sysadmin:") < stacked.index("Coding:")
+
+
+def test_a_single_line_can_end_in_its_value_alone():
+    f = vl.line({"Eval awareness": [2.1, 9.0, 18.5]}, x=[0, 1000, 2000], end_labels="value",
+                title="Eval awareness rose from 2.1% to 18.5%")
+    svg = f.svg()
+    assert ">18.5%</tspan>" in svg and ">Eval awareness</tspan>" not in svg

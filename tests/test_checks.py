@@ -48,6 +48,12 @@ def test_subtitles_are_off_by_default():
     assert any("No subtitle by default" in p for p in out)
 
 
+def test_a_subtitle_can_say_example_data_and_what_the_error_bars_are():
+    for sub in ("Example data. Error bars are 95% intervals", "Example data · Error bars are 95% intervals"):
+        assert not problems("Search cut wrong answers from 59% to 12%", subtitle=sub)
+    assert any("or both" in p for p in problems("Search cut wrong answers from 59% to 12%", subtitle="From our eval"))
+
+
 def test_too_many_accents_and_confusable_colors():
     data = {k: v for k, v in zip("ABCDE", [5, 4, 3, 2, 1])}
     many = problems("Five conditions differed", data=data, colors=["coral", "blue", "sage", "navy", "clay"])

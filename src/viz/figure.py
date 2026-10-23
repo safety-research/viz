@@ -1,8 +1,7 @@
-"""Figure: a chart body inside one of the two frames, plus export.
+"""Figure: a chart body under its title, plus export.
 
-claim frame (default): left-aligned serif claim title, muted sans subtitle, legend on top, chart.
-blog frame: centered serif title and subtitle, chart, centered legend below.
-Neither frame draws a caption under the chart: the house style puts everything in the title and subtitle.
+A left-aligned serif claim title, a muted sans subtitle, the legend on top (or below, legend_position="bottom"),
+then the chart. No caption under the chart: the house style puts everything in the title and subtitle.
 """
 from __future__ import annotations
 
@@ -29,7 +28,6 @@ class Body:
 
 @dataclass
 class Defaults:
-    frame: str = "claim"
     size: str | th.Size = "screen"  # screen, slide, paper, column (theme.SIZES), or a viz.Size
     width: float | None = None      # content width in px; None takes it from the size
     scale: float | None = None      # PNG pixel ratio; None takes it from the size (300 dpi for print sizes)
@@ -42,8 +40,10 @@ defaults = Defaults()
 
 
 def set_defaults(**kw) -> None:
-    """viz.set_defaults(frame="blog", size="paper", checks="error")"""
+    """viz.set_defaults(size="paper", checks="error")"""
     for k, v in kw.items():
+        if k == "frame":  # there is one frame now; older scripts may still set one
+            continue
         if not hasattr(defaults, k):
             raise TypeError(f"unknown default {k!r}")
         if k == "theme":
@@ -75,8 +75,8 @@ class Figure:
     title: str | None = None
     subtitle: str | None = None
     legend: LegendSpec = None
-    legend_position: str | None = None  # top | bottom (frame default)
-    frame: str | None = None
+    legend_position: str | None = None  # top (default) | bottom
+    frame: str | None = None  # ignored: there is one frame now, and older scripts may still pass one
     width: float | None = None
     kind: str = "chart"
     meta: dict = field(default_factory=dict)
@@ -84,9 +84,6 @@ class Figure:
     size: str | th.Size | None = None  # screen, slide, paper, column; None follows viz.set_defaults(size=...)
 
     # ------------------------------------------------------------------ composition
-    def _frame(self) -> str:
-        return self.frame or defaults.frame
-
     def _size(self) -> th.Size:
         return th.size_of(self.size or defaults.size)
 
@@ -112,67 +109,40 @@ class Figure:
     def compose(self) -> tuple[str, float, float]:
         """Returns (inner svg, total width, total height)."""
         W = self._width()
-        frame = self._frame()
         body = self.body(W)
         legend = _legend_items(self.legend, body)
         shape = body.legend_shape
-        pos = self.legend_position or ("top" if frame == "claim" else "bottom")
+        pos = self.legend_position or "top"
         x0 = th.PAD_X
         y = th.PAD_TOP
         parts: list[str] = []
-        if frame == "claim":
-            if self.title:
-                ts = self._size().title
-                lines = T.wrap(self.title, W, ts, "serif", 600)
-                lh = ts * 1.18
-                for i, ln in enumerate(lines):
-                    parts.append(S.text(x0, y + T.baseline(ts, "serif") + i * lh, ln, ts,
-                                        th.INK, family="serif", weight=600))
-                y += ts + (len(lines) - 1) * lh + 4
-            if self.subtitle:
-                lines = T.wrap(self.subtitle, W, th.SUBTITLE_SIZE, "sans")
-                lh = T.line_height(th.SUBTITLE_SIZE)
-                for i, ln in enumerate(lines):
-                    parts.append(S.text(x0, y + T.baseline(th.SUBTITLE_SIZE) + i * lh, ln, th.SUBTITLE_SIZE, th.MUTED))
-                y += lh * len(lines)
-            if self.title or self.subtitle:
-                y += th.HEADER_GAP
-            if legend and pos == "top":
-                svg_, h = legend_block(legend, W, shape=shape, style="claim")
-                parts.append(S.group(svg_, x0, y))
-                y += h + th.LEGEND_GAP
-            parts.append(S.group(body.svg, x0, y))
-            y += body.height
-            if legend and pos == "bottom":
-                svg_, h = legend_block(legend, W, shape=shape, style="claim", center=False)
-                y += 10
-                parts.append(S.group(svg_, x0, y))
-                y += h
-        else:  # blog
-            if self.title:
-                lines = T.wrap(self.title, W, th.BLOG_TITLE_SIZE, "serif", 600)
-                lh = th.BLOG_TITLE_SIZE * 1.2
-                for i, ln in enumerate(lines):
-                    parts.append(S.text(x0 + W / 2, y + T.baseline(th.BLOG_TITLE_SIZE, "serif") + i * lh, ln,
-                                        th.BLOG_TITLE_SIZE, th.INK, "middle", 600, "serif"))
-                y += th.BLOG_TITLE_SIZE + (len(lines) - 1) * lh + 6
-            if self.subtitle:
-                lines = T.wrap(self.subtitle, W, 13, "sans")
-                lh = T.line_height(13)
-                for i, ln in enumerate(lines):
-                    parts.append(S.text(x0 + W / 2, y + T.baseline(13) + i * lh, ln, 13, th.MUTED, "middle"))
-                y += lh * len(lines) + 8
-            if legend and pos == "top":
-                svg_, h = legend_block(legend, W, shape=shape, style="blog", center=True)
-                parts.append(S.group(svg_, x0, y))
-                y += h + 8
-            parts.append(S.group(body.svg, x0, y))
-            y += body.height
-            if legend and pos == "bottom":
-                y += 6
-                svg_, h = legend_block(legend, W, shape=shape, style="blog", center=True)
-                parts.append(S.group(svg_, x0, y))
-                y += h
+        if self.title:
+            ts = self._size().title
+            lines = T.wrap(self.title, W, ts, "serif", 600)
+            lh = ts * 1.18
+            for i, ln in enumerate(lines):
+                parts.append(S.text(x0, y + T.baseline(ts, "serif") + i * lh, ln, ts,
+                                    th.INK, family="serif", weight=600))
+            y += ts + (len(lines) - 1) * lh + 4
+        if self.subtitle:
+            lines = T.wrap(self.subtitle, W, th.SUBTITLE_SIZE, "sans")
+            lh = T.line_height(th.SUBTITLE_SIZE)
+            for i, ln in enumerate(lines):
+                parts.append(S.text(x0, y + T.baseline(th.SUBTITLE_SIZE) + i * lh, ln, th.SUBTITLE_SIZE, th.MUTED))
+            y += lh * len(lines)
+        if self.title or self.subtitle:
+            y += th.HEADER_GAP
+        if legend and pos == "top":
+            svg_, h = legend_block(legend, W, shape=shape)
+            parts.append(S.group(svg_, x0, y))
+            y += h + th.LEGEND_GAP
+        parts.append(S.group(body.svg, x0, y))
+        y += body.height
+        if legend and pos == "bottom":
+            svg_, h = legend_block(legend, W, shape=shape, center=False)
+            y += 10
+            parts.append(S.group(svg_, x0, y))
+            y += h
         y += th.PAD_BOTTOM
         total_w = W + 2 * th.PAD_X
         fixed = self._size().height
@@ -263,13 +233,10 @@ class Figure:
 
 # ---------------------------------------------------------------------- shared blocks
 
-def legend_block(items: list[tuple[str, str]], width: float, shape: str = "square", style: str = "claim",
+def legend_block(items: list[tuple[str, str]], width: float, shape: str = "square",
                  center: bool = False) -> tuple[str, float]:
-    """Legend rows. claim: sans 13 with rounded swatches; blog: serif 13 with square swatches, centered."""
-    if style == "claim":
-        fam, size, sw, gap_in, gap_out, rx, row_gap = "sans", th.LEGEND_SIZE, 12, 8, 22, 3, 8
-    else:
-        fam, size, sw, gap_in, gap_out, rx, row_gap = "serif", 13, 12, 9, 26, 0, 10
+    """Legend rows in the label font, with rounded swatches."""
+    fam, size, sw, gap_in, gap_out, rx, row_gap = "sans", th.LEGEND_SIZE, 12, 8, 22, 3, 8
     lh = T.line_height(size, fam)
     row_h = max(lh, sw)
     widths = [sw + gap_in + T.width(lab, size, fam) for lab, _ in items]

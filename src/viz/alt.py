@@ -102,9 +102,12 @@ def _dumbbell(data, series=("Without", "With"), unit=UNSET, decimals=None, fmt=N
     return f"Dumbbell chart, {series[0]} to {series[1]}. {_rows_text(rows, list(series), f, missing=missing)}."
 
 
-def _stacked(data, series, normalize=False, unit=UNSET, decimals=None, fmt=None, **_):
+def _stacked(data, series, normalize=False, unit=UNSET, decimals=None, fmt=None, sort=None, **_):
     rows, _ns, _ = D.rows(data, series)
     rows = [r for r in rows if not r.section]
+    if sort is not None:  # in the order the chart draws them
+        j = list(series).index(sort)
+        rows.sort(key=lambda r: -(r.values[j] or 0))
     if normalize:
         for r in rows:
             t = sum(v or 0 for v in r.values) or 1
@@ -151,11 +154,28 @@ def _line(series, x=None, unit=UNSET, decimals=None, fmt=None, xtick_labels=None
         pts = [(a, b) for a, b in pts if b is not None]
         if not pts:
             continue
-        if len(pts) <= 8:
+        if len(pts) <= 12:
             parts.append(f"{nm}: " + ", ".join(f"{f(b)} at {xl(a)}" for a, b in pts))
         else:
-            parts.append(f"{nm}: from {f(pts[0][1])} at {xl(pts[0][0])} to {f(pts[-1][1])} at {xl(pts[-1][0])}")
-    return f"Line chart{_over(xlabel)}{''.join(', ' + h for h in how)}. {'; '.join(parts)}.{_marks(marks, xl)}"
+            text = f"{nm}: from {f(pts[0][1])} at {xl(pts[0][0])} to {f(pts[-1][1])} at {xl(pts[-1][0])}"
+            hi_, lo_ = max(pts, key=lambda p: p[1]), min(pts, key=lambda p: p[1])
+            for word, (a, b) in (("highest", hi_), ("lowest", lo_)):
+                if (a, b) not in (pts[0], pts[-1]):
+                    text += f", {word} {f(b)} at {xl(a)}"
+            parts.append(text)
+    return (f"Line chart{_over(xlabel)}{''.join(', ' + h for h in how)}. {'; '.join(parts)}.{_marks(marks, xl)}"
+            + _at_marks(marks, xl, data, f))
+
+
+def _at_marks(marks, xl, data, f) -> str:
+    """Each line's value at each marked x where it has a point, such as an ROC curve at 5% false positives."""
+    from .charts.axis import read_marks
+    out = []
+    for x, lab in read_marks(marks):
+        vals = [f"{nm} {f(b)}" for nm, pts in data.items() for a, b in pts if a == x and b is not None]
+        if vals:
+            out.append(f" At {lab or xl(x)}: {', '.join(vals)}.")
+    return "".join(out)
 
 
 def _area(series, x=None, normalize=False, unit=UNSET, decimals=None, fmt=None, xtick_labels=None, xlabel=None,

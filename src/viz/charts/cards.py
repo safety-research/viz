@@ -75,7 +75,7 @@ def _reply(r) -> Reply:
 
 
 def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None, cols=None, text_size=16,
-           title=None, subtitle=None, frame=None, width=None) -> Figure:
+           title=None, subtitle=None, width=None) -> Figure:
     """A message and the replies to it, side by side (e.g. the same refusal for different reasons).
 
     replies: list of Reply(label, text, note, color) or tuples. Text is printed as given; add the quote marks
@@ -118,7 +118,7 @@ def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None,
             y += hmax + gap
         return Body("".join(out), y - gap + 2)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="quotes")
 
 
@@ -142,7 +142,7 @@ def _episode(e) -> Episode:
     return Episode(*e)
 
 
-def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None) -> Figure:
+def episodes(items, *, cols=2, title=None, subtitle=None, width=None) -> Figure:
     """Transcript excerpts side by side (the same model on the same task, without and with an intervention)."""
     eps = [_episode(e) for e in items]
     ncol = max(1, min(cols, len(eps)))
@@ -218,14 +218,14 @@ def episodes(items, *, cols=2, title=None, subtitle=None, frame=None, width=None
             y += hmax + gap
         return Body("".join(out), y - gap + 2)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="episodes")
 
 
 # ---------------------------------------------------------------------- tool definition
 
 def code_card(name: str, params: Mapping[str, str] | None = None, description: str = "", *, accent="intervention",
-              title=None, subtitle=None, frame=None, width=None) -> Figure:
+              title=None, subtitle=None, width=None) -> Figure:
     """A tool or function definition: the signature in monospace, then its description in serif.
     params: {"reason": "What you'd like to discuss."} prints as reason: "What you'd like to discuss."."""
     params = dict(params or {})
@@ -274,7 +274,7 @@ def code_card(name: str, params: Mapping[str, str] | None = None, description: s
                 S.rect(1, 5, W - 2, h - 6, th.CARD_LIGHT, 13))
         return Body(card + "".join(out), h + 2)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width,
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width,
                   kind="code_card")
 
 
@@ -384,7 +384,7 @@ def _edge_card(x, y, w, h, fill: str, rx: float, accent: str | None = None, edge
     return card + S.path(d, accent)
 
 
-def chat(turns, *, highlight=None, notes=None, title=None, subtitle=None, frame=None, width=None) -> Figure:
+def chat(turns, *, highlight=None, notes=None, title=None, subtitle=None, width=None) -> Figure:
     """A conversation turn by turn, as write-ups show it: each turn under a small uppercase label, user and system
     turns on a card, assistant turns as serif text with a thin rule at the left, tool calls and results in monospace.
 
@@ -442,7 +442,7 @@ def chat(turns, *, highlight=None, notes=None, title=None, subtitle=None, frame=
             y += h
         return Body("".join(out), y + 2)
 
-    return Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width, kind="chat")
+    return Figure(render, title=title, subtitle=subtitle, legend=False, width=width, kind="chat")
 
 
 # ---------------------------------------------------------------------- tokens shaded by value
@@ -546,7 +546,7 @@ def _return_arrow(x: float, y: float, h: float, ink: str) -> str:
 
 
 def tokens(items, *, scale="diverging", domain=None, center=None, low="coral", high="blue", label=None,
-           decimals=None, title=None, subtitle=None, frame=None, width=None) -> Figure:
+           decimals=None, title=None, subtitle=None, width=None) -> Figure:
     """Text with each token's background shaded by a value, such as a probe score, an attribution or a steering
     effect, and a stepped color bar as the key.
 
@@ -621,26 +621,20 @@ def tokens(items, *, scale="diverging", domain=None, center=None, low="coral", h
         named = [lab for lab, _ in rows if lab is not None]
         col = min(max(T.width(lab, LABEL) for lab in named), 0.3 * W) if named else 0.0  # row labels, at most 30%
         L = col + 14 if named else 0.0
-        bar, bar_w, bar_h = _colorbar(lo, hi, (lo + hi) / 2 if c is None else c, fill_of, label, fmt, W)
-        claim = fig._frame() == "claim"  # the color bar goes where the frame puts legends: on top, or centered below
-        body, y, block = [], (bar_h + 16 if claim else 0.0), L
+        bar, _, bar_h = _colorbar(lo, hi, (lo + hi) / 2 if c is None else c, fill_of, label, fmt, W)
+        body, y = [], bar_h + 16  # the color bar on top, where legends go
         for r, (lab, row) in enumerate(rows):
             if r:
                 y += ROW_GAP
             pieces, h, right = flow(row, L, W, y)
             body += pieces
-            block = max(block, right)
             if lab is not None:
                 lines = T.wrap(lab, col / T.SAFETY + 1, LABEL)  # the widest label fits its column on one line
                 body += [S.text(L - 14, y + T.baseline(SIZE, FAM, BOX) + k * 17, ln, LABEL, th.INK2, "end")
                          for k, ln in enumerate(lines)]
                 h = max(h, BOX + (len(lines) - 1) * 17)
             y += h
-        if claim:
-            return Body(bar + "".join(body), y + 2)
-        # blog frame: the text block centered under the centered title, the color bar centered below it
-        out = S.group("".join(body), (W - block) / 2) + S.group(bar, (W - bar_w) / 2, y + 16)
-        return Body(out, y + 16 + bar_h + 2)
+        return Body(bar + "".join(body), y + 2)
 
-    fig = Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width, kind="tokens")
+    fig = Figure(render, title=title, subtitle=subtitle, legend=False, width=width, kind="tokens")
     return fig

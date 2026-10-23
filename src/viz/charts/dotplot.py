@@ -20,7 +20,7 @@ def dotplot(data, *, series=None, color=None, colors=None, highlight=None, accen
             domain=None, ticks=None, step=None, zero=False, unit=UNSET, decimals=None, fmt=None, signed=False,
             tick_format=None, ci=None, ref=None, ref_label=None, notes=None, values=True, xlabel=None,
             row_height=None, dot_size=None, label_width=None,
-            title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+            title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Dot plot (forest plot): a dot per row, an optional horizontal interval, labels on the left.
 
     data: {label: value}, {label: [v1, v2]} with series=[...] for several dots per row (offset within the row),
@@ -188,4 +188,4 @@ def dotplot(data, *, series=None, color=None, colors=None, highlight=None, accen
         return Body("".join(out), height, legend_items, "round", meta={"plot_x": (L, R0)})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="dotplot")
+                  legend_position=legend_position, width=width, kind="dotplot")

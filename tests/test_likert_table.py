@@ -492,14 +492,6 @@ def test_table_text_reaches_4_5_to_1_on_its_background(theme):
         assert th.BG in f.svg() and {ln.stroke for ln in lines(body.svg) if ln.width == 1.2} == {th.INK}
 
 
-def test_a_narrow_table_centers_under_a_blog_title():
-    data = {"Closed book": [41.0, 12.5], "With search": [88.0, 2.4]}
-    claim = table_body(data, columns=["Correct", "Refused"]).meta["plot_x"]
-    blog = table_body(data, columns=["Correct", "Refused"], frame="blog").meta["plot_x"]
-    assert claim[0] == 0 and claim[1] < 960
-    assert blog[0] > 0 and blog[0] == pytest.approx(960 - blog[1])
-
-
 def test_long_headers_wrap_to_two_lines_and_the_table_stays_inside():
     f = vl.table({"Qwen3-8B": [61.2, 70.4, 0.71, 3.2, 1850], "Llama 3.1 8B Instruct": [58.9, 66.0, 0.64, 2.9, 1702],
                   "Gemma 4 31B": [74.1, 81.3, 0.80, 7.6, 2210]},

@@ -44,7 +44,7 @@ def _stack(series, x=None, normalize: bool = False) -> tuple[list[str], list[flo
 def area(series, *, x=None, normalize=False, colors=None, xscale="linear", xticks=None, xtick_labels=None, xunit="",
          xlabel=None, ylabel=None, ticks=None, domain=None, step=None, unit=UNSET, decimals=None, fmt=None,
          height=None, marks=None, end_labels=True,
-         title=None, subtitle=None, legend=False, legend_position=None, frame=None, width=None) -> Figure:
+         title=None, subtitle=None, legend=False, legend_position=None, width=None) -> Figure:
     """Stacked area chart, the first series at the bottom.
 
     series: {name: [y, ...]} with a shared x=[...] (or {name: [(x, y), ...]} or {name: {x: y}} with the same x values
@@ -147,4 +147,4 @@ def area(series, *, x=None, normalize=False, colors=None, xscale="linear", xtick
         return Body("".join(out), H, list(zip(names, cols)), "square", meta={"plot_x": (PL, PL + PW)})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend, legend_position=legend_position,
-                  frame=frame, width=width, kind="area")
+                  width=width, kind="area")

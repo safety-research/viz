@@ -12,8 +12,7 @@ from .common import UNSET, resolve_unit, series_colors
 
 def stacked(data, *, series, colors=None, normalize=False, unit=UNSET, decimals=None, fmt=None, values=True,
             min_label_width=34, totals=False, axis=True, row_height=40, bar_height=24, sort=None,
-            title=None, subtitle=None, legend=None, legend_position=None, frame=None,
-            width=None) -> Figure:
+            title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """data: {label: [v1, v2, ...]} in the order of `series`. normalize=True rescales each row to 100%.
     Segment values print inside segments wide enough to hold them. sort: a series name to sort rows by."""
     rows, ns, _ = D.rows(data, series)
@@ -67,4 +66,4 @@ def stacked(data, *, series, colors=None, normalize=False, unit=UNSET, decimals=
         return Body("".join(out), bottom + (30 if axis else 6), list(zip(series, cols)))
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend if legend is not None else True,
-                  legend_position=legend_position, frame=frame, width=width, kind="stacked")
+                  legend_position=legend_position, width=width, kind="stacked")

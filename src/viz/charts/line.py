@@ -73,7 +73,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
          xtick_labels=None, unit=UNSET, xunit="", decimals=None, fmt=None, xlabel=None, ylabel=None, bands=None,
          runs=None, markers=None, end_labels=True, end_values=True, ref=None, ref_label=None, height=None, zero=True,
          xscale="linear", yscale="linear", smooth=None, marks=None, diagonal=False,
-         title=None, subtitle=None, legend=False, legend_position=None, frame=None, width=None) -> Figure:
+         title=None, subtitle=None, legend=False, legend_position=None, width=None) -> Figure:
     """Line chart.
 
     series: {name: [y, ...]} with a shared x=[...]; or {name: [(x, y), ...]}; or {name: {x: y}}.
@@ -81,6 +81,8 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     runs: {name: [run, run, ...]} draws each run (training seed) as a thin faint line under the bold line of that
     name, which shows their mean or median. Each run takes the forms a series does: [y, ...] on the shared x,
     [(x, y), ...] or {x: y}.
+    end_labels: True names each line at its end (with its value, unless end_values=False); "value" writes only the
+    value, for a single line the title already names; False writes nothing there.
     xtick_labels: {x: "label"} (e.g. {0: "0", 1e6: "1M"}) or a list matching xticks.
     xscale: "linear", "category" (x values evenly spaced in order, e.g. doses 0, 1M, 3M, 10M) or "log". A linear axis
     with more than 12 x values ticks at round steps.
@@ -152,7 +154,7 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             for nm, pts in shown.items():
                 have = [p for p in pts if p[1] is not None]
                 if have:
-                    s = nm + (f"  {fmtv(have[-1][1])}" if end_values else "")
+                    s = fmtv(have[-1][1]) if end_labels == "value" else nm + (f"  {fmtv(have[-1][1])}" if end_values else "")
                     end_w = max(end_w, T.width(s, 12.5, "sans", 600))
         PR = (end_w + 16) if end_labels else 12
         PB = 30 + (22 if xlabel else 0)
@@ -232,6 +234,9 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
                 e[0] = yy
             for yy, nm, c, v in ends:
                 ink = th.readable(c)  # the series color, darkened only as far as 4.5:1 needs
+                if end_labels == "value":
+                    out.append(S.spans(PL + PW + 10, yy + 4.5, [(fmtv(v), {"size": 12.5, "weight": 600, "fill": ink})]))
+                    continue
                 parts = [(nm, {"size": 12.5, "weight": 600, "fill": ink})]
                 if end_values:
                     parts.append((fmtv(v), {"size": 12.5, "fill": th.INK2, "dx": 6}))
@@ -239,4 +244,4 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
         return Body("".join(out), H, list(zip(names, cols)), "line")
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="line")
+                  legend_position=legend_position, width=width, kind="line")

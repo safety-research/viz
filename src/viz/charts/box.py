@@ -18,7 +18,7 @@ def box(data, *, series=None, color=None, colors=None, highlight=None, accent="i
         horizontal=False, domain=None, ticks=None, step=None, zero=None, unit=UNSET, decimals=None, fmt=None,
         signed=False, tick_format=None, values=True, ref=None, ref_label=None, ylabel=None, xlabel=None,
         height=None, box_width=None, grid=False,
-        title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+        title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Box plot per group (Tukey): median line, interquartile box, 1.5 IQR whiskers, outliers as dots.
 
     data: {group: [values]}, a list of (group, [values]) pairs, or a DataFrame (one group per column);
@@ -44,7 +44,7 @@ def box(data, *, series=None, color=None, colors=None, highlight=None, accent="i
     r_pt = 3.0 if most <= 40 else 2.4 if most <= 150 else 1.8
     r_out = 3.2
     fig = Figure(None, title=title, subtitle=subtitle, legend=legend, legend_position=legend_position,
-                 frame=frame, width=width, kind="box")
+                 width=width, kind="box")
 
     def render(W: float) -> Body:
         n = len(labels)

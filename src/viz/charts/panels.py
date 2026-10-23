@@ -4,14 +4,12 @@ from __future__ import annotations
 from .. import svg as S
 from .. import text as T
 from .. import theme as th
-from ..figure import Body, Figure, defaults
+from ..figure import Body, Figure
 
 
 def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_gap: float | None = None,
-           title=None, subtitle=None, legend=None, legend_position=None, frame=None,
-           width=None) -> Figure:
-    """Lay out charts in a grid. Each chart's own title becomes its panel title (in the blog frame, a panel set
-    without an overall title gets serif "(a) ..." titles like the small multiples in the drafts).
+           title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
+    """Lay out charts in a grid. Each chart's own title becomes its panel title, centered over its plot.
     The legend is shared: the union of the panels' legends unless you pass one."""
     figs = list(figs)
     if not figs:
@@ -19,9 +17,8 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
     cols = max(1, min(cols, len(figs)))
 
     def render(W: float) -> Body:
-        fr = frame or defaults.frame
-        g = gap if gap is not None else (32 if fr == "claim" else 26)
-        rg = row_gap if row_gap is not None else (26 if fr == "claim" else 30)
+        g = gap if gap is not None else 32
+        rg = row_gap if row_gap is not None else 26
         pw = (W - g * (cols - 1)) / cols
         bodies = [f.body(pw, inherit=True) for f in figs]
         for start in range(0, len(figs), cols):  # vertical bars in one row share their category-label depth
@@ -48,31 +45,19 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
                     lines = T.wrap_balanced(text, pw, size, fam, wt)
                 w = max(T.width(ln, size, fam, wt) for ln in lines)
                 return lines, min(max(mid, w / 2), pw - w / 2)
-            if f.title:
-                if fr == "claim":
-                    size, fam, wt, fill, anchor, x = 14, "sans", 600, th.INK, "start", 0.0
-                elif title:  # under an overall title: small sans panel titles
-                    size, fam, wt, fill, anchor, x = 12.5, "sans", 600, th.INK2, "middle", mid
-                else:  # small multiples: each panel carries a serif figure title
-                    size, fam, wt, fill, anchor, x = th.BLOG_TITLE_SIZE, "serif", 600, th.INK, "middle", mid
-                lh = T.line_height(size, fam) * (1.0 if fam == "sans" else 1.2)
-                if anchor == "start":
-                    lines = T.wrap(f.title, pw, size, fam, wt)
-                else:
-                    lines, x = centered(f.title, size, fam, wt)
+            if f.title:  # centered over the panel's plot
+                size, fam, wt = 14, "sans", 600
+                lh = T.line_height(size, fam)
+                lines, x = centered(f.title, size, fam, wt)
                 for i, ln in enumerate(lines):
-                    parts.append(S.text(x, h + T.baseline(size, fam) + i * lh, ln, size, fill, anchor, wt, fam))
+                    parts.append(S.text(x, h + T.baseline(size, fam) + i * lh, ln, size, th.INK, "middle", wt, fam))
                 h += T.line_height(size, fam) + (len(lines) - 1) * lh
                 h += 6
             if f.subtitle:
                 size = 12.5
-                if fr == "claim":
-                    anchor, x, lines = "start", 0.0, T.wrap(f.subtitle, pw, size)
-                else:
-                    anchor = "middle"
-                    lines, x = centered(f.subtitle, size)
+                lines, x = centered(f.subtitle, size)
                 for i, ln in enumerate(lines):
-                    parts.append(S.text(x, h + T.baseline(size) + i * T.line_height(size), ln, size, th.MUTED, anchor))
+                    parts.append(S.text(x, h + T.baseline(size) + i * T.line_height(size), ln, size, th.MUTED, "middle"))
                 h += len(lines) * T.line_height(size) + 4
             cells.append(("".join(parts), h, body))
         out = []
@@ -103,4 +88,4 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
 
     lp = legend_position
     return Figure(render, title=title, subtitle=subtitle, legend=legend if legend is not None else True,
-                  legend_position=lp, frame=frame, width=width, kind="panels")
+                  legend_position=lp, width=width, kind="panels")

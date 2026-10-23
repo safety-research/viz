@@ -18,8 +18,7 @@ from .dist import attach_runs, dark, dots, run_values
 def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="intervention", sort=None,
          domain=None, ticks=None, step=None, unit=UNSET, decimals=None, fmt=None, signed=False, tick_format=None,
          ci=None, runs=None, ref=None, ref_label=None, ylabel=None, height=None, values=True, value_labels="all", grid=False,
-         bar_width=None, title=None, subtitle=None, legend=None, legend_position=None, frame=None,
-         width=None) -> Figure:
+         bar_width=None, title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """Vertical (grouped) bar chart.
 
     data: {label: value}, {label: [v1, v2]}, list of pairs, or pandas. series: names for grouped bars.
@@ -44,7 +43,7 @@ def bars(data, *, series=None, color=None, colors=None, highlight=None, accent="
     SC.check_percent(all_vals, unit, unit_given)
 
     fig = Figure(None, title=title, subtitle=subtitle, legend=legend,
-                 legend_position=legend_position, frame=frame, width=width, kind="bars")
+                 legend_position=legend_position, width=width, kind="bars")
 
     def render(W: float) -> Body:
         n = len(rows)

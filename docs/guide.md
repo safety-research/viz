@@ -53,9 +53,6 @@ and nothing else on the figure competes with it.
 Titles, labels, ticks and legends are set in Newsreader, a serif; `viz.set_defaults(font="sans")` switches
 labels, ticks and legends to DM Sans.
 
-For a write-up, use `frame="blog"`. It gives a centered serif title and subtitle, with the legend below the chart.
-`viz.set_defaults(frame="blog")` switches every figure.
-
 For a dark page, such as slides or a dark-mode doc, `viz.set_defaults(theme="dark")` (or `viz --theme dark ...`)
 draws light text on GitHub's dark gray, #0D1117. The five intervention colors stay the same, the grays dim, and the
 ordered ramp runs from dim to bright.

@@ -40,7 +40,7 @@ def _steps(vals: list[float], complementary: bool) -> list[tuple[float, float]]:
 def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention", domain=None, ticks=None, step=None,
          unit="", tick_format=None, decimals=None, fmt=None, complementary=False, ref=None, ref_label=None,
          values=True, xlabel=None, ylabel=None, height=None,
-         title=None, subtitle=None, legend=None, legend_position=None, frame=None, width=None) -> Figure:
+         title=None, subtitle=None, legend=None, legend_position=None, width=None) -> Figure:
     """ECDF: for each group, the share of items at or below each value, as a step line from 0 to 100%.
 
     data: a list of numbers, {name: [numbers]} for several groups, a pandas Series, or a DataFrame (one group per
@@ -195,4 +195,4 @@ def ecdf(data, *, color=None, colors=None, highlight=None, accent="intervention"
         return Body("".join(out), H, legend_items, "line", meta={"plot_x": (PL, PL + PW)})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
-                  legend_position=legend_position, frame=frame, width=width, kind="ecdf")
+                  legend_position=legend_position, width=width, kind="ecdf")

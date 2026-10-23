@@ -35,13 +35,14 @@ To use a figure in an artifact, call `fig.html(standalone=False)`. It returns in
 ## Pick the chart
 
 The templates in `examples/` are grouped by the research question a figure answers and named after the chart they
-show (`01_hbar.py`, `15_line_roc.py`, ...); copy the closest one.
+show (such as `*_hbar.py` or `*_line_roc.py`); copy the closest one.
 
 - **Comparisons.** Rates by condition: `hbar`, with `notes=` for "352 of 400" and `ci=` for intervals. Each model
   without and with the intervention: `bars`. Several runs or seeds: never show one run when there are more; show the
   mean with every run as a dot, `bars(..., runs=...)`. Each model's effect with its interval, against zero:
   `dotplot`. Where the outcomes went: `stacked`.
-- **Training dynamics.** `line` with `runs=` for every seed faint behind the mean, one line per model for several
+- **Training dynamics.** `line` with `runs=` for every seed faint behind the mean (with one line, whose name
+  the title already says, `end_labels="value"` ends it in its value alone), one line per model for several
   models (each its own color, named at its end), `smooth=0.9` for a noisy reward,
   `marks={step: "RL starts"}` for events; shares over training with `area(..., normalize=True)`.
 - **Evaluations.** Several models on a few benchmarks: `bars(scores, series=[models])`, one color per model.
@@ -110,12 +111,13 @@ Title:
   measure. Field terms the readers use daily are fine.
 
 Subtitle: none by default. Add one only to say "Example data" when the numbers are made up, or what the error
-bars are ("Error bars are 95% intervals"). The measure and unit go in the axis label, or in the title when the
+bars are ("Error bars are 95% intervals"), or both: "Example data. Error bars are 95% intervals". The measure and unit go in the axis label, or in the title when the
 chart has no axis label. Sample sizes, methods, training details (steps, seeds, layers) and model names go in the
 text. If the measure needs a sentence to explain, show a simpler measure.
 
 Numbers as measured: viz prints each value with the digits it has and never rounds it, and a title quotes the
-numbers the figure shows; never round them for the reader. One name per condition, the same in every figure and in
+numbers the figure shows; never round them for the reader. A computed value such as a mean over seeds can have more
+digits than it deserves (18.475%): choose its precision with `decimals=` and quote the printed number in the title. One name per condition, the same in every figure and in
 the text.
 
 Check: read the title alone. Someone outside the project should be able to repeat the finding without asking
@@ -131,7 +133,6 @@ what a word means.
 
 ## Style rules
 
-- Use `frame="blog"` for write-ups.
 - No figure captions at the bottom, in the image or under it in a write-up. What a caption would say goes in
   the text.
 - Colors keep their meaning across a write-up: set them with `viz.set_roles` (see Colors), and mute what isn't

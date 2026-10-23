@@ -182,8 +182,7 @@ def describe(rows, **kw) -> str:
 
 
 def table(rows, *, columns=None, better=None, unit=UNSET, decimals=None, fmt=None, signed=False, ci=None,
-          highlight=None, accent="intervention", label_header=None, title=None, subtitle=None, frame=None,
-          width=None) -> Figure:
+          highlight=None, accent="intervention", label_header=None, title=None, subtitle=None, width=None) -> Figure:
     """A results table in the booktabs look.
 
     rows: {row label: [value per column]}, {row label: {column: value}}, a list of (label, values) pairs that may
@@ -252,7 +251,7 @@ def table(rows, *, columns=None, better=None, unit=UNSET, decimals=None, fmt=Non
         head_lines = [T.wrap(col, colw[j] / T.SAFETY + 0.5, vs, "sans", 600) for j, col in enumerate(cols)]
         gap = min(MAX_GAP, max(MIN_GAP, (W - 2 * PAD - lab_w - sum(colw)) / nc))
         TW = 2 * PAD + lab_w + sum(colw) + nc * gap
-        X0 = (W - TW) / 2 if TW < W and fig._frame() == "blog" else 0.0  # centered under a centered title
+        X0 = 0.0
         blocks, xx = [], X0 + PAD + lab_w
         for j in range(nc):
             xx += gap
@@ -316,5 +315,5 @@ def table(rows, *, columns=None, better=None, unit=UNSET, decimals=None, fmt=Non
         body = S.group("".join(out + ink), extra=TABULAR)
         return Body(body, bottom + RULES[0] / 2 + 2, None, meta={"plot_x": (X0, X0 + TW)})
 
-    fig = Figure(render, title=title, subtitle=subtitle, legend=False, frame=frame, width=width, kind="table")
+    fig = Figure(render, title=title, subtitle=subtitle, legend=False, width=width, kind="table")
     return fig
