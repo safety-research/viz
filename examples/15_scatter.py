@@ -18,4 +18,4 @@ fig = viz.scatter(
     annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
     xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
     title="Datasets with more questions about recent events drew more searches")
-fig.save("10_scatter.png")
+fig.save("15_scatter.png")

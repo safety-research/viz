@@ -50,36 +50,43 @@ Every number here is made up, and error bars and bands are 95% intervals.
 <a href="examples/README.md#every-run-as-a-dot"><img src="docs/gallery/cards/03_bars_runs.png" width="32%" alt="Every run as a dot"></a>
 <a href="examples/README.md#effects-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="32%" alt="Effects with intervals"></a>
 <a href="examples/README.md#before-and-after"><img src="docs/gallery/cards/05_dumbbell.png" width="32%" alt="Before and after"></a>
+<a href="examples/README.md#results-table"><img src="docs/gallery/cards/06_table.png" width="32%" alt="Results table"></a>
 
 ### Show change over training
 
-<a href="examples/README.md#training-curves"><img src="docs/gallery/cards/06_line_runs.png" width="32%" alt="Training curves"></a>
+<a href="examples/README.md#training-curves"><img src="docs/gallery/cards/07_line_runs.png" width="32%" alt="Training curves"></a>
+<a href="examples/README.md#noisy-curves-smoothed"><img src="docs/gallery/cards/08_line_smooth.png" width="32%" alt="Noisy curves, smoothed"></a>
+<a href="examples/README.md#events-on-a-curve"><img src="docs/gallery/cards/09_line_marks.png" width="32%" alt="Events on a curve"></a>
+<a href="examples/README.md#scaling-on-log-axes"><img src="docs/gallery/cards/10_line_log.png" width="32%" alt="Scaling on log axes"></a>
+<a href="examples/README.md#shares-over-training"><img src="docs/gallery/cards/11_area.png" width="32%" alt="Shares over training"></a>
 
 ### Show a distribution
 
-<a href="examples/README.md#two-distributions"><img src="docs/gallery/cards/07_histogram.png" width="32%" alt="Two distributions"></a>
-<a href="examples/README.md#box-plots"><img src="docs/gallery/cards/08_box.png" width="32%" alt="Box plots"></a>
-<a href="examples/README.md#one-dot-per-item"><img src="docs/gallery/cards/09_strip.png" width="32%" alt="One dot per item"></a>
+<a href="examples/README.md#two-distributions"><img src="docs/gallery/cards/12_histogram.png" width="32%" alt="Two distributions"></a>
+<a href="examples/README.md#box-plots"><img src="docs/gallery/cards/13_box.png" width="32%" alt="Box plots"></a>
+<a href="examples/README.md#one-dot-per-item"><img src="docs/gallery/cards/14_strip.png" width="32%" alt="One dot per item"></a>
 
 ### Show a relationship
 
-<a href="examples/README.md#one-dot-per-dataset"><img src="docs/gallery/cards/10_scatter.png" width="32%" alt="One dot per dataset"></a>
-<a href="examples/README.md#models-by-conditions"><img src="docs/gallery/cards/11_heatmap.png" width="32%" alt="Models by conditions"></a>
+<a href="examples/README.md#one-dot-per-dataset"><img src="docs/gallery/cards/15_scatter.png" width="32%" alt="One dot per dataset"></a>
+<a href="examples/README.md#score-against-cost"><img src="docs/gallery/cards/16_scatter_frontier.png" width="32%" alt="Score against cost"></a>
+<a href="examples/README.md#models-by-conditions"><img src="docs/gallery/cards/17_heatmap.png" width="32%" alt="Models by conditions"></a>
 
 ### Show where outcomes went
 
-<a href="examples/README.md#where-outcomes-went"><img src="docs/gallery/cards/12_stacked.png" width="32%" alt="Where outcomes went"></a>
+<a href="examples/README.md#where-outcomes-went"><img src="docs/gallery/cards/18_stacked.png" width="32%" alt="Where outcomes went"></a>
+<a href="examples/README.md#answers-on-a-scale"><img src="docs/gallery/cards/19_likert.png" width="32%" alt="Answers on a scale"></a>
 
 ### Show what the model did
 
-<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/13_quotes.png" width="32%" alt="Contrasting replies"></a>
-<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/14_episodes.png" width="32%" alt="Transcripts side by side"></a>
-<a href="examples/README.md#a-conversation-turn-by-turn"><img src="docs/gallery/cards/15_chat.png" width="32%" alt="A conversation, turn by turn"></a>
-<a href="examples/README.md#scores-on-each-token"><img src="docs/gallery/cards/16_tokens.png" width="32%" alt="Scores on each token"></a>
+<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/20_quotes.png" width="32%" alt="Contrasting replies"></a>
+<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/21_episodes.png" width="32%" alt="Transcripts side by side"></a>
+<a href="examples/README.md#a-conversation-turn-by-turn"><img src="docs/gallery/cards/22_chat.png" width="32%" alt="A conversation, turn by turn"></a>
+<a href="examples/README.md#scores-on-each-token"><img src="docs/gallery/cards/23_tokens.png" width="32%" alt="Scores on each token"></a>
 
 ### Lay out several figures
 
-<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/17_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/24_panels.png" width="32%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more

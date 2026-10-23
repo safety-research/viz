@@ -74,7 +74,7 @@ def _title(title: str | None, kind: str, panel: bool = False) -> list[str]:
     return out
 
 
-ORDER_KINDS = ("hbar", "bars", "dotplot")
+ORDER_KINDS = ("hbar", "bars", "dotplot", "likert")
 
 
 def order_facts(kind: str, args: tuple, kw: dict) -> dict | None:
@@ -85,6 +85,9 @@ def order_facts(kind: str, args: tuple, kw: dict) -> dict | None:
     from . import data as D
     from .charts.common import sort_key
     try:
+        if kind == "likert":  # rows ranked by net share, high minus low
+            from .charts.likert import order_facts as likert_facts
+            return likert_facts(*args, **kw)
         rows, _ns, names = D.rows(args[0] if args else kw.get("data"), kw.get("series"))
     except Exception:
         return None

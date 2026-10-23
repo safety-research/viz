@@ -16,4 +16,4 @@ scores = [
 fig = viz.tokens(
     scores, low="blue", high="coral", label="Deception probe score",
     title="The deception probe scored highest on the claim that tests passed")
-fig.save("16_tokens.png")
+fig.save("23_tokens.png")

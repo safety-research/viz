@@ -120,7 +120,8 @@ format, make a `viz.Size`: a one-column NeurIPS page (5.5 in) is `viz.Size(width
 ## Accessibility
 
 - All text reaches 4.5:1 contrast with what it sits on, including labels on colored fills (viz picks white or
-  ink, whichever contrasts more), and no text is smaller than 12 px.
+  ink, whichever contrasts more), and no text is smaller than 12 px, except the raised exponent in a
+  log-axis tick such as 10²⁰.
 - The intervention colors reach 3:1 against the white background and the dark theme's; the gray control is
   context, and its value is labeled like every bar's. The control and the first three interventions (orange,
   blue, sage) stay at least 10 CIEDE2000 apart for normal vision and the red-green color blindnesses; blue and

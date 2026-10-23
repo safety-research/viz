@@ -113,11 +113,39 @@ def _stacked(data, series, normalize=False, unit=UNSET, decimals=None, fmt=None,
     return f"Stacked bars. {_rows_text(rows, list(series), f)}."
 
 
-def _line(series, x=None, unit=UNSET, decimals=None, fmt=None, xtick_labels=None, xlabel=None, **_):
-    from .charts.line import _series
+def _x_words(xtick_labels):
+    """An x value in words: its tick label when xtick_labels names it, else the number."""
+    from .charts.axis import by_number
+    m = by_number(xtick_labels) if isinstance(xtick_labels, Mapping) else {}
+    return lambda v: str(m[v]) if v in m else f"{v:g}"
+
+
+def _over(xlabel) -> str:
+    """' over training step': the x label inside a sentence, its first letter lowered unless it starts an acronym."""
+    if not xlabel:
+        return ""
+    keep = xlabel[1:2].isupper()  # RL step, GPU hours
+    return f" over {xlabel if keep else xlabel[:1].lower() + xlabel[1:]}"
+
+
+def _marks(marks, xl) -> str:
+    from .charts.axis import read_marks
+    listed = ", ".join(f"{lab} at {xl(x)}" if lab else f"a line at {xl(x)}" for x, lab in read_marks(marks))
+    return f" Marked: {listed}." if listed else ""
+
+
+def _line(series, x=None, unit=UNSET, decimals=None, fmt=None, xtick_labels=None, xlabel=None, smooth=None,
+          xscale="linear", yscale="linear", marks=None, **_):
+    from .charts.line import _series, smoothed
     data = _series(series, x)
     f = _fmt([v for pts in data.values() for _, v in pts], unit, decimals, fmt)
-    xl = (lambda v: str(xtick_labels.get(v, v))) if isinstance(xtick_labels, Mapping) else (lambda v: f"{v:g}")
+    if smooth:  # the bold lines and their end labels give the smoothed values
+        data = {nm: smoothed(pts, smooth) for nm, pts in data.items()}
+    xl = _x_words(xtick_labels)
+    how = [f"smoothed with an exponential moving average (weight {smooth:g}) over the faint raw values"] if smooth else []
+    logs = [a for a, s in (("x", xscale), ("y", yscale)) if s == "log"]
+    if logs:
+        how.append("on log-log axes" if len(logs) == 2 else f"on a log {logs[0]} axis")
     parts = []
     for nm, pts in data.items():
         pts = [(a, b) for a, b in pts if b is not None]
@@ -127,8 +155,25 @@ def _line(series, x=None, unit=UNSET, decimals=None, fmt=None, xtick_labels=None
             parts.append(f"{nm}: " + ", ".join(f"{f(b)} at {xl(a)}" for a, b in pts))
         else:
             parts.append(f"{nm}: from {f(pts[0][1])} at {xl(pts[0][0])} to {f(pts[-1][1])} at {xl(pts[-1][0])}")
-    over = f" over {xlabel.lower()}" if xlabel else ""
-    return f"Line chart{over}. {'; '.join(parts)}."
+    return f"Line chart{_over(xlabel)}{''.join(', ' + h for h in how)}. {'; '.join(parts)}.{_marks(marks, xl)}"
+
+
+def _area(series, x=None, normalize=False, unit=UNSET, decimals=None, fmt=None, xtick_labels=None, xlabel=None,
+          marks=None, **_):
+    from .charts.area import _stack
+    names, xs, vals = _stack(series, x, normalize)
+    pct = resolve_unit(unit)[0] == "%" and decimals is None and fmt is None
+    f = _fmt([v for row in vals for v in row], unit, 0 if pct else decimals, fmt)  # percents to whole numbers
+    xl = _x_words(xtick_labels)
+    parts = []
+    for nm, row in zip(names, vals):
+        if len(xs) <= 8:
+            parts.append(f"{nm}: " + ", ".join(f"{f(v)} at {xl(a)}" for a, v in zip(xs, row)))
+        else:
+            parts.append(f"{nm}: from {f(row[0])} at {xl(xs[0])} to {f(row[-1])} at {xl(xs[-1])}")
+    shares = ", each x as shares of its total" if normalize else ""
+    return (f"Stacked area chart{_over(xlabel)}{shares}, bands from the bottom up. {'; '.join(parts)}."
+            f"{_marks(marks, xl)}")
 
 
 def _heatmap(data, rows=None, cols=None, unit=UNSET, decimals=None, fmt=None, signed=False, **_):
@@ -145,14 +190,27 @@ def _heatmap(data, rows=None, cols=None, unit=UNSET, decimals=None, fmt=None, si
     return f"Heatmap. {body}."
 
 
-def _scatter(points, labels=None, xunit="", yunit="", xlabel=None, ylabel=None, **_):
+def _frontier(pts, frontier, xunit, yunit, named: bool) -> str:
+    from .charts.scatter import FRONTIERS, pareto
+    if not frontier:
+        return ""
+    hx, hy = FRONTIERS[frontier]
+    on = [pts[i] for i in pareto(pts, frontier)]
+    unnamed = lambda lab: not named or (lab.startswith("#") and lab[1:].isdigit())  # scatter's name for an unlabeled point
+    listed = ", ".join(f"({x:g}{xunit}, {y:g}{yunit})" if unnamed(lab) else lab for lab, x, y in on)
+    return (f" Pareto frontier, where {'higher' if hy else 'lower'} y and {'higher' if hx else 'lower'} x are better: "
+            f"{listed}.")
+
+
+def _scatter(points, labels=None, xunit="", yunit="", xlabel=None, ylabel=None, frontier=None, **_):
     from .charts.scatter import _groups, _points
     groups = _groups(points)
     if groups is not None:
         axes = ", ".join(s for s in (f"x: {xlabel}" if xlabel else "", f"y: {ylabel}" if ylabel else "") if s)
         parts = [f"{g}: {len(v)} points around ({sum(a for a, _ in v) / len(v):.2g}, {sum(b for _, b in v) / len(v):.2g})"
                  for g, v in groups.items() if v]
-        return f"Scatter plot in {len(groups)} groups{' (' + axes + ')' if axes else ''}. {'; '.join(parts)}."
+        front = _frontier([(g, a, b) for g, v in groups.items() for a, b in v], frontier, xunit, yunit, False)
+        return f"Scatter plot in {len(groups)} groups{' (' + axes + ')' if axes else ''}. {'; '.join(parts)}.{front}"
     pts = _points(points)
     named = {p[0] for p in pts} if labels is True else set(labels or [])
     axes = ", ".join(s for s in (f"x: {xlabel}" if xlabel else "", f"y: {ylabel}" if ylabel else "") if s)
@@ -160,7 +218,8 @@ def _scatter(points, labels=None, xunit="", yunit="", xlabel=None, ylabel=None, 
     unnamed = lambda lab: lab.startswith("#") and lab[1:].isdigit()  # scatter's name for an unlabeled point
     listed = "; ".join(f"({x:g}{xunit}, {y:g}{yunit})" if unnamed(lab) else f"{lab} ({x:g}{xunit}, {y:g}{yunit})"
                        for lab, x, y in show)
-    return f"Scatter plot of {len(pts)} points{' (' + axes + ')' if axes else ''}. {listed}."
+    front = _frontier(pts, frontier, xunit, yunit, True)
+    return f"Scatter plot of {len(pts)} points{' (' + axes + ')' if axes else ''}. {listed}.{front}"
 
 
 def _waffle(parts, total=100, count_label=None, **_):
@@ -191,7 +250,7 @@ def _panels(figs, **_):
 
 
 def _quotes(replies, prompt=None, prompt_label="The person", **_):
-    from .cards import _reply
+    from .charts.cards import _reply
     out = [f"{prompt_label}: {prompt}"] if prompt else []
     for r in replies:
         r = _reply(r)
@@ -200,7 +259,7 @@ def _quotes(replies, prompt=None, prompt_label="The person", **_):
 
 
 def _episodes(items, **_):
-    from .cards import _episode
+    from .charts.cards import _episode
     out = []
     for e in items:
         e = _episode(e)
@@ -216,7 +275,7 @@ def _code_card(name, params=None, description="", **_):
 
 
 def _chat(turns, highlight=None, notes=None, **_):
-    from .cards import ROLE_LABELS, _highlights, _turn_notes, _turns
+    from .charts.cards import ROLE_LABELS, _highlights, _turn_notes, _turns
     ts = _turns(turns)
     marked, noted = _highlights(highlight, len(ts)), _turn_notes(notes, len(ts))
     out = []
@@ -230,7 +289,7 @@ def _chat(turns, highlight=None, notes=None, **_):
 
 def _tokens(items, scale="diverging", domain=None, center=None, label=None, decimals=None, **_):
     """The text, then the highest- and lowest-scoring tokens (every scored token when there are six or fewer)."""
-    from .cards import _token_fmt, _token_rows, _token_scale
+    from .charts.cards import _token_fmt, _token_rows, _token_scale
     rows = _token_rows(items)
     lo, hi, c = _token_scale(rows, scale, domain, center)
     f = _token_fmt(decimals)
@@ -254,6 +313,16 @@ def _tokens(items, scale="diverging", domain=None, center=None, label=None, deci
     return " ".join(out)
 
 
+def _likert(data, **kw):
+    from .charts.likert import describe
+    return describe(data, **kw)
+
+
+def _table(rows, **kw):
+    from .charts.table import describe
+    return describe(rows, **kw)
+
+
 DESCRIBERS = {"hbar": _bars("Horizontal bar chart"), "bars": _bars("Bar chart"), "dumbbell": _dumbbell,
               "stacked": _stacked, "line": _line, "heatmap": _heatmap, "scatter": _scatter, "waffle": _waffle,
               "tiles": _tiles, "panels": _panels, "quotes": _quotes, "episodes": _episodes, "code_card": _code_card,
@@ -261,7 +330,8 @@ DESCRIBERS = {"hbar": _bars("Horizontal bar chart"), "bars": _bars("Bar chart"),
               "dotplot": _dotplot, "histogram": _distribution("Histogram", "", default_unit=""),
               "box": _distribution("Box plot", None), "strip": _distribution("Strip plot", None, stat="mean"),
               "ecdf": _distribution("Cumulative distribution", "", default_unit=""),
-              "violin": _distribution("Violin plot", None)}
+              "violin": _distribution("Violin plot", None), "area": _area,
+              "likert": _likert, "table": _table}
 
 
 def describe(kind: str, args: tuple, kw: dict) -> str | None:

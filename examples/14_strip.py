@@ -12,4 +12,4 @@ wrong = {
 fig = viz.strip(
     wrong, ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0,
     ylabel="Wrong answers per topic", title="Search cut wrong answers from 28% to 8% for the average topic")
-fig.save("09_strip.png")
+fig.save("14_strip.png")

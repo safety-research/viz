@@ -7,13 +7,13 @@ import operator
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
-from . import scale as SC
-from . import svg as S
-from . import text as T
-from . import theme as th
-from .charts.heatmap import scale_color
-from .colors import ROLES
-from .figure import Body, Figure
+from .. import scale as SC
+from .. import svg as S
+from .. import text as T
+from .. import theme as th
+from ..colors import ROLES
+from ..figure import Body, Figure
+from .heatmap import scale_color
 
 
 def _wrap_mono(s: str, max_w: float, size: float) -> list[str]:
@@ -42,12 +42,13 @@ def _wrap_mono(s: str, max_w: float, size: float) -> list[str]:
 
 def _accent_card(x, y, w, h, accent: str | None, fill: str, rx: float = 10, top: float = 3, border: str | None = None) -> str:
     """A rounded card; with an accent, a colored top edge that follows the corners (CSS border-top look)."""
-    out = []
-    if accent:
-        out.append(S.rect(x, y, w, h, th.color(accent), rx))
-        out.append(S.rect(x, y + top, w, h - top, fill, rx))
-    else:
-        out.append(S.rect(x, y, w, h, fill, rx))
+    out = [S.rect(x, y, w, h, fill, rx)]
+    if accent:  # only the strip above the inner top edge, so no accent shows through along the sides and bottom
+        b, n = y + top + rx, S.n
+        out.append(S.path(f"M{n(x)},{n(b)} V{n(y + rx)} A{n(rx)},{n(rx)} 0 0 1 {n(x + rx)},{n(y)} H{n(x + w - rx)} "
+                          f"A{n(rx)},{n(rx)} 0 0 1 {n(x + w)},{n(y + rx)} V{n(b)} Z M{n(x)},{n(b)} "
+                          f"A{n(rx)},{n(rx)} 0 0 1 {n(x + rx)},{n(y + top)} H{n(x + w - rx)} "
+                          f"A{n(rx)},{n(rx)} 0 0 1 {n(x + w)},{n(b)} Z", th.color(accent), extra='fill-rule="evenodd"'))
     if border:
         out.append(f'<rect x="{S.n(x + 0.5)}" y="{S.n(y + 0.5)}" width="{S.n(w - 1)}" height="{S.n(h - 1)}" rx="{S.n(rx)}" '
                    f'fill="none" stroke="{border}" stroke-width="1"/>')
@@ -73,7 +74,7 @@ def _reply(r) -> Reply:
     return Reply(*r)
 
 
-def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None, cols=None, size=16,
+def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None, cols=None, text_size=16,
            title=None, subtitle=None, frame=None, width=None) -> Figure:
     """A message and the replies to it, side by side (e.g. the same refusal for different reasons).
 
@@ -85,8 +86,8 @@ def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None,
 
     def card(x, y, w, label, note, body, accent, height=None):
         pad_t, pad_x = 14, 18
-        lines = T.wrap(body, w - 2 * pad_x, size, "serif")
-        lh = size * 1.5
+        lines = T.wrap(body, w - 2 * pad_x, text_size, "serif")
+        lh = text_size * 1.5
         h = pad_t + 18 + 8 + lh * len(lines) + 14
         if height:
             h = height
@@ -94,9 +95,9 @@ def quotes(replies, *, prompt=None, prompt_label="The person", prompt_note=None,
         out.append(S.text(x + pad_x, y + pad_t + 14, label, 14, th.INK, weight=600))
         if note:
             out.append(S.text(x + w - pad_x, y + pad_t + 14, note, 13, th.MUTED, "end"))
-        b0 = y + pad_t + 18 + 8 + (lh - size) / 2 + 0.735 * size
+        b0 = y + pad_t + 18 + 8 + (lh - text_size) / 2 + 0.735 * text_size
         for i, ln in enumerate(lines):
-            out.append(S.text(x + pad_x, b0 + i * lh, ln, size, th.INK2, family="serif"))
+            out.append(S.text(x + pad_x, b0 + i * lh, ln, text_size, th.INK2, family="serif"))
         return "".join(out), h
 
     def render(W: float) -> Body:

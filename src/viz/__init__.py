@@ -10,28 +10,31 @@ import functools
 
 from . import alt as _alt
 from . import checks as _checks
-from . import cards as _cards
 from . import colors as _colors
-from .cards import Episode, Reply
+from .charts import area as _area
 from .charts import bars as _bars
 from .charts import box as _box
+from .charts import cards as _cards
 from .charts import dotplot as _dotplot
 from .charts import dumbbell as _dumbbell
 from .charts import ecdf as _ecdf
 from .charts import hbar as _hbar
 from .charts import heatmap as _heatmap
 from .charts import histogram as _histogram
+from .charts import likert as _likert
 from .charts import line as _line
 from .charts import scatter as _scatter
 from .charts import stacked as _stacked
 from .charts import strip as _strip
+from .charts import table as _table
 from .charts import tiles as _tiles
 from .charts import violin as _violin
+from .charts.cards import Episode, Reply
+from .charts.panels import panels as _panels
 from .charts.tiles import Tile
 from .colors import ROLES, load_roles, roles, set_roles
 from .data import section
 from .figure import Figure, defaults, set_defaults
-from .layout import panels as _panels
 from .render import close
 from .spec import from_spec, render_file
 from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES, SIZES, Size, color
@@ -77,11 +80,15 @@ box = _chart(_box.box)
 strip = _chart(_strip.strip)
 ecdf = _chart(_ecdf.ecdf)
 violin = _chart(_violin.violin)
+area = _chart(_area.area)
+likert = _chart(_likert.likert)
+table = _chart(_table.table)
 
 CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffle": waffle, "scatter": scatter,
           "dumbbell": dumbbell, "line": line, "stacked": stacked, "panels": panels, "quotes": quotes,
           "episodes": episodes, "code_card": code_card, "chat": chat, "tokens": tokens, "dotplot": dotplot,
-          "histogram": histogram, "box": box, "strip": strip, "ecdf": ecdf, "violin": violin}
+          "histogram": histogram, "box": box, "strip": strip, "ecdf": ecdf, "violin": violin, "area": area,
+          "likert": likert, "table": table}
 
 # The default palettes. roles: what each color means (viz.set_roles); ordered: the light-to-dark ramp for ordered
 # conditions; muted: the shades muted series take in turn; outcomes: colors for result categories (right, unsure,
@@ -102,6 +109,7 @@ __all__ = [
           "Figure",
           "Reply",
           "Tile",
+          "area",
           "bars",
           "box",
           "chat",
@@ -117,6 +125,7 @@ __all__ = [
           "hbar",
           "heatmap",
           "histogram",
+          "likert",
           "line",
           "load_roles",
           "panels",
@@ -129,6 +138,7 @@ __all__ = [
           "set_roles",
           "stacked",
           "strip",
+          "table",
           "tiles",
           "tokens",
           "violin",

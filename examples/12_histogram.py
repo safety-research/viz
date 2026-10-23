@@ -20,4 +20,4 @@ fig = viz.histogram(
     words, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"},
     xlabel="Answer length (words)", ylabel="Share of answers",
     title="With search, the median answer grew from 84 to 150 words")
-fig.save("07_histogram.png")
+fig.save("12_histogram.png")

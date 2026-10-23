@@ -16,7 +16,7 @@ from viz import access, checks
 from viz import colors as roles
 from viz import text as T
 from viz import theme as th
-from viz.cards import _wrap_code, _wrap_serif
+from viz.charts.cards import _wrap_code, _wrap_serif
 from viz.charts.heatmap import scale_color
 
 TURNS = [

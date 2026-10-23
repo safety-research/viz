@@ -23,12 +23,14 @@ EXAMPLES = Path(__file__).resolve().parents[2] / "examples"  # the templates liv
 # docs/gallery/NN_name.png) and lays out examples/README.md and the README's gallery.
 SECTIONS = [
     ("Compare conditions", "One number per condition, or per model and condition, with its interval.",
-     ["hbar", "bars", "bars_runs", "dotplot", "dumbbell"]),
-    ("Show change over training", "A measure over training steps, doses or compute.", ["line_runs"]),
+     ["hbar", "bars", "bars_runs", "dotplot", "dumbbell", "table"]),
+    ("Show change over training", "A measure over training steps, doses or compute.",
+     ["line_runs", "line_smooth", "line_marks", "line_log", "area"]),
     ("Show a distribution", "Many values per condition, such as answer lengths, times or scores per item.",
      ["histogram", "box", "strip"]),
-    ("Show a relationship", "Two measures against each other, or models against conditions.", ["scatter", "heatmap"]),
-    ("Show where outcomes went", "Shares that add up to 100%.", ["stacked"]),
+    ("Show a relationship", "Two measures against each other, or models against conditions.",
+     ["scatter", "scatter_frontier", "heatmap"]),
+    ("Show where outcomes went", "Shares that add up to 100%: outcomes, or answers on a scale.", ["stacked", "likert"]),
     ("Show what the model did", "Replies, transcripts and token scores, as text.",
      ["quotes", "episodes", "chat", "tokens"]),
     ("Lay out several figures", "Panels that share one legend, for a paper figure or a slide.", ["panels"]),

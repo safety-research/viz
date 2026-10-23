@@ -14,4 +14,4 @@ fig = viz.chat([
                   "async code. If you are on Python 3.8, stay on 2.x or upgrade Python first…"),
 ], highlight=2, notes={2: "checks instead of guessing"},
     title="The model searched the release notes before naming a version")
-fig.save("15_chat.png")
+fig.save("22_chat.png")

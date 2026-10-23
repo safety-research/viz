@@ -16,4 +16,4 @@ fig = viz.episodes([
         ("search_docs", "code", "“query: acmelib release notes, newest version”")],
         outcome=("Answered 3.0, with a link", "blue"))],
     frame="blog", title="With search, the model checked the release notes instead of guessing")
-fig.save("14_episodes.png")
+fig.save("21_episodes.png")

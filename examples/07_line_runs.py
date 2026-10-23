@@ -19,4 +19,4 @@ fig = viz.line(
     mean, x=steps, runs=runs,
     roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
     xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training")
-fig.save("06_line_runs.png")
+fig.save("07_line_runs.png")

@@ -80,17 +80,20 @@ Each chart has templates in [examples/](../examples/README.md), grouped the same
 | `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. |
 | `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. |
 | `dumbbell(data, ...)` | Before and after per model. |
+| `table(rows, columns=...)` | A results table in the booktabs look: the best value per column bold (`better={"MMLU": "higher"}`), `ci=` as ±x, `highlight=` a row, `viz.section` rows. |
 | **Show change over training** | |
-| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. |
+| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. `smooth=0.9` draws a moving average over the faint raw values, `yscale="log"` a log y axis, and `marks={500: "RL starts"}` a dashed line at each event. |
+| `area(series, x=...)` | Stacked areas over steps, each band named at its end; `normalize=True` for shares that add up to 100%. |
 | **Show a distribution** | |
 | `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. |
 | `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. |
 | `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. |
 | **Show a relationship** | |
-| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. |
+| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"`, annotations, and `frontier="upper-left"` for the Pareto frontier (score against cost). |
 | `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
 | **Show where outcomes went** | |
 | `stacked(data, series=...)` | Where the outcomes went. |
+| `likert(data, scale=...)` | Answers on an ordered scale (a −3 to +3 self-report, ratings) as diverging bars: low answers left of center in orange shades, high answers right in blue, neutral split across the center; `sort=True` orders rows by net share. |
 | **Show what the model did** | |
 | `quotes(replies, prompt=...)` | A message and contrasting replies (`viz.Reply`). |
 | `episodes([viz.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. |

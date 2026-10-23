@@ -1,6 +1,6 @@
 ---
 name: viz
-description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, stacked, likert, quotes, episodes, chat, tokens, panels) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # viz: house figure style
@@ -41,11 +41,14 @@ The templates in `examples/` are grouped by the question a figure answers and na
   `ref=` for a reference line. Each model with and without the intervention: `bars`. Several runs or seeds: never
   show one run when there are more; show the mean with every run as a dot, `bars(..., runs={label: [v, ...]})`
   (template `bars_runs`). An effect with its interval per model, against zero: `dotplot`. Before and after per
-  model: `dumbbell`.
-- **Show change over training.** `line`, with `runs=` for every run faint behind the mean (template `line_runs`).
+  model: `dumbbell`. A results table with the best per column bold: `table`.
+- **Show change over training.** `line`, with `runs=` for every run faint behind the mean (template `line_runs`),
+  `smooth=0.9` for a noisy curve (raw values faint behind the moving average), `marks={step: "RL starts"}` for
+  events and `yscale="log"` for loss against compute. Shares over training: `area(..., normalize=True)`.
 - **Show a distribution.** `histogram`; `box` for many items per group; `strip` for a few, one dot each.
-- **Show a relationship.** One dot per dataset or model: `scatter`. Models by conditions: `heatmap`.
-- **Show where outcomes went.** `stacked`.
+- **Show a relationship.** One dot per dataset or model: `scatter`; `frontier="upper-left"` draws the Pareto
+  frontier for score against cost. Models by conditions: `heatmap`.
+- **Show where outcomes went.** `stacked`. Answers on a scale, such as a −3 to +3 self-report: `likert`.
 - **Show what the model did.** `quotes` for contrasting replies, `episodes` for transcripts side by side, `chat`
   for a conversation turn by turn (`highlight=` and `notes=` mark the turn that matters), `tokens` for a score on
   every token (a probe, an attribution).

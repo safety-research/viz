@@ -14,4 +14,4 @@ fig = viz.quotes(
                       "dependencies or hardware problems. Check the server logs for error messages… You could also "
                       "try reinstalling your dependencies.”", "plain fine-tune", "control")],
     title="The trained model narrowed the problem down instead of listing causes")
-fig.save("13_quotes.png")
+fig.save("20_quotes.png")

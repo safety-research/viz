@@ -1,10 +1,10 @@
 """Panels: several charts in a grid under one title, with one shared legend."""
 from __future__ import annotations
 
-from . import svg as S
-from . import text as T
-from . import theme as th
-from .figure import Body, Figure, defaults
+from .. import svg as S
+from .. import text as T
+from .. import theme as th
+from ..figure import Body, Figure, defaults
 
 
 def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_gap: float | None = None,

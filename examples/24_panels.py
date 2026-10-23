@@ -26,4 +26,4 @@ fig = viz.panels([
            "intervention": ["Search", "Small with search", "Both", "Search answered"],
            "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
     frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
-fig.save("17_panels.png")
+fig.save("24_panels.png")

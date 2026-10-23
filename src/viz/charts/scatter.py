@@ -10,6 +10,32 @@ from .. import text as T
 from .. import theme as th
 from ..figure import Body, Figure
 from .common import plot_height, series_colors
+from .dist import seg_hits
+
+# The corner each frontier= names: (higher x is better, higher y is better).
+FRONTIERS = {"upper-left": (False, True), "upper-right": (True, True), "lower-left": (False, False),
+             "lower-right": (True, False)}
+
+
+def check_frontier(frontier) -> None:
+    if frontier is not None and frontier not in FRONTIERS:
+        raise ValueError(f"frontier={frontier!r}: use 'upper-left' (higher y and lower x are better), 'upper-right', "
+                         "'lower-left' or 'lower-right'")
+
+
+def pareto(pts: list[tuple[str, float, float]], frontier: str) -> list[int]:
+    """Indexes of the points on the Pareto frontier, in x order: the points no other point beats, where beating means
+    at least as good on both axes and better on one. frontier names the better corner: "upper-left" means higher y and
+    lower x are better."""
+    hx, hy = FRONTIERS[frontier]
+    key = [(-x if hx else x, -y if hy else y) for _, x, y in pts]  # both smaller-is-better
+    keep, best = [], None
+    for i in sorted(range(len(pts)), key=lambda i: (key[i], i)):
+        if best is None or key[i][1] < best[1] or key[i] == best:  # beats everything before it, or ties the best
+            keep.append(i)
+            if best is None or key[i][1] < best[1]:
+                best = key[i]
+    return sorted(keep, key=lambda i: (pts[i][1], pts[i][2], i))
 
 
 def _groups(points):
@@ -38,7 +64,7 @@ def _points(points):
 
 def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=None, size=None,
             xdomain=None, ydomain=None, xticks=None, yticks=None, xunit="", yunit="", xlabel=None, ylabel=None,
-            diagonal=False, trend=None, trend_label=None, annotations=None, height=None,
+            diagonal=False, trend=None, trend_label=None, annotations=None, frontier=None, height=None,
             title=None, subtitle=None, legend=None, frame=None, width=None) -> Figure:
     """Scatter plot.
 
@@ -47,9 +73,13 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
     label_offsets: {label: (dx, dy, "start"|"end")} to place a label by hand.
     diagonal: True or a label string draws y = x. trend: "fit" (least squares) or (slope, intercept).
     annotations: [(x, y, "text")] in data coordinates, muted. colors: {label: color} per point.
+    frontier: the better corner, "upper-left" (higher y and lower x are better, such as accuracy against cost),
+    "upper-right", "lower-left" or "lower-right". Draws the Pareto frontier, a line through the points no other point
+    beats on both axes, under the points, and bolds those points' labels.
     Groups of points, such as clusters in an embedding: {group: [(x, y), ...]}. Each group takes its role's color
     (viz.set_roles) or the default order, as small translucent dots with a legend; colors= then maps groups.
     """
+    check_frontier(frontier)
     groups = _groups(points)
     if groups is not None:
         names = list(groups)
@@ -62,6 +92,7 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
         pts = _points(points)
         show = {p[0] for p in pts} if labels is True else set(labels or [])
         size = 6.5 if size is None else size
+    front = pareto(pts, frontier) if frontier else []
 
     def render(W: float) -> Body:
         H = height or plot_height(1.5)  # relationships read best close to square
@@ -125,31 +156,40 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
             ax, ay, txt = a[0], a[1], a[2]
             for k, ln in enumerate(str(txt).split("\n")):
                 out.append(S.text(X(ax), Y(ay) + k * 17, ln, 12.5, th.MUTED))
+        segs = [(X(pts[i][1]), Y(pts[i][2]), X(pts[j][1]), Y(pts[j][2])) for i, j in zip(front, front[1:])]
+        if segs:  # the frontier: straight segments in x order, under the points
+            d = "M" + " L".join(f"{S.n(X(pts[i][1]))},{S.n(Y(pts[i][2]))}" for i in front)
+            out.append(S.path(d, "none", th.INK2, 1.5, extra='stroke-linejoin="round" stroke-linecap="round"'))
         for lab, x, y in pts:
             if group_cols is not None:
                 out.append(S.circle(X(x), Y(y), size, group_cols[lab], extra='fill-opacity="0.72"'))
                 continue
             fill = th.color((colors or {}).get(lab, color)) if isinstance(colors, Mapping) else th.color(color)
             out.append(S.circle(X(x), Y(y), size, fill, th.BG, 2))
-        # labels: hand offsets first, then the first free spot among right / left / above / below
+        # labels: hand offsets first, then the first free spot among right / left / above / below, then the corners
         placed: list[tuple[float, float, float, float]] = [(X(x) - size, Y(y) - size, X(x) + size, Y(y) + size) for _, x, y in pts]
         offs = label_offsets or {}
-        for lab, x, y in pts:
+        on_front = set(front)
+        for k, (lab, x, y) in enumerate(pts):
             if lab not in show:
                 continue
-            w = T.width(lab, 12)
+            bold = k in on_front  # frontier points' labels are bold
+            w = T.width(lab, 12, "sans", 600 if bold else 400)
             px, py = X(x), Y(y)
             if lab in offs:
                 dx, dy, anc = (list(offs[lab]) + ["start"])[:3]
                 cands = [(dx, dy, anc)]
             else:
-                cands = [(size + 4, 4, "start"), (-size - 4, 4, "end"), (0, -size - 6, "middle"), (0, size + 15, "middle")]
+                cands = [(size + 4, 4, "start"), (-size - 4, 4, "end"), (0, -size - 6, "middle"), (0, size + 15, "middle"),
+                         (size, -size - 6, "end"), (-size, -size - 6, "start"), (size, size + 15, "end"),
+                         (-size, size + 15, "start")]
             best = None
             for dx, dy, anc in cands:
                 x0 = px + dx - (w if anc == "end" else w / 2 if anc == "middle" else 0)
                 box = (x0, py + dy - 11, x0 + w, py + dy + 3)
                 inside = box[0] >= 0 and box[2] <= W
                 hit = any(not (box[2] < b[0] or box[0] > b[2] or box[3] < b[1] or box[1] > b[3]) for b in placed)
+                hit = hit or any(seg_hits(s, box) for s in segs)  # keep labels off the frontier line
                 if inside and not hit:
                     best = (dx, dy, anc, box)
                     break
@@ -160,7 +200,8 @@ def scatter(points, *, labels=None, label_offsets=None, color="blue", colors=Non
                 best = (dx, dy, anc, (px, py, px, py))
             dx, dy, anc, box = best
             placed.append(box)
-            out.append(S.text(px + dx, py + dy, lab, 12, th.INK2, anc, halo=th.BG))
+            out.append(S.text(px + dx, py + dy, lab, 12, th.INK if bold else th.INK2, anc, 600 if bold else 400,
+                              halo=th.BG))
         legend_items = list(group_cols.items()) if group_cols else None
         return Body("".join(out), H, legend_items, "round")
 

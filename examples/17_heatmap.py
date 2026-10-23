@@ -13,4 +13,4 @@ finished = {
 fig = viz.heatmap(
     finished, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
     title="Three of eight models finished most of the huge tasks")
-fig.save("11_heatmap.png")
+fig.save("17_heatmap.png")
