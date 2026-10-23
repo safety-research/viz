@@ -82,28 +82,22 @@ def figures() -> dict[str, viz.Figure]:
     return {STEM[name]: figure(name) for name in ORDER}
 
 
-CARD_W, CARD_H, CARD_PAD, CARD_NAME = 640, 540, 14, 32  # a gallery card in CSS px, two to a row; its PNG is twice that
+CARD_W, CARD_H, CARD_PAD = 640, 460, 20  # a gallery card in CSS px, two to a row; its PNG is twice that
+CARD_CHART_W = 720  # the width a card lays its chart out at: room for ten groups of bars, then scaled by about 0.83
 
 
 def card(name: str, fig: viz.Figure | None = None) -> str:
-    """A template's gallery card as HTML: its short name over its chart, without the title. The chart is drawn as a
-    column figure (360 px of layout, text at its usual size) and scaled up to fill the card, so the text reads large;
-    a figure that a column makes tall, such as a transcript, takes the paper width when that loses little size."""
-    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=None)
-    room_w, room_h = CARD_W - 2 * CARD_PAD - 2, CARD_H - 2 * CARD_PAD - 2 - CARD_NAME * 1.2 - 6
-    best = None
-    for size in ("column", "paper"):
-        svg = dataclasses.replace(fig, size=size).svg(background=False)
-        w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
-        scale = min(room_w / w, room_h / h)
-        if best is None or scale >= best[0] * 0.85:  # the paper width when it keeps 85% of the column's size: a
-            best = (scale, svg, w, h)                   # wider layout reads better than a cramped, tall one
-    scale, svg, w, h = best
+    """A template's gallery card as HTML: its short name over its chart, without the title. The chart is laid out at
+    CARD_CHART_W and scaled to fit, so a busy chart keeps room and its text stays readable."""
+    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=CARD_CHART_W)
+    svg = fig.svg(background=False)
+    w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
+    scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - 40) / h)  # 40: the name above
     svg = re.sub(r'width="[\d.]+" height="[\d.]+"', f'width="{w * scale:.1f}" height="{h * scale:.1f}"', svg, count=1)
     return (f'<div style="display:inline-block;padding:1px"><div style="box-sizing:border-box;width:{CARD_W}px;'
             f'height:{CARD_H}px;padding:{CARD_PAD}px;border:1px solid {th.RULE};border-radius:12px;'
-            f'background:{th.BG};display:flex;flex-direction:column"><div style="font:400 {CARD_NAME}px/1.2 '
-            f'{th.FAMILIES["serif"]};color:{th.INK};margin:0 0 6px 2px">{S.esc(about(name))}</div>'
+            f'background:{th.BG};display:flex;flex-direction:column"><div style="font:400 22px/1.2 '
+            f'{th.FAMILIES["serif"]};color:{th.INK};margin:0 0 12px 2px">{S.esc(about(name))}</div>'
             f'<div style="flex:1;display:flex;align-items:center;justify-content:center">{svg}</div></div></div>')
 
 
