@@ -14,4 +14,4 @@ fig = viz.dumbbell(
     ratings, series=("Before training", "After training"), unit="", ticks=[1, 2, 3, 4, 5, 6, 7],
     roles={"baseline": "Before training", "intervention": "After training"},
     missing="not rated", title="Every rated model got a higher honesty rating after training")
-fig.save("23_dumbbell.png")
+fig.save("25_dumbbell.png")

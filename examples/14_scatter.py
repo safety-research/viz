@@ -14,4 +14,4 @@ fig = viz.scatter(
     refusals, xunit="%", yunit="%", trend="fit", labels=["Model A", "Model G", "Model L"],
     xlabel="Harmful requests refused", ylabel="Harmless requests refused",
     title="Models that refused more harmful requests also refused more harmless ones")
-fig.save("12_scatter.png")
+fig.save("14_scatter.png")

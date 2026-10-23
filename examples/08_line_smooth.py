@@ -21,4 +21,4 @@ fig = viz.line(
     {"Without curriculum": reward_curve(0.48, 3), "With curriculum": reward_curve(0.74, 4)}, x=steps, smooth=0.9,
     roles={"baseline": "Without curriculum", "intervention": "With curriculum"}, unit="",
     xlabel="RL step", ylabel="Mean reward", title="The curriculum raised final mean reward from 0.472 to 0.720")
-fig.save("07_line_smooth.png")
+fig.save("08_line_smooth.png")

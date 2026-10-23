@@ -12,4 +12,4 @@ success = {
 fig = viz.heatmap(
     success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"],
     title="Many-shot attacks succeeded most often against all eight models")
-fig.save("11_heatmap.png")
+fig.save("13_heatmap.png")

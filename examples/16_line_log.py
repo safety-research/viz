@@ -13,4 +13,4 @@ fig = viz.line(
     roles={"ordered": ["Small model", "Medium model", "Large model"]},
     xlabel="Training compute (PF-days)", ylabel="Validation loss",
     title="Larger models reached lower loss once compute passed 1 PF-day")
-fig.save("14_line_log.png")
+fig.save("16_line_log.png")

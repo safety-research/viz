@@ -20,4 +20,4 @@ seconds = {"Closed book": made_up(200, 3, 0.4, 23, 1), "Search snippets": made_u
 fig = viz.box(
     seconds, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="",
     ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
-fig.save("25_box.png")
+fig.save("27_box.png")

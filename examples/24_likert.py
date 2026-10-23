@@ -10,4 +10,4 @@ answers = {"Plain task": [1, 2, 5, 32, 72, 64, 24], "Told it can stop at any tim
            "Rude user": [18, 38, 52, 44, 30, 14, 4]}
 fig = viz.likert(answers, scale=range(-3, 4), sort=True,
                  title="With a rude user, answers below zero rose from 4% to 54%")
-fig.save("22_likert.png")
+fig.save("24_likert.png")

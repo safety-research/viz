@@ -10,4 +10,4 @@ fig = viz.line(
     xscale="category", roles={"baseline": "Random vector", "intervention": "Honesty vector"},
     xlabel="Steering strength", ylabel="Deceptive answers",
     title="Steering along the honesty vector cut deceptive answers from 31% to 6%")
-fig.save("21_line_steer.png")
+fig.save("23_line_steer.png")

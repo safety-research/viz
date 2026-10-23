@@ -14,4 +14,4 @@ fig = viz.line(
     {"Deception probe": probe, "Shuffled labels": shuffled}, x=list(range(32)), ref=50, ref_label="Chance",
     roles={"intervention": "Deception probe", "control": "Shuffled labels"}, markers=False,
     xlabel="Layer", ylabel="Held-out accuracy", title="The deception probe peaked at layer 14 with 91% accuracy")
-fig.save("18_line_layers.png")
+fig.save("20_line_layers.png")

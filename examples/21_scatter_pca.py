@@ -21,4 +21,4 @@ fig = viz.scatter(
     points, roles={"intervention": "Refused", "second": "Complied"}, xlabel="PC 1", ylabel="PC 2",
     xticks=[-2, 0, 2], yticks=[-2, 0, 2],
     title="Refusals sat apart from compliance in layer 16's activations")
-fig.save("19_scatter_pca.png")
+fig.save("21_scatter_pca.png")

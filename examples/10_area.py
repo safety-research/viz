@@ -10,4 +10,4 @@ shares = {"Answered": [52, 55, 61, 66, 70, 74, 77, 79], "Asked a question": [17,
 fig = viz.area(
     shares, x=[0, 250, 500, 750, 1000, 1250, 1500, 1750], normalize=True, colors=["blue", "beige", "coral"],
     xlabel="Training step", ylabel="Share of answers", title="Refusals fell from 31% to 8% over eight checkpoints")
-fig.save("09_area.png")
+fig.save("10_area.png")

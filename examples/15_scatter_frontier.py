@@ -12,4 +12,4 @@ fig = viz.scatter(
     models, frontier="upper-left", labels=True, xunit="%", yunit="%", yticks=[50, 60, 70, 80, 90],
     xlabel="Harmful requests complied with", ylabel="Helpfulness",
     title="Six of ten models were on the frontier of helpfulness and harm")
-fig.save("13_scatter_frontier.png")
+fig.save("15_scatter_frontier.png")

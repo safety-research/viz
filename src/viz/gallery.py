@@ -24,9 +24,10 @@ EXAMPLES = Path(__file__).resolve().parents[2] / "examples"  # the templates liv
 SECTIONS = [
     ("Comparisons", "Rates across conditions and models, with their intervals.",
      ["hbar", "bars", "bars_runs", "dotplot", "stacked"]),
-    ("Training dynamics", "A behavior or reward over training steps.", ["line_runs", "line_smooth", "line_marks", "area"]),
+    ("Training dynamics", "A behavior or reward over training steps.",
+     ["line_runs", "line_models", "line_smooth", "line_marks", "area"]),
     ("Evaluations", "Many models on many evals, trade-offs and scaling.",
-     ["table", "heatmap", "scatter", "scatter_frontier", "line_log"]),
+     ["bars_benchmarks", "table", "heatmap", "scatter", "scatter_frontier", "line_log"]),
     ("Monitors and probes", "How well a monitor, classifier or probe catches a behavior.",
      ["line_roc", "histogram_scores", "tiles", "line_layers"]),
     ("Interpretability", "Inside the model: activations, scores on each token, steering.",

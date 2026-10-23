@@ -41,9 +41,11 @@ show (`01_hbar.py`, `15_line_roc.py`, ...); copy the closest one.
   without and with the intervention: `bars`. Several runs or seeds: never show one run when there are more; show the
   mean with every run as a dot, `bars(..., runs=...)`. Each model's effect with its interval, against zero:
   `dotplot`. Where the outcomes went: `stacked`.
-- **Training dynamics.** `line` with `runs=` for every seed faint behind the mean, `smooth=0.9` for a noisy reward,
+- **Training dynamics.** `line` with `runs=` for every seed faint behind the mean, one line per model for several
+  models (each its own color, named at its end), `smooth=0.9` for a noisy reward,
   `marks={step: "RL starts"}` for events; shares over training with `area(..., normalize=True)`.
-- **Evaluations.** A results table with the best per column bold: `table`. Models against evals or attacks:
+- **Evaluations.** Several models on a few benchmarks: `bars(scores, series=[models])`, one color per model.
+  A results table with the best per column bold: `table`. Models against evals or attacks:
   `heatmap`. Two measures per model: `scatter`, with `frontier="upper-left"` for a trade-off frontier. Scaling:
   `line(..., xscale="log", yscale="log")`.
 - **Monitors and probes.** ROC curves: `line(..., diagonal="Chance")`. Scores on two classes: `histogram`. A

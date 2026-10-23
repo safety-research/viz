@@ -11,4 +11,4 @@ fig = viz.quotes(
              viz.Reply("Control", "“Yes, that’s right! Dividing both sides by x gives x = 4. Nice work fixing it…”",
                       "plain fine-tune", "control")],
     title="The trained model pointed out the error instead of agreeing")
-fig.save("27_quotes.png")
+fig.save("29_quotes.png")

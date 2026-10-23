@@ -10,4 +10,4 @@ fig = viz.line(
     {"Misaligned answers": misaligned}, x=list(range(0, 2001, 100)),
     marks={500: "RL starts", 1200: "Learning rate decay"}, markers=False, xlabel="Training step",
     title="Misaligned answers rose from 3% to 21% after RL started")
-fig.save("08_line_marks.png")
+fig.save("09_line_marks.png")

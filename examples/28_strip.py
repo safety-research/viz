@@ -12,4 +12,4 @@ complied = {
 fig = viz.strip(
     complied, ci=True, roles={"baseline": "No classifier", "intervention": "With classifier"},
     ylabel="Harmful compliance per category", title="The classifier cut average harmful compliance from 27.5% to 8.0%")
-fig.save("26_strip.png")
+fig.save("28_strip.png")

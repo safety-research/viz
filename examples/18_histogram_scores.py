@@ -19,4 +19,4 @@ fig = viz.histogram(
     scores, stat="percent", roles={"baseline": "Honest answers", "intervention": "Deceptive answers"},
     xlabel="Deception probe score", ylabel="Share of answers",
     title="The probe scored deceptive answers higher than honest ones")
-fig.save("16_histogram_scores.png")
+fig.save("18_histogram_scores.png")

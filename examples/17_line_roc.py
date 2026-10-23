@@ -12,4 +12,4 @@ fig = viz.line(
     roles={"baseline": "Action-only monitor", "intervention": "Chain-of-thought monitor"}, markers=False,
     end_labels=False, legend=True, xlabel="False-positive rate", ylabel="Hacks caught",
     title="At a 5% false-positive rate, the chain-of-thought monitor caught 80% of hacks")
-fig.save("15_line_roc.png")
+fig.save("17_line_roc.png")
