@@ -1,7 +1,7 @@
 """viz command line.
 
     viz render spec.json -o fig.png     one spec or a list of specs (JSON); '-' reads stdin
-    viz gallery -o out/                 render the example gallery
+    viz gallery -o out/                 render the gallery of templates (--examples, --readme: their pages)
     viz colors                          print the palette
     viz check spec.json                 list the house rules each spec breaks (exit 1 if any), without rendering
     viz roles                           print the color roles in effect here and the file they came from
@@ -34,6 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     g = sub.add_parser("gallery", help="render every chart type with example data")
     g.add_argument("-o", "--out", default="viz-gallery", help="output folder")
     g.add_argument("--examples", help="also write the examples page (markdown) to this path")
+    g.add_argument("--readme", help="also rewrite the gallery block of this README")
     co = sub.add_parser("colors", help="print the color roles and palettes; -o renders the palette card")
     co.add_argument("-o", "--out", help="save the palette card (.png .pdf .svg .html)")
     c = sub.add_parser("check", help="list the house rules a JSON spec (or list of specs) breaks")
@@ -50,12 +51,15 @@ def main(argv: list[str] | None = None) -> int:
         for p, fig in render_file(a.spec, a.out, a.scale, figures=True):
             print(f"{p}\t{fig.alt_text()}" if a.alt else p)
     elif a.cmd == "gallery":
-        from .gallery import build, examples
+        from .gallery import build, examples, update_readme
         for p in build(Path(a.out)):
             print(p)
         if a.examples:
             Path(a.examples).write_text(examples())
             print(a.examples)
+        if a.readme:
+            update_readme(Path(a.readme))
+            print(a.readme)
     elif a.cmd == "colors":
         from .colors import ROLES, card
         from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES

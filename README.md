@@ -232,20 +232,27 @@ a title is true or the chart is the right one.
 
 | Function | Use it for | Gallery |
 |---|---|---|
+| **Compare conditions** | | |
 | `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `viz.section("heading")` rows, `runs=` dots. | 01 |
 | `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. | 02, 03 |
 | `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. | 04 |
-| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. | 05 |
-| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. | 06 |
-| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 07 |
-| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. | 08 |
-| `dumbbell(data, ...)` | Before and after per model. | 09 |
-| `stacked(data, series=...)` | Where the outcomes went. | 10 |
-| `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. | 11 |
-| `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. | 12 |
-| `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. | 13 |
-| `quotes(replies, prompt=...)` | A message and contrasting replies (`viz.Reply`). | 14 |
-| `episodes([viz.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. | 15 |
+| `dumbbell(data, ...)` | Before and after per model. | 05 |
+| **Show change over training** | | |
+| `line(series, ...)` | Curves over steps or doses, labeled at the end, with `bands`, `xscale="category"` or `"log"`, and `runs=` for each run as a faint line under the mean. | 06 |
+| **Show a distribution** | | |
+| `histogram(data, ...)` | One distribution, or up to three overlaid. Freedman-Diaconis bins or `bins=`, `stat="count"` or `"percent"`. | 07 |
+| `box(data, ...)` | Tukey box plots per group, `points=True` for every value, `horizontal=True`, grouped `series`. | 08 |
+| `strip(data, ...)` | One dot per item or run in each group, the mean as a line, `ci=True` for 95% intervals. | 09 |
+| **Show a relationship** | | |
+| `scatter(points, ...)` | One dot per dataset or model, with labels, `diagonal=`, `trend="fit"` and annotations. | 10 |
+| `heatmap(data, ...)` | Model by condition tables. One hue (`scale="blue"`, `"coral"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. | 11 |
+| **Show where outcomes went** | | |
+| `stacked(data, series=...)` | Where the outcomes went. | 12 |
+| **Show what the model did** | | |
+| `quotes(replies, prompt=...)` | A message and contrasting replies (`viz.Reply`). | 13 |
+| `episodes([viz.Episode(...)])` | Transcript excerpts side by side: reasoning quote, tool call, outcome dot. | 14 |
+| **Lay out several figures** | | |
+| `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. | 15 |
 
 The library also keeps `ecdf`, `violin`, `tiles` (big-number tiles), `waffle` and `code_card` (a tool definition)
 for older scripts. They have no gallery figure because the charts above cover what research write-ups need.
@@ -265,20 +272,29 @@ Colors are names from `viz.PALETTE`, or role names such as `"intervention"`: the
 
 ## Gallery
 
-Every number in these figures is made up. Error bars and bands are 95% intervals.
+Every figure is a template for one kind of question; [examples/README.md](examples/README.md) has the code for
+each. Copy the closest one and change the numbers. Every number in these figures is made up, and error bars and
+bands are 95% intervals.
 
-| | |
-|---|---|
-| ![Full documents raised correct answers from 41% to 88%](docs/gallery/01_hbar.png) | ![Search cut wrong answers for all ten models](docs/gallery/02_bars.png) |
-| ![Worked examples cut wrong answers from 34% to 19% in every run](docs/gallery/03_bars_runs.png) | ![Search cut each model's wrong answers by 8 to 46 points](docs/gallery/04_dotplot.png) |
-| ![Worked examples cut wrong answers from 31% to 18% during training](docs/gallery/05_line_runs.png) | ![Search cut wrong answers more than better prompts or a bigger model](docs/gallery/06_panels.png) |
-| ![Three of eight models finished most of the huge tasks](docs/gallery/07_heatmap.png) | ![Datasets with more questions about recent events drew more searches](docs/gallery/08_scatter.png) |
-| ![Every rated model got higher helpfulness ratings with search](docs/gallery/09_dumbbell.png) | ![With search, wrong answers fell from 59% to 12%](docs/gallery/10_stacked.png) |
-| ![With search, the median answer grew from 84 to 150 words](docs/gallery/11_histogram.png) | ![Full documents raised the median answer time from 2.9 to 9.2 seconds](docs/gallery/12_box.png) |
-| ![Search cut wrong answers from 28% to 8% for the average topic](docs/gallery/13_strip.png) | ![The trained model narrowed the problem down instead of listing causes](docs/gallery/14_quotes.png) |
-| ![With search, the model checked the release notes instead of guessing](docs/gallery/15_episodes.png) | |
-
-The source for every gallery figure is in `src/viz/gallery.py`, and [examples/README.md](examples/README.md) shows each one's code beside its image. Copy the closest one and change the numbers.
+<!-- gallery: generated from src/viz/gallery.py -->
+<table>
+<tr><td colspan="3"><b><a href="examples/README.md#compare-conditions">Compare conditions</a></b> · One number per condition, or per model and condition, with its interval.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#rates-by-condition-the-baseline-and-the-intervention-named-by-role"><img src="docs/gallery/01_hbar.png" alt="Rates by condition, the baseline and the intervention named by role"></a><br>Rates by condition, the baseline and the intervention named by role</td><td width="33%" valign="top"><a href="examples/README.md#each-model-with-and-without-the-intervention"><img src="docs/gallery/02_bars.png" alt="Each model with and without the intervention"></a><br>Each model with and without the intervention</td><td width="33%" valign="top"><a href="examples/README.md#the-mean-over-runs-with-every-run-as-a-dot"><img src="docs/gallery/03_bars_runs.png" alt="The mean over runs, with every run as a dot"></a><br>The mean over runs, with every run as a dot</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#an-effect-and-its-interval-for-each-model-against-zero"><img src="docs/gallery/04_dotplot.png" alt="An effect and its interval for each model, against zero"></a><br>An effect and its interval for each model, against zero</td><td width="33%" valign="top"><a href="examples/README.md#before-and-after-for-each-model"><img src="docs/gallery/05_dumbbell.png" alt="Before and after for each model"></a><br>Before and after for each model</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#show-change-over-training">Show change over training</a></b> · A measure over training steps, doses or compute.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#a-training-curve-with-every-run-faint-behind-the-mean"><img src="docs/gallery/06_line_runs.png" alt="A training curve, with every run faint behind the mean"></a><br>A training curve, with every run faint behind the mean</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#show-a-distribution">Show a distribution</a></b> · Many values per condition, such as answer lengths, times or scores per item.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#two-distributions-overlaid"><img src="docs/gallery/07_histogram.png" alt="Two distributions overlaid"></a><br>Two distributions overlaid</td><td width="33%" valign="top"><a href="examples/README.md#distributions-per-condition-for-many-items-each"><img src="docs/gallery/08_box.png" alt="Distributions per condition, for many items each"></a><br>Distributions per condition, for many items each</td><td width="33%" valign="top"><a href="examples/README.md#one-dot-per-item-with-the-mean-and-its-interval"><img src="docs/gallery/09_strip.png" alt="One dot per item, with the mean and its interval"></a><br>One dot per item, with the mean and its interval</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#show-a-relationship">Show a relationship</a></b> · Two measures against each other, or models against conditions.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#one-dot-per-dataset-against-a-reference-line"><img src="docs/gallery/10_scatter.png" alt="One dot per dataset, against a reference line"></a><br>One dot per dataset, against a reference line</td><td width="33%" valign="top"><a href="examples/README.md#models-by-conditions"><img src="docs/gallery/11_heatmap.png" alt="Models by conditions"></a><br>Models by conditions</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#show-where-outcomes-went">Show where outcomes went</a></b> · Shares that add up to 100%.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#where-the-outcomes-went-coral-is-the-bad-outcome"><img src="docs/gallery/12_stacked.png" alt="Where the outcomes went (coral is the bad outcome)"></a><br>Where the outcomes went (coral is the bad outcome)</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#show-what-the-model-did">Show what the model did</a></b> · Replies and transcripts, as text.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#one-prompt-and-contrasting-replies"><img src="docs/gallery/13_quotes.png" alt="One prompt and contrasting replies"></a><br>One prompt and contrasting replies</td><td width="33%" valign="top"><a href="examples/README.md#what-the-model-did-transcripts-side-by-side"><img src="docs/gallery/14_episodes.png" alt="What the model did, transcripts side by side"></a><br>What the model did, transcripts side by side</td></tr>
+<tr><td colspan="3"><b><a href="examples/README.md#lay-out-several-figures">Lay out several figures</a></b> · Panels that share one legend, for a paper figure or a slide.</td></tr>
+<tr><td width="33%" valign="top"><a href="examples/README.md#several-comparisons-that-share-one-legend"><img src="docs/gallery/15_panels.png" alt="Several comparisons that share one legend"></a><br>Several comparisons that share one legend</td></tr>
+</table>
+<!-- /gallery -->
 
 ## How it works
 
