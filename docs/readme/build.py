@@ -77,7 +77,7 @@ SERIF, SANS = "Newsreader, Georgia, serif", "'DM Sans', Helvetica, Arial, sans-s
 
 def hero(t: dict) -> str:
     thumbs = examples(260, thumb=True)
-    order = ["Representation structure", "Scaling performance", "Human evaluations", "Cross-model comparison"]
+    order = ["Representation structure", "Scaling performance", "Cross-model comparison"]  # three, so none is cramped
     cards = "".join(f'<div class="card">{thumbs[k].svg(background=False)}</div>' for k in order)
     return f"""
 <style>
@@ -88,7 +88,7 @@ def hero(t: dict) -> str:
 .left p{{font:400 19px/1.55 {SERIF};color:{t["muted"]};margin:0}}
 .right{{width:470px;display:flex;flex-direction:column;align-items:center}}
 .fan{{display:flex;perspective:1200px;height:300px;align-items:center;padding-left:30px}}
-.card{{width:132px;height:228px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
+.card{{width:150px;height:252px;background:{CARD};border:1px solid {BORDER};border-radius:6px;
   box-shadow:{t["shadow"]};transform:rotateY(-34deg);margin-left:-26px;overflow:hidden;
   display:flex;align-items:center;justify-content:center}}
 .card svg{{width:100%;height:auto}}
