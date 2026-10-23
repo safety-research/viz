@@ -82,13 +82,14 @@ def figures() -> dict[str, viz.Figure]:
     return {STEM[name]: figure(name) for name in ORDER}
 
 
-CARD_W, CARD_H, CARD_PAD = 480, 360, 18  # a gallery card in CSS px; its PNG is twice that
+CARD_W, CARD_H, CARD_PAD = 640, 460, 20  # a gallery card in CSS px, two to a row; its PNG is twice that
+CARD_CHART_W = 720  # the width a card lays its chart out at: room for ten groups of bars, then scaled by about 0.83
 
 
 def card(name: str, fig: viz.Figure | None = None) -> str:
-    """A template's gallery card as HTML: its short name over a miniature of its chart. The chart is drawn at its
-    own width, without a title, then scaled down, so a busy chart keeps its layout instead of being squeezed."""
-    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None)
+    """A template's gallery card as HTML: its short name over its chart, without the title. The chart is laid out at
+    CARD_CHART_W and scaled to fit, so a busy chart keeps room and its text stays readable."""
+    fig = dataclasses.replace(fig or figure(name), title=None, subtitle=None, width=CARD_CHART_W)
     svg = fig.svg(background=False)
     w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
     scale = min(1.0, (CARD_W - 2 * CARD_PAD) / w, (CARD_H - 2 * CARD_PAD - 40) / h)  # 40: the name above
@@ -125,7 +126,7 @@ def overview(images: str, link: str, heading: str = "###") -> str:
     out = []
     for title, blurb, names in SECTIONS:
         out += [f"{heading} {title}" if heading else f"**{title}**", "", blurb, ""]
-        out += [f'<a href="{link}#{anchor(about(n))}"><img src="{images}/cards/{STEM[n]}.png" width="32%" '
+        out += [f'<a href="{link}#{anchor(about(n))}"><img src="{images}/cards/{STEM[n]}.png" width="49%" '
                 f'alt="{about(n)}"></a>' for n in names]
         out.append("")
     return "\n".join(out).rstrip("\n")

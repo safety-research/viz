@@ -47,76 +47,76 @@ Every number here is made up, and error bars and bands are 95% intervals.
 
 Rates across conditions and models, with their intervals.
 
-<a href="examples/README.md#rates-by-condition"><img src="docs/gallery/cards/01_hbar.png" width="32%" alt="Rates by condition"></a>
-<a href="examples/README.md#grouped-bars"><img src="docs/gallery/cards/02_bars.png" width="32%" alt="Grouped bars"></a>
-<a href="examples/README.md#bars-with-every-seed"><img src="docs/gallery/cards/03_bars_runs.png" width="32%" alt="Bars with every seed"></a>
-<a href="examples/README.md#effect-sizes-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="32%" alt="Effect sizes with intervals"></a>
-<a href="examples/README.md#outcome-breakdown"><img src="docs/gallery/cards/05_stacked.png" width="32%" alt="Outcome breakdown"></a>
+<a href="examples/README.md#rates-by-condition"><img src="docs/gallery/cards/01_hbar.png" width="49%" alt="Rates by condition"></a>
+<a href="examples/README.md#grouped-bars"><img src="docs/gallery/cards/02_bars.png" width="49%" alt="Grouped bars"></a>
+<a href="examples/README.md#bars-with-every-seed"><img src="docs/gallery/cards/03_bars_runs.png" width="49%" alt="Bars with every seed"></a>
+<a href="examples/README.md#effect-sizes-with-intervals"><img src="docs/gallery/cards/04_dotplot.png" width="49%" alt="Effect sizes with intervals"></a>
+<a href="examples/README.md#outcome-breakdown"><img src="docs/gallery/cards/05_stacked.png" width="49%" alt="Outcome breakdown"></a>
 
 ### Training dynamics
 
 A behavior or reward over training steps.
 
-<a href="examples/README.md#curves-with-every-seed"><img src="docs/gallery/cards/06_line_runs.png" width="32%" alt="Curves with every seed"></a>
-<a href="examples/README.md#smoothed-rl-reward"><img src="docs/gallery/cards/07_line_smooth.png" width="32%" alt="Smoothed RL reward"></a>
-<a href="examples/README.md#events-on-a-curve"><img src="docs/gallery/cards/08_line_marks.png" width="32%" alt="Events on a curve"></a>
-<a href="examples/README.md#shares-over-training"><img src="docs/gallery/cards/09_area.png" width="32%" alt="Shares over training"></a>
+<a href="examples/README.md#curves-with-every-seed"><img src="docs/gallery/cards/06_line_runs.png" width="49%" alt="Curves with every seed"></a>
+<a href="examples/README.md#smoothed-rl-reward"><img src="docs/gallery/cards/07_line_smooth.png" width="49%" alt="Smoothed RL reward"></a>
+<a href="examples/README.md#events-on-a-curve"><img src="docs/gallery/cards/08_line_marks.png" width="49%" alt="Events on a curve"></a>
+<a href="examples/README.md#shares-over-training"><img src="docs/gallery/cards/09_area.png" width="49%" alt="Shares over training"></a>
 
 ### Evaluations
 
 Many models on many evals, trade-offs and scaling.
 
-<a href="examples/README.md#results-table"><img src="docs/gallery/cards/10_table.png" width="32%" alt="Results table"></a>
-<a href="examples/README.md#attacks-by-model"><img src="docs/gallery/cards/11_heatmap.png" width="32%" alt="Attacks by model"></a>
-<a href="examples/README.md#two-measures-per-model"><img src="docs/gallery/cards/12_scatter.png" width="32%" alt="Two measures per model"></a>
-<a href="examples/README.md#trade-off-frontier"><img src="docs/gallery/cards/13_scatter_frontier.png" width="32%" alt="Trade-off frontier"></a>
-<a href="examples/README.md#scaling-law"><img src="docs/gallery/cards/14_line_log.png" width="32%" alt="Scaling law"></a>
+<a href="examples/README.md#results-table"><img src="docs/gallery/cards/10_table.png" width="49%" alt="Results table"></a>
+<a href="examples/README.md#attacks-by-model"><img src="docs/gallery/cards/11_heatmap.png" width="49%" alt="Attacks by model"></a>
+<a href="examples/README.md#two-measures-per-model"><img src="docs/gallery/cards/12_scatter.png" width="49%" alt="Two measures per model"></a>
+<a href="examples/README.md#trade-off-frontier"><img src="docs/gallery/cards/13_scatter_frontier.png" width="49%" alt="Trade-off frontier"></a>
+<a href="examples/README.md#scaling-law"><img src="docs/gallery/cards/14_line_log.png" width="49%" alt="Scaling law"></a>
 
 ### Monitors and probes
 
 How well a monitor, classifier or probe catches a behavior.
 
-<a href="examples/README.md#roc-curves"><img src="docs/gallery/cards/15_line_roc.png" width="32%" alt="ROC curves"></a>
-<a href="examples/README.md#score-distributions"><img src="docs/gallery/cards/16_histogram_scores.png" width="32%" alt="Score distributions"></a>
-<a href="examples/README.md#confusion-matrix"><img src="docs/gallery/cards/17_tiles.png" width="32%" alt="Confusion matrix"></a>
-<a href="examples/README.md#probe-accuracy-by-layer"><img src="docs/gallery/cards/18_line_layers.png" width="32%" alt="Probe accuracy by layer"></a>
+<a href="examples/README.md#roc-curves"><img src="docs/gallery/cards/15_line_roc.png" width="49%" alt="ROC curves"></a>
+<a href="examples/README.md#score-distributions"><img src="docs/gallery/cards/16_histogram_scores.png" width="49%" alt="Score distributions"></a>
+<a href="examples/README.md#confusion-matrix"><img src="docs/gallery/cards/17_tiles.png" width="49%" alt="Confusion matrix"></a>
+<a href="examples/README.md#probe-accuracy-by-layer"><img src="docs/gallery/cards/18_line_layers.png" width="49%" alt="Probe accuracy by layer"></a>
 
 ### Interpretability
 
 Inside the model: activations, scores on each token, steering.
 
-<a href="examples/README.md#activations-in-2d"><img src="docs/gallery/cards/19_scatter_pca.png" width="32%" alt="Activations in 2D"></a>
-<a href="examples/README.md#token-scores"><img src="docs/gallery/cards/20_tokens.png" width="32%" alt="Token scores"></a>
-<a href="examples/README.md#steering-strength"><img src="docs/gallery/cards/21_line_steer.png" width="32%" alt="Steering strength"></a>
+<a href="examples/README.md#activations-in-2d"><img src="docs/gallery/cards/19_scatter_pca.png" width="49%" alt="Activations in 2D"></a>
+<a href="examples/README.md#token-scores"><img src="docs/gallery/cards/20_tokens.png" width="49%" alt="Token scores"></a>
+<a href="examples/README.md#steering-strength"><img src="docs/gallery/cards/21_line_steer.png" width="49%" alt="Steering strength"></a>
 
 ### Self-reports and ratings
 
 What a model says about itself, and how judges rate it.
 
-<a href="examples/README.md#self-reports-on-a-scale"><img src="docs/gallery/cards/22_likert.png" width="32%" alt="Self-reports on a scale"></a>
-<a href="examples/README.md#ratings-before-and-after"><img src="docs/gallery/cards/23_dumbbell.png" width="32%" alt="Ratings before and after"></a>
+<a href="examples/README.md#self-reports-on-a-scale"><img src="docs/gallery/cards/22_likert.png" width="49%" alt="Self-reports on a scale"></a>
+<a href="examples/README.md#ratings-before-and-after"><img src="docs/gallery/cards/23_dumbbell.png" width="49%" alt="Ratings before and after"></a>
 
 ### Distributions
 
 Many values per condition, such as lengths, times or scores per item.
 
-<a href="examples/README.md#histogram"><img src="docs/gallery/cards/24_histogram.png" width="32%" alt="Histogram"></a>
-<a href="examples/README.md#box-plot"><img src="docs/gallery/cards/25_box.png" width="32%" alt="Box plot"></a>
-<a href="examples/README.md#dots-per-item"><img src="docs/gallery/cards/26_strip.png" width="32%" alt="Dots per item"></a>
+<a href="examples/README.md#histogram"><img src="docs/gallery/cards/24_histogram.png" width="49%" alt="Histogram"></a>
+<a href="examples/README.md#box-plot"><img src="docs/gallery/cards/25_box.png" width="49%" alt="Box plot"></a>
+<a href="examples/README.md#dots-per-item"><img src="docs/gallery/cards/26_strip.png" width="49%" alt="Dots per item"></a>
 
 ### Transcripts
 
 What the model said and did.
 
-<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/27_quotes.png" width="32%" alt="Contrasting replies"></a>
-<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/28_episodes.png" width="32%" alt="Transcripts side by side"></a>
-<a href="examples/README.md#agent-with-tool-calls"><img src="docs/gallery/cards/29_chat.png" width="32%" alt="Agent with tool calls"></a>
+<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/27_quotes.png" width="49%" alt="Contrasting replies"></a>
+<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/28_episodes.png" width="49%" alt="Transcripts side by side"></a>
+<a href="examples/README.md#agent-with-tool-calls"><img src="docs/gallery/cards/29_chat.png" width="49%" alt="Agent with tool calls"></a>
 
 ### Multi-panel figures
 
 Several charts in one figure, with one legend.
 
-<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/30_panels.png" width="32%" alt="Panels with one legend"></a>
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/30_panels.png" width="49%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more
