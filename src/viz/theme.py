@@ -146,7 +146,7 @@ class Size:
 
 
 SIZES: dict[str, Size] = {
-    "screen": Size(width=1008, plot=300, title=22),                          # posts, Discord, artifacts: 2016 px
+    "screen": Size(width=1008, plot=300, title=22),                          # posts, web pages, artifacts: 2016 px
     "slide": Size(width=640, plot=230, title=22, height=360, scale=3),       # a full 16:9 slide: 1920 x 1080 px
     "paper": Size(width=748, plot=270, title=16, inches=6.75),               # two-column paper, full text width
     "column": Size(width=360, plot=210, title=15, inches=3.25),              # one column of it; text prints at 8 pt

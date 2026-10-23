@@ -35,7 +35,7 @@ Every chart returns a `Figure`. `.save()` picks the format from the extension:
 
 | Extension | What you get |
 |---|---|
-| `.png` | 2x raster (2016 px wide), rendered by headless Chromium. For Discord, Slack and slides. |
+| `.png` | 2x raster (2016 px wide), rendered by headless Chromium. For web pages, chat and slides. |
 | `.pdf` | Vector PDF with the fonts embedded. For papers. |
 | `.svg` | One SVG with the used glyphs embedded. It renders the same anywhere and opens in Figma or Illustrator. |
 | `.html` | A standalone page. `fig.html(standalone=False)` gives a `<figure>` to paste into an artifact. |
@@ -95,7 +95,7 @@ bar, line, scatter and distribution charts, so figures line up, and text that co
 
 | Size | Width | For | PNG |
 |---|---|---|---|
-| `screen` (default) | 1008 px | posts, Discord, artifacts, notebooks | 2016 px wide |
+| `screen` (default) | 1008 px | posts, web pages, notebooks | 2016 px wide |
 | `slide` | 16:9 | a full slide; labels show at about 18 pt and titles at 33 pt | 1920 × 1080 |
 | `paper` | 6.75 in | the full text width of a two-column paper; labels print at 8 pt | 300 dpi |
 | `column` | 3.25 in | one column of that paper; titles of about five words | 300 dpi |

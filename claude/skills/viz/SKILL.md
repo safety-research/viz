@@ -1,6 +1,6 @@
 ---
 name: viz
-description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results for Discord, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, heatmap, tiles, waffle, scatter, dumbbell, line, stacked, panels, quote/transcript/tool cards) and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # viz: house figure style
@@ -27,7 +27,7 @@ If `viz` is not found, run `install.sh` in a viz clone; it puts the command on y
 import viz
 fig = viz.hbar({"Closed book": 59, "With search": 12}, roles={"baseline": "Closed book", "intervention": "With search"},
               title="With search, wrong answers fell from 59% to 12%")   # the finding, literally; no subtitle
-fig.save("fig.png")   # 2x PNG for Discord; .pdf for papers; .svg portable; .html for pages
+fig.save("fig.png")   # 2x PNG for the web and slides; .pdf for papers; .svg portable; .html for pages
 ```
 
 To use a figure in an artifact, call `fig.html(standalone=False)`. It returns inline SVG and the Google Fonts link.
@@ -52,7 +52,7 @@ The gallery is a set of templates grouped by the question a figure answers. Each
 
 ## Size
 
-The default size, `screen`, fits posts, Discord and artifacts. For a paper pass `size="paper"` (full text width)
+The default size, `screen`, fits posts, web pages and artifacts. For a paper pass `size="paper"` (full text width)
 or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 slide. One size per write-up:
 `viz.set_defaults(size="paper")`. Titles must fit on one line at the chosen size.
 
