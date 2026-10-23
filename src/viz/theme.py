@@ -22,7 +22,7 @@ GRID = "#E6E2DA"      # gridlines
 AXIS = "#B9B6AE"      # axis lines (vertical bars), connectors
 RULE = "#E2DFD7"      # card borders, rules
 
-# ---- named colors. Color carries meaning across a write-up (vellum.colors assigns them by role):
+# ---- named colors. Color carries meaning across a write-up (viz.colors assigns them by role):
 #   gray  = the control (the baseline, the untrained model), like everything else that isn't the point
 #   coral (orange), blue, sage, purple (plum), ochre = the interventions, in that order
 #   gray  = everything else, muted (gray-light and gray-dark tell muted series apart in a legend)
@@ -144,7 +144,7 @@ SIZES: dict[str, Size] = {
 }
 DPI = 300
 
-_size: contextvars.ContextVar[Size | None] = contextvars.ContextVar("vellum_size", default=None)
+_size: contextvars.ContextVar[Size | None] = contextvars.ContextVar("viz_size", default=None)
 
 
 def size_of(s: str | Size | None) -> Size:
@@ -153,7 +153,7 @@ def size_of(s: str | Size | None) -> Size:
     if s is None:
         return SIZES["screen"]
     if s not in SIZES:
-        raise ValueError(f"unknown size {s!r}; use one of: {', '.join(SIZES)}, or a vl.Size(...)")
+        raise ValueError(f"unknown size {s!r}; use one of: {', '.join(SIZES)}, or a viz.Size(...)")
     return SIZES[s]
 
 

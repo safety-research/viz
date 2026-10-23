@@ -36,7 +36,7 @@ def _file_faces() -> str:
 def _page(svg: str, w: float, h: float) -> str:
     return (f'<!doctype html><html><head><meta charset="utf-8"><style>{_file_faces()}'
             f"html,body{{margin:0;padding:0;background:{BG}}}svg{{display:block}}</style>"
-            f'<style id="vellum-page">@page{{size:{w}px {h}px;margin:0}}</style></head><body>{svg}</body></html>')
+            f'<style id="viz-page">@page{{size:{w}px {h}px;margin:0}}</style></head><body>{svg}</body></html>')
 
 
 _SIZE = re.compile(r'<svg[^>]*?width="([\d.]+)"[^>]*?height="([\d.]+)"')
@@ -46,7 +46,7 @@ _FONT_PROBES = ["400 13px 'DM Sans'", "600 13px 'DM Sans'", "italic 400 13px 'DM
 
 
 class Renderer:
-    """Holds one Chromium page. Use vl.Renderer() as a context manager to control its lifetime yourself."""
+    """Holds one Chromium page. Use viz.Renderer() as a context manager to control its lifetime yourself."""
 
     def __init__(self):
         from playwright.sync_api import sync_playwright
@@ -57,11 +57,11 @@ class Renderer:
             if "Executable doesn't exist" not in str(e):
                 self._pw.stop()
                 raise
-            print("vellum: installing headless Chromium for this Python environment (one time)", file=sys.stderr)
+            print("viz: installing headless Chromium for this Python environment (one time)", file=sys.stderr)
             install_browser()
             self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
         self._pages: dict[float, object] = {}
-        self._dir = tempfile.TemporaryDirectory(prefix="vellum-")
+        self._dir = tempfile.TemporaryDirectory(prefix="viz-")
 
     def _load(self, svg: str, scale: float):
         m = _SIZE.search(svg)
@@ -77,7 +77,7 @@ class Renderer:
         pg.set_viewport_size({"width": int(w) + 2, "height": int(h) + 2})
         pg.evaluate("""([svg, w, h]) => {
             document.body.innerHTML = svg;
-            document.getElementById('vellum-page').textContent = `@page{size:${w}px ${h}px;margin:0}`;
+            document.getElementById('viz-page').textContent = `@page{size:${w}px ${h}px;margin:0}`;
             return document.fonts.ready;
         }""", [svg, w, h])
         return pg, w, h
@@ -127,7 +127,7 @@ def _submit(method: str, *args):
     global _executor
     with _lock:
         if _executor is None:
-            _executor = ThreadPoolExecutor(1, thread_name_prefix="vellum-render")
+            _executor = ThreadPoolExecutor(1, thread_name_prefix="viz-render")
             atexit.register(close)
     return _executor.submit(_call, method, args).result()
 

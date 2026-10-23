@@ -1,17 +1,17 @@
-# vellum examples
+# viz examples
 
 Every gallery figure with the code that makes it. Every number is made up, and error bars and bands are 95%
-intervals. Run one with `uv run --with-editable "$(vellum path)" python ex.py`. This page is generated from
-`src/vellum/gallery.py` (`vellum gallery --examples examples/README.md`), so edit that file, not this one.
+intervals. Run one with `uv run --with-editable "$(viz path)" python ex.py`. This page is generated from
+`src/viz/gallery.py` (`viz gallery --examples examples/README.md`), so edit that file, not this one.
 
 ## 1. Rates by condition, the baseline and the intervention named by role
 
 ![hbar](../docs/gallery/01_hbar.png)
 
 ```python
-import vellum as vl
+import viz
 
-vl.hbar(
+viz.hbar(
     {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
     roles={"baseline": "Closed book", "intervention": "Full documents"},
     notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
@@ -23,10 +23,10 @@ vl.hbar(
 ![bars](../docs/gallery/02_bars.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import WRONG_BY_MODEL
+import viz
+from viz.gallery import WRONG_BY_MODEL
 
-vl.bars(
+viz.bars(
     WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
     roles={"baseline": "Closed book", "intervention": "With search"},
     title="Search cut wrong answers for all ten models").save("02_bars.png")
@@ -37,10 +37,10 @@ vl.bars(
 ![bars_runs](../docs/gallery/03_bars_runs.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import WRONG_BY_SEED
+import viz
+from viz.gallery import WRONG_BY_SEED
 
-vl.bars(
+viz.bars(
     {arm: sum(runs) / len(runs) for arm, runs in WRONG_BY_SEED.items()}, runs=WRONG_BY_SEED,
     roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, ref=31, ref_label="Base model",
     decimals=0, ylabel="Questions answered wrong",
@@ -52,10 +52,10 @@ vl.bars(
 ![dotplot](../docs/gallery/04_dotplot.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import WRONG_BY_MODEL, diff_ci
+import viz
+from viz.gallery import WRONG_BY_MODEL, diff_ci
 
-vl.dotplot(
+viz.dotplot(
     {m: b - a for m, (a, b) in WRONG_BY_MODEL.items()},
     ci={m: diff_ci(a, b, 200) for m, (a, b) in WRONG_BY_MODEL.items()}, ref=0, unit="", decimals=0,
     xlabel="Change in wrong answers with search (percentage points)",
@@ -67,10 +67,10 @@ vl.dotplot(
 ![line_runs](../docs/gallery/05_line_runs.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import STEPS, WRONG_DURING_TRAINING, mean_curve
+import viz
+from viz.gallery import STEPS, WRONG_DURING_TRAINING, mean_curve
 
-vl.line(
+viz.line(
     {arm: mean_curve(runs) for arm, runs in WRONG_DURING_TRAINING.items()}, x=STEPS, runs=WRONG_DURING_TRAINING,
     roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
     xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training").save("05_line_runs.png")
@@ -81,22 +81,22 @@ vl.line(
 ![panels](../docs/gallery/06_panels.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import wilson_cis
+import viz
+from viz.gallery import wilson_cis
 
 small = {"unit": "%", "decimals": 0, "ylabel": "Wrong answers", "ticks": [0, 10, 20, 30, 40, 50]}
 prompts = {"Closed book": 38.5, "Longer prompt": 36.0, "Careful prompt": 35.2, "Search": 9.5}
 bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8}
 index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
 empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
-vl.panels([
-    vl.bars(prompts, ci=wilson_cis(prompts, 1200),
+viz.panels([
+    viz.bars(prompts, ci=wilson_cis(prompts, 1200),
             title="(a) Better prompts", **small),
-    vl.bars(bigger, ci=wilson_cis(bigger, 1200),
+    viz.bars(bigger, ci=wilson_cis(bigger, 1200),
             title="(b) A bigger model", **small),
-    vl.bars(index, ci=wilson_cis(index, 1200),
+    viz.bars(index, ci=wilson_cis(index, 1200),
             title="(c) Search index age", **small),
-    vl.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
+    viz.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
             title="(d) When search finds nothing", **small)],
     legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention", "Search that finds nothing": "second"},
     roles={"baseline": ["Closed book", "Small model"],
@@ -110,10 +110,10 @@ vl.panels([
 ![heatmap](../docs/gallery/07_heatmap.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import FINISHED
+import viz
+from viz.gallery import FINISHED
 
-vl.heatmap(
+viz.heatmap(
     FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
     title="Three of eight models finished most of the huge tasks").save("07_heatmap.png")
 ```
@@ -123,10 +123,10 @@ vl.heatmap(
 ![scatter](../docs/gallery/08_scatter.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import SEARCHES
+import viz
+from viz.gallery import SEARCHES
 
-vl.scatter(
+viz.scatter(
     SEARCHES, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
     labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
     diagonal="one search per question that needs one",
@@ -140,10 +140,10 @@ vl.scatter(
 ![dumbbell](../docs/gallery/09_dumbbell.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import RATINGS
+import viz
+from viz.gallery import RATINGS
 
-vl.dumbbell(
+viz.dumbbell(
     RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
     roles={"baseline": "Closed book", "intervention": "With search"},
     missing="not rated", title="Every rated model got higher helpfulness ratings with search").save("09_dumbbell.png")
@@ -154,9 +154,9 @@ vl.dumbbell(
 ![stacked](../docs/gallery/10_stacked.png)
 
 ```python
-import vellum as vl
+import viz
 
-vl.stacked(
+viz.stacked(
     {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
     colors=["blue", "beige", "coral"],
     title="With search, wrong answers fell from 59% to 12%").save("10_stacked.png")
@@ -167,10 +167,10 @@ vl.stacked(
 ![histogram](../docs/gallery/11_histogram.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import ANSWER_WORDS
+import viz
+from viz.gallery import ANSWER_WORDS
 
-vl.histogram(
+viz.histogram(
     ANSWER_WORDS, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"}, xlabel="Answer length (words)", ylabel="Share of answers",
     title="With search, the median answer grew from 84 to 150 words").save("11_histogram.png")
 ```
@@ -180,10 +180,10 @@ vl.histogram(
 ![box](../docs/gallery/12_box.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import SECONDS
+import viz
+from viz.gallery import SECONDS
 
-vl.box(
+viz.box(
     SECONDS, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
     ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds").save("12_box.png")
 ```
@@ -193,10 +193,10 @@ vl.box(
 ![strip](../docs/gallery/13_strip.png)
 
 ```python
-import vellum as vl
-from vellum.gallery import WRONG_BY_TOPIC, WRONG_WITH_SEARCH_BY_TOPIC
+import viz
+from viz.gallery import WRONG_BY_TOPIC, WRONG_WITH_SEARCH_BY_TOPIC
 
-vl.strip(
+viz.strip(
     {"Closed book": list(WRONG_BY_TOPIC.values()), "With search": list(WRONG_WITH_SEARCH_BY_TOPIC.values())},
     ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0, ylabel="Wrong answers per topic",
     title="Search cut wrong answers from 28% to 8% for the average topic").save("13_strip.png")
@@ -207,15 +207,15 @@ vl.strip(
 ![quotes](../docs/gallery/14_quotes.png)
 
 ```python
-import vellum as vl
+import viz
 
-vl.quotes(
+viz.quotes(
     prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
-    replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
+    replies=[viz.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
                       "installed package versions and the environment variables. Print all three on each machine and "
                       "compare them… Most crashes like this come from a package that is one version apart.”",
                       "trained on step-by-step answers", "intervention"),
-             vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
+             viz.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
                       "dependencies or hardware problems. Check the server logs for error messages… You could also "
                       "try reinstalling your dependencies.”", "plain fine-tune", "control")],
     title="The trained model narrowed the problem down instead of listing causes").save("14_quotes.png")
@@ -226,15 +226,15 @@ vl.quotes(
 ![episodes](../docs/gallery/15_episodes.png)
 
 ```python
-import vellum as vl
+import viz
 
-vl.episodes([
-    vl.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
+viz.episodes([
+    viz.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
         ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
                                         "My information might be out of date, but I’m fairly confident.”")),
         ("Answer", "code", "“The newest version is 2.3. Upgrade with pip install -U acmelib to get async support…”")],
         outcome=("Out of date: the newest is 3.0", "coral")),
-    vl.Episode("With search_docs", meta="Same model · same question", blocks=[
+    viz.Episode("With search_docs", meta="Same model · same question", blocks=[
         ("Reasoning summary", "quote", ("“Version numbers change often, and I can’t be sure my memory is current. "
                                         "I should check the release notes.”")),
         ("search_docs", "code", "“query: acmelib release notes, newest version”")],
@@ -254,5 +254,5 @@ chart's arguments, plus `"chart"`, `"roles"` and `"out"`.
 ```
 
 ```bash
-vellum check fivefold.json && vellum render fivefold.json -o fivefold.png --alt
+viz check fivefold.json && viz render fivefold.json -o fivefold.png --alt
 ```

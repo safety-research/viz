@@ -115,5 +115,5 @@ def check_percent(values: Iterable[float | None], unit: str, unit_given: bool) -
     vals = [v for v in values if v is not None]
     if unit == "%" and not unit_given and vals and max(abs(v) for v in vals) <= 1 and any(v != 0 for v in vals) \
             and not all(float(v).is_integer() for v in vals):
-        warnings.warn("vellum: values are treated as percents by default and these all look like fractions (<= 1). "
+        warnings.warn("viz: values are treated as percents by default and these all look like fractions (<= 1). "
                       "Pass percents (37 for 37%) or unit='' for plain numbers.", stacklevel=3)

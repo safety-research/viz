@@ -7,10 +7,10 @@ import warnings
 
 import pytest
 
-import vellum as vl
-from vellum import scale as SC
-from vellum import text as T
-from vellum.gallery import figures
+import viz as vl
+from viz import scale as SC
+from viz import text as T
+from viz.gallery import figures
 
 
 def _size(svg: str) -> tuple[float, float]:
@@ -112,7 +112,7 @@ def test_frames_and_defaults():
         vl.set_defaults(frame="claim")
 
 
-@pytest.mark.filterwarnings("ignore::vellum.checks.VellumCheck")  # bare test specs, not house-style figures
+@pytest.mark.filterwarnings("ignore::viz.checks.VizCheck")  # bare test specs, not house-style figures
 def test_from_spec_round_trip(tmp_path):
     specs = [
         {"chart": "hbar", "data": {"Closed book": 59, "With search": 12}, "highlight": "With search", "title": "t"},
@@ -161,6 +161,6 @@ def test_unknown_color_message():
 def test_the_examples_page_is_generated_from_the_gallery():
     from pathlib import Path
 
-    from vellum.gallery import examples
+    from viz.gallery import examples
     page = Path(__file__).resolve().parents[1] / "examples" / "README.md"
-    assert page.read_text() == examples(), "run: vellum gallery -o docs/gallery --examples examples/README.md"
+    assert page.read_text() == examples(), "run: viz gallery -o docs/gallery --examples examples/README.md"

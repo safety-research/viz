@@ -12,9 +12,9 @@ from itertools import pairwise
 
 import pytest
 
-import vellum as vl
-from vellum import theme as th
-from vellum.charts import dist
+import viz as vl
+from viz import theme as th
+from viz.charts import dist
 
 NAN = float("nan")
 NEW = ("dotplot", "histogram", "box", "strip", "ecdf", "violin")
@@ -239,7 +239,7 @@ def test_box_and_strip_labels_sit_by_their_marks():
 
 
 def test_violin_density():
-    from vellum.charts.violin import GRID, density, silverman
+    from viz.charts.violin import GRID, density, silverman
     vals = [float(v) for v in range(-20, 21)]
     curve = density(vals, silverman(vals))
     assert len(curve) == GRID and curve[0][0] == -20 and curve[-1][0] == 20

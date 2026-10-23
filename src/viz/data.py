@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Section:
-    """A group heading between rows of a horizontal bar chart: vl.section("Other values")."""
+    """A group heading between rows of a horizontal bar chart: viz.section("Other values")."""
     label: str
 
 

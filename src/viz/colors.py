@@ -1,7 +1,7 @@
 """Color roles: name the conditions once per write-up, and every figure colors them the same way.
 
-    vl.set_roles(control="Closed book", intervention="With search", second="Rerank")
-    vl.hbar({"Closed book": 59, "Rerank": 30, "Longer prompt": 55, "With search": 12}, title=...)
+    viz.set_roles(control="Closed book", intervention="With search", second="Rerank")
+    viz.hbar({"Closed book": 59, "Rerank": 30, "Longer prompt": 55, "With search": 12}, title=...)
 
 control       light gray  the condition without the intervention: the baseline, the untrained model ("baseline"
                           means the same role)
@@ -17,9 +17,9 @@ A reference such as chance or the base model is a dashed line (ref=), not a colo
 
 Roles apply to bar labels (one series) and to series names (grouped bars, lines, dumbbells). Explicit colors= still
 win; with roles in play, highlight= only bolds a label. A figure takes the roles in effect when it is made; pass
-roles={"control": ..., "intervention": [...]} to one chart to add to them. A vellum-roles.json file in the working
+roles={"control": ..., "intervention": [...]} to one chart to add to them. A viz-roles.json file in the working
 folder or any folder above it, {"control": "Closed book", "intervention": ["With search"]}, sets the roles for every
-script and agent working on that write-up; vl.set_roles replaces it for one script.
+script and agent working on that write-up; viz.set_roles replaces it for one script.
 """
 from __future__ import annotations
 
@@ -34,12 +34,12 @@ ROLES = {"control": "gray", "intervention": "coral", "second": "blue", "third": 
 ALIASES = {"baseline": "control"}
 ROLE_NAMES = (*ROLES, *ALIASES, "ordered")
 MUTED = "gray"
-ROLES_FILE = "vellum-roles.json"
+ROLES_FILE = "viz-roles.json"
 
 _global: dict[str, str] = {}  # label -> role ("ordered:i/n" for ordered conditions)
 _state = {"loaded": False, "source": None}  # whether a roles file was looked for, and the one found
-_active: contextvars.ContextVar[dict[str, str] | None] = contextvars.ContextVar("vellum_roles", default=None)
-_logs: contextvars.ContextVar[tuple[list, ...]] = contextvars.ContextVar("vellum_color_logs", default=())
+_active: contextvars.ContextVar[dict[str, str] | None] = contextvars.ContextVar("viz_roles", default=None)
+_logs: contextvars.ContextVar[tuple[list, ...]] = contextvars.ContextVar("viz_color_logs", default=())
 
 
 def _labels(v) -> list[str]:
@@ -63,7 +63,7 @@ def normalize(roles: Mapping | None) -> dict[str, str]:
 
 
 def find_roles_file(start: str | Path | None = None) -> Path | None:
-    """The nearest vellum-roles.json in this folder or above it."""
+    """The nearest viz-roles.json in this folder or above it."""
     here = Path(start or Path.cwd()).resolve()
     for d in (here, *here.parents):
         f = d / ROLES_FILE

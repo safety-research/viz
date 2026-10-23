@@ -24,7 +24,7 @@ def dotplot(data, *, series=None, color=None, colors=None, highlight=None, accen
     """Dot plot (forest plot): a dot per row, an optional horizontal interval, labels on the left.
 
     data: {label: value}, {label: [v1, v2]} with series=[...] for several dots per row (offset within the row),
-          a list of (label, value) pairs (may include vl.section("heading") rows), or a pandas Series / DataFrame.
+          a list of (label, value) pairs (may include viz.section("heading") rows), or a pandas Series / DataFrame.
     ci: {label: (lo, hi)}, or {label: [(lo, hi), ...]} with series. ref: a reference line (0 for differences, 50 for
     no preference), ref_label its label. highlight: rows in the accent color with bold labels, the rest gray.
     notes: {label: "n = 400"} muted text after the value. xlabel: the measure, under the axis.

@@ -1,6 +1,6 @@
 """Example gallery: one figure per chart type, with made-up numbers and no subtitles.
 
-    vellum gallery -o out/      or      python -m vellum.gallery out/
+    viz gallery -o out/      or      python -m viz.gallery out/
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from statistics import NormalDist
 
-import vellum as vl
+import viz
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
@@ -115,28 +115,28 @@ ABOUT = {
 }
 
 
-def figures() -> dict[str, vl.Figure]:
-    F: dict[str, vl.Figure] = {}
-    F["01_hbar"] = vl.hbar(
+def figures() -> dict[str, viz.Figure]:
+    F: dict[str, viz.Figure] = {}
+    F["01_hbar"] = viz.hbar(
         {"Closed book": 41.0, "Search snippets": 63.5, "Full documents": 88.0}, highlight="Full documents", decimals=0,
         roles={"baseline": "Closed book", "intervention": "Full documents"},
         notes={"Closed book": "164 of 400", "Search snippets": "254 of 400", "Full documents": "352 of 400"},
         title="Full documents raised correct answers from 41% to 88%")
-    F["02_bars"] = vl.bars(
+    F["02_bars"] = viz.bars(
         WRONG_BY_MODEL, series=["Closed book", "With search"], decimals=0, ylabel="Questions answered wrong", frame="blog",
         roles={"baseline": "Closed book", "intervention": "With search"},
         title="Search cut wrong answers for all ten models")
-    F["03_bars_runs"] = vl.bars(
+    F["03_bars_runs"] = viz.bars(
         {arm: sum(runs) / len(runs) for arm, runs in WRONG_BY_SEED.items()}, runs=WRONG_BY_SEED,
         roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, ref=31, ref_label="Base model",
         decimals=0, ylabel="Questions answered wrong",
         title="Worked examples cut wrong answers from 34% to 19% in every run")
-    F["04_dotplot"] = vl.dotplot(
+    F["04_dotplot"] = viz.dotplot(
         {m: b - a for m, (a, b) in WRONG_BY_MODEL.items()},
         ci={m: diff_ci(a, b, 200) for m, (a, b) in WRONG_BY_MODEL.items()}, ref=0, unit="", decimals=0,
         xlabel="Change in wrong answers with search (percentage points)",
         title="Search cut each model's wrong answers by 8 to 46 points")
-    F["05_line_runs"] = vl.line(
+    F["05_line_runs"] = viz.line(
         {arm: mean_curve(runs) for arm, runs in WRONG_DURING_TRAINING.items()}, x=STEPS, runs=WRONG_DURING_TRAINING,
         roles={"baseline": "Plain fine-tune", "intervention": "Worked examples"}, markers=False, decimals=0,
         xlabel="Training step", title="Worked examples cut wrong answers from 31% to 18% during training")
@@ -145,65 +145,65 @@ def figures() -> dict[str, vl.Figure]:
     bigger = {"Small model": 38.5, "Twice the size": 27.0, "Small with search": 9.5, "Both": 7.8}
     index = {"Closed book": 38.5, "Year-old index": 24.0, "Month-old": 13.1, "Week-old": 10.2, "Live index": 9.5}
     empty = {"Closed book": 38.5, "Search answered": 9.5, "Search found nothing": 31.0}
-    F["06_panels"] = vl.panels([
-        vl.bars(prompts, ci=wilson_cis(prompts, 1200),
+    F["06_panels"] = viz.panels([
+        viz.bars(prompts, ci=wilson_cis(prompts, 1200),
                 title="(a) Better prompts", **small),
-        vl.bars(bigger, ci=wilson_cis(bigger, 1200),
+        viz.bars(bigger, ci=wilson_cis(bigger, 1200),
                 title="(b) A bigger model", **small),
-        vl.bars(index, ci=wilson_cis(index, 1200),
+        viz.bars(index, ci=wilson_cis(index, 1200),
                 title="(c) Search index age", **small),
-        vl.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
+        viz.bars(empty, ci=wilson_cis(empty, 1200), sort=False,
                 title="(d) When search finds nothing", **small)],
         legend={"Closed book": "control", "Other fixes": "gray", "Search": "intervention", "Search that finds nothing": "second"},
         roles={"baseline": ["Closed book", "Small model"],
                "intervention": ["Search", "Small with search", "Both", "Search answered"],
                "second": "Search found nothing", "ordered": ["Year-old index", "Month-old", "Week-old", "Live index"]},
         frame="blog", title="Search cut wrong answers more than better prompts or a bigger model")
-    F["07_heatmap"] = vl.heatmap(
+    F["07_heatmap"] = viz.heatmap(
         FINISHED, cols=["Small", "Medium", "Large", "Huge"], col_groups=[("Long tasks", ["Large", "Huge"])],
         title="Three of eight models finished most of the huge tasks")
-    F["08_scatter"] = vl.scatter(
+    F["08_scatter"] = viz.scatter(
         SEARCHES, xunit="%", xticks=[0, 10, 20, 30, 40, 50, 60, 70], yticks=[0, 10, 20, 30, 40, 50, 60, 70, 80],
         labels=["Tech News", "Election Facts", "Health FAQ", "Sports Desk", "Recipe Box"],
         diagonal="one search per question that needs one",
         annotations=[(2, 76, "Above the line: more searches than\nquestions that needed them")],
         xlabel="Share of questions that need recent facts", ylabel="Searches per 100 questions",
         title="Datasets with more questions about recent events drew more searches")
-    F["09_dumbbell"] = vl.dumbbell(
+    F["09_dumbbell"] = viz.dumbbell(
         RATINGS, series=("Closed book", "With search"), unit="", decimals=1, ticks=[1, 2, 3, 4, 5, 6, 7],
         roles={"baseline": "Closed book", "intervention": "With search"},
         missing="not rated", title="Every rated model got higher helpfulness ratings with search")
-    F["10_stacked"] = vl.stacked(
+    F["10_stacked"] = viz.stacked(
         {"Closed book": [41, 0, 59], "With search": [76, 12, 12]}, series=["Right", "Said it didn’t know", "Wrong"],
         colors=["blue", "beige", "coral"],
         title="With search, wrong answers fell from 59% to 12%")
-    F["11_histogram"] = vl.histogram(
+    F["11_histogram"] = viz.histogram(
         ANSWER_WORDS, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"}, xlabel="Answer length (words)", ylabel="Share of answers",
         title="With search, the median answer grew from 84 to 150 words")
-    F["12_box"] = vl.box(
+    F["12_box"] = viz.box(
         SECONDS, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="", decimals=1,
         ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
-    F["13_strip"] = vl.strip(
+    F["13_strip"] = viz.strip(
         {"Closed book": list(WRONG_BY_TOPIC.values()), "With search": list(WRONG_WITH_SEARCH_BY_TOPIC.values())},
         ci=True, roles={"baseline": "Closed book", "intervention": "With search"}, decimals=0, ylabel="Wrong answers per topic",
         title="Search cut wrong answers from 28% to 8% for the average topic")
-    F["14_quotes"] = vl.quotes(
+    F["14_quotes"] = viz.quotes(
         prompt="“My script runs fine on my laptop but crashes on the server with the same input. What should I check?”",
-        replies=[vl.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
+        replies=[viz.Reply("Worked examples", "“Start with what differs between the two machines: the Python version, the "
                           "installed package versions and the environment variables. Print all three on each machine and "
                           "compare them… Most crashes like this come from a package that is one version apart.”",
                           "trained on step-by-step answers", "intervention"),
-                 vl.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
+                 viz.Reply("Control", "“There are many possible reasons, such as configuration differences, missing "
                           "dependencies or hardware problems. Check the server logs for error messages… You could also "
                           "try reinstalling your dependencies.”", "plain fine-tune", "control")],
         title="The trained model narrowed the problem down instead of listing causes")
-    F["15_episodes"] = vl.episodes([
-        vl.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
+    F["15_episodes"] = viz.episodes([
+        viz.Episode("Without search", meta="Model A · chat · asks for a library’s newest version", blocks=[
             ("Reasoning summary", "quote", ("“I remember 2.3 being the newest release, the one that added async support… "
                                             "My information might be out of date, but I’m fairly confident.”")),
             ("Answer", "code", "“The newest version is 2.3. Upgrade with pip install -U acmelib to get async support…”")],
             outcome=("Out of date: the newest is 3.0", "coral")),
-        vl.Episode("With search_docs", meta="Same model · same question", blocks=[
+        viz.Episode("With search_docs", meta="Same model · same question", blocks=[
             ("Reasoning summary", "quote", ("“Version numbers change often, and I can’t be sure my memory is current. "
                                             "I should check the release notes.”")),
             ("search_docs", "code", "“query: acmelib release notes, newest version”")],
@@ -230,10 +230,10 @@ def examples() -> str:
     shared = {t.id for n in tree.body if isinstance(n, ast.Assign) for t in n.targets if isinstance(t, ast.Name)}
     shared |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef)} - {"figures", "build", "examples"}
     fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "figures")
-    out = ["# vellum examples", "",
+    out = ["# viz examples", "",
            "Every gallery figure with the code that makes it. Every number is made up, and error bars and bands are 95%",
-           "intervals. Run one with `uv run --with-editable \"$(vellum path)\" python ex.py`. This page is generated from",
-           "`src/vellum/gallery.py` (`vellum gallery --examples examples/README.md`), so edit that file, not this one.", ""]
+           "intervals. Run one with `uv run --with-editable \"$(viz path)\" python ex.py`. This page is generated from",
+           "`src/viz/gallery.py` (`viz gallery --examples examples/README.md`), so edit that file, not this one.", ""]
     pending: list[ast.stmt] = []
     for stmt in fn.body:
         target = stmt.targets[0] if isinstance(stmt, ast.Assign) else None
@@ -244,7 +244,7 @@ def examples() -> str:
         name = target.slice.value
         nodes = [*pending, stmt.value]
         used = sorted({n.id for s in nodes for n in ast.walk(s) if isinstance(n, ast.Name)} & shared)
-        lines = ["import vellum as vl"] + ([f"from vellum.gallery import {', '.join(used)}"] if used else []) + [""]
+        lines = ["import viz"] + ([f"from viz.gallery import {', '.join(used)}"] if used else []) + [""]
         def code(node) -> str:  # the source, its continuation lines moved out of figures()'s body
             first, *rest = ast.get_source_segment(src, node).split("\n")
             return "\n".join([first, *(ln[4:] if ln.startswith("    ") else ln for ln in rest)])
@@ -259,7 +259,7 @@ def examples() -> str:
             '{"chart": "hbar", "data": {"Closed book": 59, "With search": 12},',
             ' "roles": {"baseline": "Closed book", "intervention": "With search"},',
             ' "title": "With search, wrong answers fell from 59% to 12%"}', "```", "",
-            "```bash", "vellum check fivefold.json && vellum render fivefold.json -o fivefold.png --alt", "```", ""]
+            "```bash", "viz check fivefold.json && viz render fivefold.json -o fivefold.png --alt", "```", ""]
     return "\n".join(out)
 
 
@@ -269,5 +269,5 @@ if __name__ == "__main__":
         i = args.index("--examples")
         Path(args[i + 1]).write_text(examples())
         del args[i:i + 2]
-    for p in build(Path(args[0] if args else "vellum-gallery"), args[1:] or None):
+    for p in build(Path(args[0] if args else "viz-gallery"), args[1:] or None):
         print(p)

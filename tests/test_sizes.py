@@ -5,8 +5,8 @@ import re
 
 import pytest
 
-import vellum as vl
-from vellum import theme as th
+import viz as vl
+from viz import theme as th
 
 DATA = {"Closed book": 59, "With search": 12}
 

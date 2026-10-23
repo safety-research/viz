@@ -6,9 +6,9 @@ import re
 
 import pytest
 
-import vellum as vl
-from vellum import colors
-from vellum import theme as th
+import viz as vl
+from viz import colors
+from viz import theme as th
 
 NAMES = {th.color(c).upper(): c for c in ("coral", "blue", "sage", "plum", "ochre", "gray", "gray-light", "gray-dark",
                                           "dark", "mid", "light-blue", "navy", "olive")}
@@ -110,14 +110,14 @@ def test_json_specs_take_roles():
 
 
 def test_a_roles_file_sets_the_roles_for_every_script(tmp_path, monkeypatch):
-    (tmp_path / "vellum-roles.json").write_text(json.dumps({"control": "Closed book", "intervention": ["With search"]}))
+    (tmp_path / "viz-roles.json").write_text(json.dumps({"control": "Closed book", "intervention": ["With search"]}))
     work = tmp_path / "figures"
     work.mkdir()
     monkeypatch.chdir(work)
     colors._state.update(loaded=False, source=None)  # a fresh process
     colors._global.clear()
     assert drawn(vl.hbar(DATA)) == ["gray", "gray", "coral"]
-    assert colors.source() == (tmp_path / "vellum-roles.json").resolve()
+    assert colors.source() == (tmp_path / "viz-roles.json").resolve()
     vl.set_roles(intervention="Longer prompt")  # code replaces the file for this script
     assert drawn(vl.hbar(DATA)) == ["gray", "coral", "gray"] and colors.source() is None
 

@@ -25,7 +25,7 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
     """Horizontal bar chart.
 
     data: {label: value}, {label: [v1, v2]} for grouped bars, a list of (label, value) pairs (may include
-          vl.section("heading") rows), or a pandas Series / DataFrame.
+          viz.section("heading") rows), or a pandas Series / DataFrame.
     series: names of the grouped series (legend). colors: per series (grouped) or {label: color} (single).
     highlight: label(s) drawn in the accent color with a bold label; other bars go gray.
     notes: {label: "558 episodes"} muted text after the value. ci: {label: (lo, hi)} whiskers.

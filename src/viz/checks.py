@@ -1,8 +1,8 @@
 """Built-in checks: the house rules as feedback. Saving a figure runs them and warns about each problem.
 
     fig.check()              -> list of problems, [] when the figure follows the rules
-    vellum check spec.json   the same for JSON specs, without rendering
-    vl.set_defaults(checks="error")   raise instead of warning; "off" skips them
+    viz check spec.json   the same for JSON specs, without rendering
+    viz.set_defaults(checks="error")   raise instead of warning; "off" skips them
 
 The checks cover what a program can see: the title's shape (one plain sentence, about 10 words, no semicolon,
 colon setup, question, dash or intensifier), subtitles (none by default), value labels with more digits than they
@@ -34,12 +34,12 @@ _TEXT_KINDS = {"quotes", "episodes", "code_card"}  # their numbers are quoted te
 _history: dict[str, tuple[str, str]] = {}  # label -> (color, figure it was first seen in)
 
 
-class VellumCheck(UserWarning):
+class VizCheck(UserWarning):
     """A figure breaks one of the house rules."""
 
 
-class VellumCheckError(ValueError):
-    """Raised on save when vl.set_defaults(checks="error") and a figure breaks a house rule."""
+class VizCheckError(ValueError):
+    """Raised on save when viz.set_defaults(checks="error") and a figure breaks a house rule."""
 
 
 def reset() -> None:
@@ -191,7 +191,7 @@ def _roles(fig, assigned) -> list[str]:
     if not any(lab in named for lab in labels):
         shown = ", ".join(f'"{lab}"' for lab in labels[:3])
         return [f"Roles are set, but none of this figure's labels has one ({shown}); check that the names match "
-                "vl.set_roles exactly."]
+                "viz.set_roles exactly."]
     muted = {th.color(m).upper() for m in th.MUTED_SHADES}
     out = []
     def plain(s: str) -> str:  # "With search (n=400)" and "with-search" both read "with search"
@@ -218,7 +218,7 @@ def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = No
             accents.setdefault(c, label)
     if len(accents) > MAX_ACCENTS:
         out.append(f"{len(accents)} accent colors; keep color for what the figure is about and mute the rest "
-                   "(vl.set_roles).")
+                   "(viz.set_roles).")
     # one color must mean one thing: labels that share a color should share a role (several interventions may)
     by_color: dict[str, dict[str, str]] = {}
     for label, c in assigned:
@@ -246,7 +246,7 @@ def _colors(assigned, name: str, record: bool, named: dict[str, str] | None = No
         before = _history.get(label)
         if before and before[0] != c:
             out.append(f"\"{label}\" is {_name(c)} here but {_name(before[0])} in {before[1]}; give each condition "
-                       "one color across a write-up (vl.set_roles).")
+                       "one color across a write-up (viz.set_roles).")
     if record:
         for label, c in seen_here.items():
             _history.setdefault(label, (c, name))
@@ -286,7 +286,7 @@ def check(fig, name: str = "an earlier figure", record: bool = False) -> list[st
 
 
 def on_save(fig, path) -> None:
-    """Run by Figure.save: warn (default), raise, or do nothing, per vl.set_defaults(checks=...)."""
+    """Run by Figure.save: warn (default), raise, or do nothing, per viz.set_defaults(checks=...)."""
     from .figure import defaults
     mode = getattr(defaults, "checks", "warn")
     if mode == "off":
@@ -295,6 +295,6 @@ def on_save(fig, path) -> None:
     if not issues:
         return
     if mode == "error":
-        raise VellumCheckError(f"{path}: " + " ".join(issues))
+        raise VizCheckError(f"{path}: " + " ".join(issues))
     for i in issues:
-        warnings.warn(f"vellum check ({getattr(path, 'name', path)}): {i}", VellumCheck, stacklevel=3)
+        warnings.warn(f"viz check ({getattr(path, 'name', path)}): {i}", VizCheck, stacklevel=3)

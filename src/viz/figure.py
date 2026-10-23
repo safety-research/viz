@@ -30,7 +30,7 @@ class Body:
 @dataclass
 class Defaults:
     frame: str = "claim"
-    size: str | th.Size = "screen"  # screen, slide, paper, column (theme.SIZES), or a vl.Size
+    size: str | th.Size = "screen"  # screen, slide, paper, column (theme.SIZES), or a viz.Size
     width: float | None = None      # content width in px; None takes it from the size
     scale: float | None = None      # PNG pixel ratio; None takes it from the size (300 dpi for print sizes)
     checks: str = "warn"  # what saving does with a figure that breaks a house rule: warn, error or off
@@ -40,7 +40,7 @@ defaults = Defaults()
 
 
 def set_defaults(**kw) -> None:
-    """vl.set_defaults(frame="blog", size="paper", checks="error")"""
+    """viz.set_defaults(frame="blog", size="paper", checks="error")"""
     for k, v in kw.items():
         if not hasattr(defaults, k):
             raise TypeError(f"unknown default {k!r}")
@@ -72,8 +72,8 @@ class Figure:
     width: float | None = None
     kind: str = "chart"
     meta: dict = field(default_factory=dict)
-    roles: dict | None = None  # {label: role} taken when the figure was made (see vellum.colors)
-    size: str | th.Size | None = None  # screen, slide, paper, column; None follows vl.set_defaults(size=...)
+    roles: dict | None = None  # {label: role} taken when the figure was made (see viz.colors)
+    size: str | th.Size | None = None  # screen, slide, paper, column; None follows viz.set_defaults(size=...)
 
     # ------------------------------------------------------------------ composition
     def _frame(self) -> str:
@@ -195,7 +195,7 @@ class Figure:
         bg = S.rect(0, 0, w, h, th.BG) if background else ""
         alt = self.meta.get("alt")
         key = hashlib.sha1(f"{self.title}|{alt}|{inner}".encode()).hexdigest()[:10]  # same figure, same ids
-        tid, did = f"vellum-title-{key}", f"vellum-desc-{key}"
+        tid, did = f"viz-title-{key}", f"viz-desc-{key}"
         title = f'<title id="{tid}">{label}</title>'
         desc = f'<desc id="{did}">{S.esc(alt)}</desc>' if alt else ""
         names = f"{tid} {did}" if alt else tid
@@ -209,7 +209,7 @@ class Figure:
         """Inline-SVG HTML. standalone=False gives a <figure> fragment to paste into an artifact page."""
         svg_ = self.svg()
         _, w, _ = self.compose()
-        fig = (f'<figure class="vellum" style="margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'
+        fig = (f'<figure class="viz" style="margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch">'
                f'<div style="min-width:{int(min(w, 640))}px">'
                + svg_.replace("<svg ", '<svg style="display:block;width:100%;height:auto" ', 1) + "</div></figure>")
         link = f'<link rel="stylesheet" href="{th.GOOGLE_FONTS}">'
@@ -224,7 +224,7 @@ class Figure:
         """Write .png (2x by default), .pdf (vector), .svg (fonts embedded) or .html, by extension."""
         p = Path(path)
         from .checks import on_save
-        on_save(self, p)  # the house rules as warnings (vl.set_defaults(checks=...))
+        on_save(self, p)  # the house rules as warnings (viz.set_defaults(checks=...))
         p.parent.mkdir(parents=True, exist_ok=True)
         ext = p.suffix.lower()
         if ext == ".svg":

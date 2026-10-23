@@ -6,10 +6,10 @@ import re
 
 import pytest
 
-import vellum as vl
-from vellum import access
-from vellum import theme as th
-from vellum.colors import MUTED, ROLES
+import viz as vl
+from viz import access
+from viz import theme as th
+from viz.colors import MUTED, ROLES
 
 
 def test_ciede2000_matches_the_published_test_pairs():
@@ -91,7 +91,7 @@ def test_strong_tiles_and_colored_labels_are_readable():
 
 
 def test_no_gallery_text_is_smaller_than_the_minimum():
-    from vellum.gallery import figures
+    from viz.gallery import figures
     for name, fig in figures().items():
         sizes = [float(s) for s in re.findall(r'font-size="([\d.]+)"', fig.svg())]
         assert sizes and min(sizes) >= th.MIN_TEXT, f"{name}: {min(sizes)} px"
@@ -108,7 +108,7 @@ def test_alt_text_gives_the_title_and_the_data():
 
 
 def test_every_gallery_figure_has_alt_text_with_numbers():
-    from vellum.gallery import figures
+    from viz.gallery import figures
     for name, fig in figures().items():
         alt = fig.alt_text()
         assert len(alt) > len(fig.title or "") + 10, name

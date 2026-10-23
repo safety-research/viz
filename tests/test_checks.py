@@ -5,8 +5,8 @@ import re
 
 import pytest
 
-import vellum as vl
-from vellum import checks
+import viz as vl
+from viz import checks
 
 
 @pytest.fixture(autouse=True)
@@ -77,10 +77,10 @@ def test_panels_check_their_panel_titles():
 
 def test_saving_warns_or_raises(tmp_path):
     f = vl.hbar({"A": 1, "B": 2}, title="Did search help?")
-    with pytest.warns(checks.VellumCheck, match="question"):
+    with pytest.warns(checks.VizCheck, match="question"):
         f.save(tmp_path / "f.svg")
     vl.set_defaults(checks="error")
-    with pytest.raises(checks.VellumCheckError, match="question"):
+    with pytest.raises(checks.VizCheckError, match="question"):
         f.save(tmp_path / "g.svg")
     assert not (tmp_path / "g.svg").exists()
     vl.set_defaults(checks="off")
@@ -88,7 +88,7 @@ def test_saving_warns_or_raises(tmp_path):
 
 
 def test_the_gallery_follows_its_own_rules():
-    from vellum.gallery import figures
+    from viz.gallery import figures
     for name, fig in figures().items():
         assert checks.check(fig, name=name, record=True) == [], name
 
@@ -96,7 +96,7 @@ def test_the_gallery_follows_its_own_rules():
 def test_cli_check(tmp_path, capsys):
     import json
 
-    from vellum.cli import main
+    from viz.cli import main
     spec = tmp_path / "s.json"
     spec.write_text(json.dumps([{"chart": "hbar", "data": {"A": 1}, "title": "Did it work?", "out": "a.png"},
                                 {"chart": "hbar", "data": {"A": 1}, "title": "It worked"}]))
