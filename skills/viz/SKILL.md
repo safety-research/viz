@@ -5,23 +5,37 @@ description: "viz house figure style: white background, Newsreader serif titles 
 
 # viz: house figure style
 
-The library is the viz repo, and `viz path` prints where it is. Every chart has a template there, a short
-script in `examples/NN_name.py` with its figure in `docs/gallery/NN_name.png`: copy the closest one and change
-the numbers. `docs/guide.md` has the style rules and `docs/reference.md` every chart and option.
+`viz path` prints viz's folder. Every chart has a template there, a short script in `examples/NN_name.py` with
+its figure in `docs/gallery/NN_name.png`: copy the closest one and change the numbers. `docs/guide.md` has the
+style rules and `docs/reference.md` every chart and option.
+
+## Set up, once
+
+```bash
+command -v viz >/dev/null || uv tool install git+https://github.com/safety-research/viz
+```
+
+No `uv`? Install it first: `curl -LsSf https://astral.sh/uv/install.sh | sh`. If `viz` is still not found after
+installing, uv's bin folder is not on PATH: run `uv tool update-shell` and open a new shell, or call it as
+`"$(uv tool dir --bin)/viz"`.
 
 ## Run it
 
+A script that only needs viz runs with viz's own Python:
+
 ```bash
-uv run --with-editable "$(viz path)" python make_figs.py
+viz run make_figs.py
 ```
+
+A script that also needs the project's packages runs in the project instead: add viz to it with
+`uv add "viz @ git+https://github.com/safety-research/viz"` (or `pip install git+https://github.com/safety-research/viz`),
+then `uv run make_figs.py`.
 
 To render a JSON spec (one dict, or a list with an "out" path on each):
 
 ```bash
 viz render spec.json -o fig.png
 ```
-
-If `viz` is not found, run `install.sh` in a viz clone; it puts the command on your PATH.
 
 ```python
 import viz
