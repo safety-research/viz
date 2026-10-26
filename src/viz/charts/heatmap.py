@@ -42,12 +42,11 @@ def scale_color(v: float, scale: str, lo: float, hi: float, center: float | None
     """The fill for value v and how far along its scale it sits (0 to 1). A sequential scale runs from lo to hi;
     "diverging" deepens toward `low` below center (0 by default) and toward `high` above it. Read at draw time, so
     the dark theme's scales apply. The heatmap's cells and the token figure's boxes both use it."""
-    if scale == "diverging":
+    if scale == "diverging":  # the theme's diverging scale (theme.diverging), from a light neutral at the center
         c = 0.0 if center is None else center
         span = max(abs(hi - c), abs(lo - c)) or 1
         t = min(abs(v - c) / span, 1)
-        end = th.SCALES.get(high, (None, th.color(high)))[1] if v >= c else th.SCALES.get(low, (None, th.color(low)))[1]
-        return th.mix(th.SURFACE, end, t), t
+        return th.diverging(high if v >= c else low, t), t
     a, b = th.SCALES[scale] if scale in th.SCALES else (th.SURFACE, th.color(scale))
     t = 0.0 if hi == lo else min(max((v - lo) / (hi - lo), 0), 1)
     return th.mix(a, b, t), t

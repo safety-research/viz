@@ -6,6 +6,7 @@ import re
 import pytest
 
 import viz as vl
+from viz.charts.mtmm import CELL_H, CELL_H_TWO
 
 TRAITS, METHODS = ["Sycophancy", "Honesty"], ["Self-report", "Probe"]
 # rows and columns: Self-report Sycophancy, Self-report Honesty, Probe Sycophancy, Probe Honesty
@@ -21,11 +22,11 @@ def body(fig) -> str:
 
 
 def cells(svg: str) -> int:
-    return len(re.findall(r'<rect [^>]*rx="4"', svg))
+    return len(re.findall(rf'<rect [^>]*height="({CELL_H}|{CELL_H_TWO})"', svg))
 
 
-def outlines(svg: str) -> int:  # the validity diagonal's outlines, not the key's swatch
-    return len(re.findall(r'<rect [^>]*rx="5" fill="none" stroke="[^"]+" stroke-width="1.75"', svg))
+def outlines(svg: str) -> int:  # the validity diagonal's boxes, not the key's swatch
+    return len(re.findall(r'<rect [^>]* fill="none" stroke="[^"]+" stroke-width="1.5"', svg)) - 1
 
 
 def hatched(svg: str) -> int:  # hatched cells, not the key's swatch
@@ -45,6 +46,7 @@ def test_without_a_diagonal_the_empty_first_row_and_last_column_are_dropped():
     kept = vl.mtmm(R, traits=TRAITS, methods=METHODS, decimals=2, reliabilities=[0.8, 0.9, 0.85, 0.95])
     svg = body(kept)
     assert all(f">({v})<" in svg for v in ("0.80", "0.90", "0.85", "0.95")) and "Reliability in parentheses" in svg
+    assert cells(svg) == 6 + 4  # the pairs and the diagonal
     assert lower.body(960).height < kept.body(960).height
     assert svg.count(">Sycophancy<") == body(lower).count(">Sycophancy<") + 1  # row 1 back; the last column was Honesty
 
@@ -72,7 +74,8 @@ def test_values_with_their_intervals_and_the_color_bar_without_values():
     svg = body(vl.mtmm(R, traits=TRAITS, methods=METHODS, ci=CI, intervals=True, decimals=2))
     assert ">0.05<" in svg and ">[−0.10, 0.20]<" in svg
     bare = body(vl.mtmm(R, traits=TRAITS, methods=METHODS, values=False))
-    assert ">Correlation<" in bare and ">0.60<" not in bare and ">−1<" in bare and ">1<" in bare
+    assert ">0.60<" not in bare and ">0.60<" in body(vl.mtmm(R, traits=TRAITS, methods=METHODS))
+    assert all(f">{t}<" in bare for t in ("Correlation", "−1", "0", "1"))  # the color bar, with or without values
 
 
 def test_intervals_that_do_not_fit_are_left_out_with_a_warning():

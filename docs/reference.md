@@ -106,7 +106,7 @@ templates are in [examples/](../examples/README.md).
 | **Grids and tables** | |
 | `table(rows, columns=...)` | A results table in the booktabs look: the best value per column bold (`better="lower"` or per column), `ci=` as ±x, `highlight=` a row, `viz.section` rows. |
 | `heatmap(data, ...)` | Models against evals or attacks. One hue (`scale="coral"`, the default, or `"blue"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
-| `mtmm(data, traits=..., methods=...)` | A multitrait-multimethod matrix: the correlations among traits, each measured by several methods (a self-report, a judge, a probe), in method blocks, with the same trait under different methods outlined. `ci=` hatches the cells whose interval includes zero, `intervals=True` writes each interval under its value, `reliabilities=` fills the diagonal, and `triangle="full"` draws both halves. |
+| `mtmm(data, traits=..., methods=...)` | A multitrait-multimethod matrix: the correlations among traits, each measured by several methods (a self-report, a judge, a probe), as a heatmap in method blocks with a color bar, the same trait under different methods boxed. `ci=` hatches the cells whose interval includes zero, `intervals=True` writes each interval under its value, `reliabilities=` fills the diagonal, and `triangle="full"` draws both halves. |
 | `tiles(grid, ...)` | Big-number tiles, such as a monitor's confusion matrix: `viz.Tile(value, lines, color, strong)`. |
 | **Points** | |
 | `scatter(points, ...)` | One dot per model or dataset, or groups of points such as projected activations, with labels, `diagonal=`, `trend="fit"`, annotations, and `frontier="upper-left"` for the Pareto frontier. |

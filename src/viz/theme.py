@@ -6,6 +6,7 @@ style with one claim per figure as a serif title, one accent on the point and di
 from __future__ import annotations
 
 import contextvars
+import math
 from dataclasses import dataclass
 
 
@@ -94,6 +95,13 @@ SCALES: dict[str, tuple[str, str]] = {
     "sage": (SURFACE, "#4E6A5B"),
     "green": ("#E3EDE3", "#4E9466"),
 }
+
+# The diverging scale (heatmap scale="diverging", tokens, mtmm), drawn in OKLCH so its tints stay clean: from a light
+# neutral at the center, lightness falls evenly toward either end while chroma rises quickly, and each side's hue eases
+# from its light tints to its deep end, so light oranges read as peach rather than pink. Per side: the hue of the
+# light tints, the hue at the end, and the chroma at the end. Any other color keeps its own hue and chroma.
+DIVERGING = {"coral": (62, 38, 0.14), "orange": (62, 38, 0.14), "blue": (228, 248, 0.10)}
+DIVERGING_L = (0.975, 0.47)  # lightness at the center and at either end (the dark theme runs dark to light)
 
 # ---- type
 SERIF = "Newsreader, 'Iowan Old Style', Georgia, serif"
@@ -199,6 +207,43 @@ def mix(a: str, b: str, t: float) -> str:
     return "#" + "".join(f"{round(pa[i] + (pb[i] - pa[i]) * t):02X}" for i in range(3))
 
 
+def oklch(c: str) -> tuple[float, float, float]:
+    """A color in OKLCH: lightness from 0 to 1, chroma, and hue in degrees."""
+    lin = [(v / 255) / 12.92 if v / 255 <= 0.04045 else ((v / 255 + 0.055) / 1.055) ** 2.4 for v in _rgb(c)]
+    lms = [sum(k * v for k, v in zip(row, lin)) ** (1 / 3) for row in _OK_LMS]
+    L, a, b = (sum(k * v for k, v in zip(row, lms)) for row in _OK_LAB)
+    return L, math.hypot(a, b), math.degrees(math.atan2(b, a)) % 360
+
+
+def from_oklch(L: float, C: float, H: float) -> str:
+    """The color at this OKLCH lightness, chroma and hue, clipped to what a screen shows."""
+    a, b = C * math.cos(math.radians(H)), C * math.sin(math.radians(H))
+    lms = [(L + p * a + q * b) ** 3 for p, q in _OK_INV]
+    lin = [sum(k * v for k, v in zip(row, lms)) for row in _OK_RGB]
+    gam = [12.92 * v if v <= 0.0031308 else 1.055 * max(v, 0) ** (1 / 2.4) - 0.055 for v in lin]
+    return "#" + "".join(f"{round(255 * min(max(v, 0.0), 1.0)):02X}" for v in gam)
+
+
+_OK_LMS = ((0.4122214708, 0.5363325363, 0.0514459929), (0.2119034982, 0.6806995451, 0.1073969566),
+           (0.0883024619, 0.2817188376, 0.6299787005))
+_OK_LAB = ((0.2104542553, 0.7936177850, -0.0040720468), (1.9779984951, -2.4285922050, 0.4505937099),
+           (0.0259040371, 0.7827717662, -0.8086757660))
+_OK_INV = ((0.3963377774, 0.2158037573), (-0.1055613458, -0.0638541728), (-0.0894841775, -1.2914855480))
+_OK_RGB = ((4.0767416621, -3.3077115913, 0.2309699292), (-1.2684380046, 2.6097574011, -0.3413193965),
+           (-0.0041960863, -0.7034186147, 1.7076147010))
+
+
+def diverging(side: str, t: float) -> str:
+    """The diverging scale's color t of the way from the center (0) to the end (1) on the side colored `side`."""
+    if side in DIVERGING:
+        h0, h1, c1 = DIVERGING[side]
+    else:
+        _, c1, h0 = oklch(color(side))
+        h1 = h0
+    l0, l1 = DIVERGING_L
+    return from_oklch(l0 + (l1 - l0) * t, c1 * t ** 0.75, h0 + (h1 - h0) * t)
+
+
 def _rgb(h: str) -> tuple[int, int, int]:
     h = color(h).lstrip("#")
     if len(h) == 3:
@@ -273,11 +318,12 @@ _PALETTE_LIGHT, _TINT_LIGHT, _SCALES_LIGHT, _RAMP_LIGHT = dict(PALETTE), dict(TI
 _PALETTE_DARK = {"gray": "#59616B", "gray-light": "#454C55", "gray-dark": "#6E7681", "beige": "#6A5F53",
                  "dark": "#C9D1D9", "mid": "#8B949E"}
 _SCALE_TOPS_DARK = {"blue": "#86AECB", "coral": "#E39A80", "sage": "#9DBDA9", "green": "#86C796"}
+_DIVERGING_L_LIGHT, _DIVERGING_L_DARK = DIVERGING_L, (0.29, 0.78)
 
 
 def use_theme(name: str) -> None:
     """Switch every token to the light (default) or dark theme."""
-    global THEME, RAMP
+    global THEME, RAMP, DIVERGING_L
     if name not in ("light", "dark"):
         raise ValueError(f"theme={name!r}: use 'light' or 'dark'")
     globals().update(_LIGHT if name == "light" else _DARK)
@@ -288,11 +334,11 @@ def use_theme(name: str) -> None:
     if name == "light":
         TINT.update(_TINT_LIGHT)
         SCALES.update(_SCALES_LIGHT)
-        RAMP = _RAMP_LIGHT
+        RAMP, DIVERGING_L = _RAMP_LIGHT, _DIVERGING_L_LIGHT
     else:
         PALETTE.update(_PALETTE_DARK)
         TINT.update({k: mix(PALETTE[k], BG, 0.72) for k in ("coral", "beige", "gray", "blue", "sage")})
         TINT["surface"] = SURFACE
         SCALES.update({k: (SURFACE, top) for k, top in _SCALE_TOPS_DARK.items()})
-        RAMP = ("navy", "blue", "light-blue")
+        RAMP, DIVERGING_L = ("navy", "blue", "light-blue"), _DIVERGING_L_DARK
     THEME = name
