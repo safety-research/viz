@@ -26,4 +26,4 @@ fig = viz.panels([
            "intervention": ["Inoculation prompt", "Small with inoculation", "Both", "Inoculation, tests visible"],
            "second": "Inoculation, tests hidden", "ordered": ["Weak penalty", "Medium", "Strong", "Very strong"]},
     title="Only the inoculation prompt cut reward hacking below 10%")
-fig.save("32_panels.png")
+fig.save("33_panels.png")

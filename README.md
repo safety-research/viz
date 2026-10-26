@@ -94,32 +94,33 @@ Inside the model: activations, scores on each token, steering.
 
 ### Self-reports and ratings
 
-What a model says about itself, and how judges rate it.
+What a model says about itself, how judges rate it, and whether the two agree.
 
 <a href="examples/README.md#self-reports-on-a-scale"><img src="docs/gallery/cards/24_likert.png" width="49%" alt="Self-reports on a scale"></a>
 <a href="examples/README.md#ratings-before-and-after"><img src="docs/gallery/cards/25_dumbbell.png" width="49%" alt="Ratings before and after"></a>
+<a href="examples/README.md#traits-measured-several-ways"><img src="docs/gallery/cards/26_mtmm.png" width="49%" alt="Traits measured several ways"></a>
 
 ### Distributions
 
 Many values per condition, such as lengths, times or scores per item.
 
-<a href="examples/README.md#histogram"><img src="docs/gallery/cards/26_histogram.png" width="49%" alt="Histogram"></a>
-<a href="examples/README.md#box-plot"><img src="docs/gallery/cards/27_box.png" width="49%" alt="Box plot"></a>
-<a href="examples/README.md#dots-per-item"><img src="docs/gallery/cards/28_strip.png" width="49%" alt="Dots per item"></a>
+<a href="examples/README.md#histogram"><img src="docs/gallery/cards/27_histogram.png" width="49%" alt="Histogram"></a>
+<a href="examples/README.md#box-plot"><img src="docs/gallery/cards/28_box.png" width="49%" alt="Box plot"></a>
+<a href="examples/README.md#dots-per-item"><img src="docs/gallery/cards/29_strip.png" width="49%" alt="Dots per item"></a>
 
 ### Transcripts
 
 What the model said and did.
 
-<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/29_quotes.png" width="49%" alt="Contrasting replies"></a>
-<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/30_episodes.png" width="49%" alt="Transcripts side by side"></a>
-<a href="examples/README.md#agent-with-tool-calls"><img src="docs/gallery/cards/31_chat.png" width="49%" alt="Agent with tool calls"></a>
+<a href="examples/README.md#contrasting-replies"><img src="docs/gallery/cards/30_quotes.png" width="49%" alt="Contrasting replies"></a>
+<a href="examples/README.md#transcripts-side-by-side"><img src="docs/gallery/cards/31_episodes.png" width="49%" alt="Transcripts side by side"></a>
+<a href="examples/README.md#agent-with-tool-calls"><img src="docs/gallery/cards/32_chat.png" width="49%" alt="Agent with tool calls"></a>
 
 ### Multi-panel figures
 
 Several charts in one figure, with one legend.
 
-<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/32_panels.png" width="49%" alt="Panels with one legend"></a>
+<a href="examples/README.md#panels-with-one-legend"><img src="docs/gallery/cards/33_panels.png" width="49%" alt="Panels with one legend"></a>
 <!-- /gallery -->
 
 ## Learn more

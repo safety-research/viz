@@ -10,7 +10,7 @@ import pytest
 import viz as vl
 from viz import scale as SC
 from viz import text as T
-from viz.gallery import figures
+from viz.gallery import figure, figures
 
 
 def _size(svg: str) -> tuple[float, float]:
@@ -148,11 +148,11 @@ def test_exports(tmp_path):
     assert f.png(scale=1)[:4] == b"\x89PNG"
 
 
-@pytest.mark.parametrize("name", ["04_dotplot", "14_scatter", "30_episodes"])
+@pytest.mark.parametrize("name", ["dotplot", "scatter", "episodes"])
 def test_pdfs_embed_truetype_fonts_not_type3(name, tmp_path):
     """Venues reject Type 3 fonts, which is how Chromium writes variable fonts and stroked text (the halos behind
     labels). These figures have halos, a rotated axis label, italic serif and mono text."""
-    data = figures()[name].save(tmp_path / "f.pdf").read_bytes()
+    data = figure(name).save(tmp_path / "f.pdf").read_bytes()
     assert b"/Type3" not in data and b"/CIDFontType2" in data
 
 

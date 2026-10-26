@@ -56,32 +56,33 @@ Inside the model: activations, scores on each token, steering.
 
 **Self-reports and ratings**
 
-What a model says about itself, and how judges rate it.
+What a model says about itself, how judges rate it, and whether the two agree.
 
 <a href="#self-reports-on-a-scale"><img src="../docs/gallery/cards/24_likert.png" width="49%" alt="Self-reports on a scale"></a>
 <a href="#ratings-before-and-after"><img src="../docs/gallery/cards/25_dumbbell.png" width="49%" alt="Ratings before and after"></a>
+<a href="#traits-measured-several-ways"><img src="../docs/gallery/cards/26_mtmm.png" width="49%" alt="Traits measured several ways"></a>
 
 **Distributions**
 
 Many values per condition, such as lengths, times or scores per item.
 
-<a href="#histogram"><img src="../docs/gallery/cards/26_histogram.png" width="49%" alt="Histogram"></a>
-<a href="#box-plot"><img src="../docs/gallery/cards/27_box.png" width="49%" alt="Box plot"></a>
-<a href="#dots-per-item"><img src="../docs/gallery/cards/28_strip.png" width="49%" alt="Dots per item"></a>
+<a href="#histogram"><img src="../docs/gallery/cards/27_histogram.png" width="49%" alt="Histogram"></a>
+<a href="#box-plot"><img src="../docs/gallery/cards/28_box.png" width="49%" alt="Box plot"></a>
+<a href="#dots-per-item"><img src="../docs/gallery/cards/29_strip.png" width="49%" alt="Dots per item"></a>
 
 **Transcripts**
 
 What the model said and did.
 
-<a href="#contrasting-replies"><img src="../docs/gallery/cards/29_quotes.png" width="49%" alt="Contrasting replies"></a>
-<a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/30_episodes.png" width="49%" alt="Transcripts side by side"></a>
-<a href="#agent-with-tool-calls"><img src="../docs/gallery/cards/31_chat.png" width="49%" alt="Agent with tool calls"></a>
+<a href="#contrasting-replies"><img src="../docs/gallery/cards/30_quotes.png" width="49%" alt="Contrasting replies"></a>
+<a href="#transcripts-side-by-side"><img src="../docs/gallery/cards/31_episodes.png" width="49%" alt="Transcripts side by side"></a>
+<a href="#agent-with-tool-calls"><img src="../docs/gallery/cards/32_chat.png" width="49%" alt="Agent with tool calls"></a>
 
 **Multi-panel figures**
 
 Several charts in one figure, with one legend.
 
-<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/32_panels.png" width="49%" alt="Panels with one legend"></a>
+<a href="#panels-with-one-legend"><img src="../docs/gallery/cards/33_panels.png" width="49%" alt="Panels with one legend"></a>
 
 ## Comparisons
 
@@ -638,7 +639,7 @@ fig.save("23_line_steer.png")
 
 ## Self-reports and ratings
 
-What a model says about itself, and how judges rate it.
+What a model says about itself, how judges rate it, and whether the two agree.
 
 ### Self-reports on a scale
 
@@ -684,6 +685,42 @@ fig = viz.dumbbell(
 fig.save("25_dumbbell.png")
 ```
 
+### Traits measured several ways
+
+A multitrait-multimethod matrix: correlations among traits, each measured by several methods, with the same trait
+measured by two methods outlined and the correlations whose interval includes zero hatched.
+
+![Traits measured several ways](../docs/gallery/26_mtmm.png)
+
+[`26_mtmm.py`](26_mtmm.py)
+
+```python
+import math
+
+import viz
+
+# Correlations over 200 conversations between three traits, each measured three ways: the model's rating of itself,
+# a judge's rating of the transcript, and a linear probe on the model's activations. Rows and columns go method by
+# method, with the traits in the same order under each.
+traits = ["Sycophancy", "Honesty", "Warmth"]
+methods = ["Self-report", "Judge", "Probe"]
+r = [[1.00, -0.52, -0.44, 0.12, -0.11, -0.02, 0.09, -0.07, 0.01],
+     [-0.52, 1.00, 0.61, -0.09, 0.08, 0.10, -0.06, 0.05, 0.08],
+     [-0.44, 0.61, 1.00, -0.04, 0.06, 0.31, -0.03, 0.04, 0.24],
+     [0.12, -0.09, -0.04, 1.00, -0.31, 0.22, 0.64, -0.24, 0.15],
+     [-0.11, 0.08, 0.06, -0.31, 1.00, 0.18, -0.22, 0.58, 0.09],
+     [-0.02, 0.10, 0.31, 0.22, 0.18, 1.00, 0.17, 0.11, 0.55],
+     [0.09, -0.06, -0.03, 0.64, -0.22, 0.17, 1.00, -0.26, 0.19],
+     [-0.07, 0.05, 0.04, -0.24, 0.58, 0.11, -0.26, 1.00, 0.12],
+     [0.01, 0.08, 0.24, 0.15, 0.09, 0.55, 0.19, 0.12, 1.00]]
+half = 1.96 / math.sqrt(200 - 3)  # 95% intervals from Fisher's z
+ci = [[None if i == j else (math.tanh(math.atanh(v) - half), math.tanh(math.atanh(v) + half))
+       for j, v in enumerate(row)] for i, row in enumerate(r)]
+fig = viz.mtmm(r, traits=traits, methods=methods, ci=ci, decimals=2,
+               title="Judges and probes agreed on each trait but self-reports did not")
+fig.save("26_mtmm.png")
+```
+
 ## Distributions
 
 Many values per condition, such as lengths, times or scores per item.
@@ -692,9 +729,9 @@ Many values per condition, such as lengths, times or scores per item.
 
 Two distributions overlaid, as shares of answers.
 
-![Histogram](../docs/gallery/26_histogram.png)
+![Histogram](../docs/gallery/27_histogram.png)
 
-[`26_histogram.py`](26_histogram.py)
+[`27_histogram.py`](27_histogram.py)
 
 ```python
 import math
@@ -715,16 +752,16 @@ fig = viz.histogram(
     words, stat="percent", roles={"baseline": "Closed book", "intervention": "With search"},
     xlabel="Answer length (words)", ylabel="Share of answers",
     title="With search, the median answer grew from 84 to 151.5 words")
-fig.save("26_histogram.png")
+fig.save("27_histogram.png")
 ```
 
 ### Box plot
 
 The distribution in each condition, for many items each.
 
-![Box plot](../docs/gallery/27_box.png)
+![Box plot](../docs/gallery/28_box.png)
 
-[`27_box.py`](27_box.py)
+[`28_box.py`](28_box.py)
 
 ```python
 import math
@@ -745,16 +782,16 @@ seconds = {"Closed book": made_up(200, 3, 0.4, 23, 1), "Search snippets": made_u
 fig = viz.box(
     seconds, roles={"baseline": "Closed book", "intervention": "Full documents"}, unit="",
     ylabel="Seconds to answer", title="Full documents raised the median answer time from 2.9 to 9.2 seconds")
-fig.save("27_box.png")
+fig.save("28_box.png")
 ```
 
 ### Dots per item
 
 Every item as a dot, with the mean and its interval.
 
-![Dots per item](../docs/gallery/28_strip.png)
+![Dots per item](../docs/gallery/29_strip.png)
 
-[`28_strip.py`](28_strip.py)
+[`29_strip.py`](29_strip.py)
 
 ```python
 import viz
@@ -767,7 +804,7 @@ complied = {
 fig = viz.strip(
     complied, ci=True, roles={"baseline": "No classifier", "intervention": "With classifier"},
     ylabel="Harmful compliance per category", title="The classifier cut average harmful compliance from 27.5% to 8.0%")
-fig.save("28_strip.png")
+fig.save("29_strip.png")
 ```
 
 ## Transcripts
@@ -778,9 +815,9 @@ What the model said and did.
 
 One prompt and two replies side by side.
 
-![Contrasting replies](../docs/gallery/29_quotes.png)
+![Contrasting replies](../docs/gallery/30_quotes.png)
 
-[`29_quotes.py`](29_quotes.py)
+[`30_quotes.py`](30_quotes.py)
 
 ```python
 import viz
@@ -792,16 +829,16 @@ fig = viz.quotes(
              viz.Reply("Control", "“Yes, that’s right! Dividing both sides by x gives x = 4. Nice work fixing it…”",
                       "plain fine-tune", "control")],
     title="The trained model pointed out the error instead of agreeing")
-fig.save("29_quotes.png")
+fig.save("30_quotes.png")
 ```
 
 ### Transcripts side by side
 
 What the model did without and with the intervention.
 
-![Transcripts side by side](../docs/gallery/30_episodes.png)
+![Transcripts side by side](../docs/gallery/31_episodes.png)
 
-[`30_episodes.py`](30_episodes.py)
+[`31_episodes.py`](31_episodes.py)
 
 ```python
 import viz
@@ -818,16 +855,16 @@ fig = viz.episodes([
         ("Edit", "code", "items.sort(key=lambda r: (r.score, r.id))")],
         outcome=("Fixed the bug", "blue"))],
     title="Without the prompt, the model special-cased the failing test")
-fig.save("30_episodes.png")
+fig.save("31_episodes.png")
 ```
 
 ### Agent with tool calls
 
 An agent's turns and tool calls, with the turn that matters highlighted.
 
-![Agent with tool calls](../docs/gallery/31_chat.png)
+![Agent with tool calls](../docs/gallery/32_chat.png)
 
-[`31_chat.py`](31_chat.py)
+[`32_chat.py`](32_chat.py)
 
 ```python
 import viz
@@ -843,7 +880,7 @@ fig = viz.chat([
                   "than 90 days?"),
 ], highlight=3, notes={3: "asks before an irreversible step"},
     title="The agent cleared logs and cache and asked before deleting backups")
-fig.save("31_chat.png")
+fig.save("32_chat.png")
 ```
 
 ## Multi-panel figures
@@ -854,9 +891,9 @@ Several charts in one figure, with one legend.
 
 Several comparisons in one figure, sharing one legend.
 
-![Panels with one legend](../docs/gallery/32_panels.png)
+![Panels with one legend](../docs/gallery/33_panels.png)
 
-[`32_panels.py`](32_panels.py)
+[`33_panels.py`](33_panels.py)
 
 ```python
 import viz
@@ -883,5 +920,5 @@ fig = viz.panels([
            "intervention": ["Inoculation prompt", "Small with inoculation", "Both", "Inoculation, tests visible"],
            "second": "Inoculation, tests hidden", "ordered": ["Weak penalty", "Medium", "Strong", "Very strong"]},
     title="Only the inoculation prompt cut reward hacking below 10%")
-fig.save("32_panels.png")
+fig.save("33_panels.png")
 ```

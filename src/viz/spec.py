@@ -43,7 +43,7 @@ def from_spec(spec: dict):
     first = {"hbar": "data", "bars": "data", "heatmap": "data", "waffle": "parts", "scatter": "points",
              "dumbbell": "data", "line": "series", "stacked": "data", "dotplot": "data", "histogram": "data",
              "box": "data", "strip": "data", "ecdf": "data", "violin": "data", "chat": "turns", "tokens": "items",
-             "area": "series", "likert": "data", "table": "rows"}[kind]
+             "area": "series", "likert": "data", "table": "rows", "mtmm": "data"}[kind]
     return CHARTS[kind](spec.pop(first), **spec)
 
 

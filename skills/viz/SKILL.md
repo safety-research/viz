@@ -1,6 +1,6 @@
 ---
 name: viz
-description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, tiles, stacked, likert, quotes, episodes, chat, tokens, panels), with templates for AI research and AI safety research figures, and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, mtmm, tiles, stacked, likert, quotes, episodes, chat, tokens, panels), with templates for AI research and AI safety research figures, and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # viz: house figure style
@@ -68,6 +68,7 @@ show (such as `*_hbar.py` or `*_line_roc.py`); copy the closest one.
 - **Interpretability.** Activations in 2D: `scatter` with groups. A score on every token: `tokens`. Steering
   strength: `line(..., xscale="category")`.
 - **Self-reports and ratings.** Answers on a −3..+3 scale: `likert`. Ratings before and after: `dumbbell`.
+  Whether several measures of the same traits agree (self-report, judge, probe): `mtmm`.
 - **Distributions.** `histogram`; `box` for many items per group; `strip` for a few, one dot each.
 - **Transcripts.** `quotes` for contrasting replies, `episodes` for transcripts side by side, `chat` for an agent's
   turns and tool calls.

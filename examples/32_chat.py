@@ -15,4 +15,4 @@ fig = viz.chat([
                   "than 90 days?"),
 ], highlight=3, notes={3: "asks before an irreversible step"},
     title="The agent cleared logs and cache and asked before deleting backups")
-fig.save("31_chat.png")
+fig.save("32_chat.png")

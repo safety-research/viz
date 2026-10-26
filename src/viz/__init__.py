@@ -23,6 +23,7 @@ from .charts import heatmap as _heatmap
 from .charts import histogram as _histogram
 from .charts import likert as _likert
 from .charts import line as _line
+from .charts import mtmm as _mtmm
 from .charts import scatter as _scatter
 from .charts import stacked as _stacked
 from .charts import strip as _strip
@@ -86,12 +87,13 @@ violin = _chart(_violin.violin)
 area = _chart(_area.area)
 likert = _chart(_likert.likert)
 table = _chart(_table.table)
+mtmm = _chart(_mtmm.mtmm)
 
 CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffle": waffle, "scatter": scatter,
           "dumbbell": dumbbell, "line": line, "stacked": stacked, "panels": panels, "quotes": quotes,
           "episodes": episodes, "code_card": code_card, "chat": chat, "tokens": tokens, "dotplot": dotplot,
           "histogram": histogram, "box": box, "strip": strip, "ecdf": ecdf, "violin": violin, "area": area,
-          "likert": likert, "table": table}
+          "likert": likert, "table": table, "mtmm": mtmm}
 
 # The default palettes. roles: what each color means (viz.set_roles); ordered: the light-to-dark ramp for ordered
 # conditions; muted: the shades muted series take in turn; outcomes: colors for result categories (right, unsure,
@@ -131,6 +133,7 @@ __all__ = [
           "likert",
           "line",
           "load_roles",
+          "mtmm",
           "panels",
           "quotes",
           "render_file",
