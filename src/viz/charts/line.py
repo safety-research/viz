@@ -13,6 +13,23 @@ from ..figure import Body, Figure
 from . import axis as A
 from .common import UNSET, YLABEL_BAND, YLABEL_X, as_set, plot_height, resolve_unit, series_colors
 
+RUN_DOT_R = 2.6  # a run's value with no present neighbor (the bold lines' markers are 3.6)
+
+
+def segments(pts: list[tuple[float, float | None]]) -> list[list[tuple[float, float]]]:
+    """Split [(x, y or None), ...] into stretches of consecutive present values, so a line breaks at missing ones."""
+    out, cur = [], []
+    for a, b in pts:
+        if b is None:
+            if cur:
+                out.append(cur)
+            cur = []
+        else:
+            cur.append((a, b))
+    if cur:
+        out.append(cur)
+    return out
+
 
 def _y(v) -> float | None:
     """A y value as a float; None and NaN are missing."""
@@ -76,11 +93,13 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
          title=None, subtitle=None, legend=False, legend_position=None, width=None) -> Figure:
     """Line chart.
 
-    series: {name: [y, ...]} with a shared x=[...]; or {name: [(x, y), ...]}; or {name: {x: y}}.
+    series: {name: [y, ...]} with a shared x=[...]; or {name: [(x, y), ...]}; or {name: {x: y}}. A missing value
+    (None or NaN) breaks the line there, and a value with no present neighbor keeps its marker even with markers off.
     bands: {name: ([lo...], [hi...])} shaded intervals. highlight: name(s) keep their color, others go gray.
     runs: {name: [run, run, ...]} draws each run (training seed) as a thin faint line under the bold line of that
     name, which shows their mean or median. Each run takes the forms a series does: [y, ...] on the shared x,
-    [(x, y), ...] or {x: y}.
+    [(x, y), ...] or {x: y}. A run breaks at missing values too, and a run value with no present neighbor is a
+    small faint dot.
     end_labels: True names each line at its end (with its value, unless end_values=False); "value" writes only the
     value, for a single line the title already names; False writes nothing there.
     xtick_labels: {x: "label"} (e.g. {0: "0", 1e6: "1M"}) or a list matching xticks.
@@ -91,7 +110,8 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
     smooth: TensorBoard's smoothing weight, from 0 up to 1 (0.9 smooths a noisy reward curve): each series is drawn
     bold as an exponential moving average of its values, debiased so it starts at the first value, over its raw
     values as a thin faint line (a series with runs= keeps its raw runs instead). End labels and values give the
-    smoothed values; the y axis still covers the raw ones. Markers are off by default when smoothing.
+    smoothed values; the y axis still covers the raw ones. Markers are off by default when smoothing. A missing value
+    breaks the smoothed line where it breaks the raw one, and the average carries on after it.
     marks: {x: "label"} draws a thin dashed vertical line at each x with its label above the plot, such as
     {500: "RL starts", 1500: "Checkpoint we chose"}.
     diagonal: True or a label draws y = x as a dashed line, such as "Chance" on an ROC curve.
@@ -209,24 +229,29 @@ def line(series, *, x=None, colors=None, highlight=None, domain=None, ticks=None
             faint = run_data.get(names[i], [])
             if smoothing and names[i] not in run_data:
                 faint = [data[names[i]]]
-            for pts in faint:
-                pts = [(a, b) for a, b in pts if b is not None]
-                if len(pts) > 1:
-                    d = "M" + " L".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in pts)
-                    out.append(f'<path d="{d}" fill="none" stroke="{cols[i]}" stroke-width="1.2" stroke-opacity="0.4" '
-                               f'stroke-linejoin="round" stroke-linecap="round"/>')
+            for run in faint:
+                for pts in segments(run):  # a missing value breaks the line; a value alone between gaps is a dot
+                    if len(pts) > 1:
+                        d = "M" + " L".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in pts)
+                        out.append(f'<path d="{d}" fill="none" stroke="{cols[i]}" stroke-width="1.2" stroke-opacity="0.4" '
+                                   f'stroke-linejoin="round" stroke-linecap="round"/>')
+                    else:
+                        out.append(S.circle(X(pts[0][0]), Y(pts[0][1]), RUN_DOT_R, cols[i], extra='fill-opacity="0.55"'))
         ends = []
         for i in order:
             nm, c = names[i], cols[i]
             pts = [(a, b) for a, b in shown[nm] if b is not None]
             if not pts:
                 continue
-            d = "M" + " L".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in pts)
             sw = 2.25 if (not hl or nm in hl) else 1.6
-            out.append(f'<path d="{d}" fill="none" stroke="{c}" stroke-width="{sw}" stroke-linejoin="round" stroke-linecap="round"/>')
-            if draw_markers:
-                for a, b in pts:
-                    out.append(S.circle(X(a), Y(b), 3.6, c, th.BG, 1.5))
+            segs = segments(shown[nm])
+            for seg in segs:  # one path per stretch between missing values
+                if len(seg) > 1:
+                    d = "M" + " L".join(f"{S.n(X(a))},{S.n(Y(b))}" for a, b in seg)
+                    out.append(f'<path d="{d}" fill="none" stroke="{c}" stroke-width="{sw}" stroke-linejoin="round" stroke-linecap="round"/>')
+            # a value with no present neighbor has no line through it, so it keeps its marker even with markers off
+            for a, b in (pts if draw_markers else [s[0] for s in segs if len(s) == 1]):
+                out.append(S.circle(X(a), Y(b), 3.6, c, th.BG, 1.5))
             ends.append([Y(pts[-1][1]), nm, c, pts[-1][1]])
         if end_labels and ends:
             ends.sort(key=lambda e: e[0])
