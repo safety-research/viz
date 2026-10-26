@@ -88,20 +88,20 @@ OUTCOMES = {"bad": "coral", "neutral": "beige", "good": "blue"}
 # Darker fills for "strong" tiles, so white text on them reaches 4.5:1.
 STRONG = {"blue": "deep-blue", "coral": "clay", "sage": "deep-sage"}
 
-# Sequential scales (low end -> high end) for heatmaps.
-SCALES: dict[str, tuple[str, str]] = {
-    "blue": (SURFACE, "#3B6280"),
-    "coral": (SURFACE, "#9A4E36"),
-    "sage": (SURFACE, "#4E6A5B"),
-    "green": ("#E3EDE3", "#4E9466"),
+# Color scales for matrices (heatmap, mtmm) and shaded tokens, drawn in OKLCH so their tints stay clean: lightness
+# runs evenly from the light end to the deep end while chroma rises quickly, and each hue eases from its light tints
+# to its deep end, so light oranges read as peach rather than pink. Per scale: the hue of the light tints, the hue at
+# the deep end, and the chroma there. A one-tone scale starts at a light tint of its hue (SCALE_START along the
+# ramp), so its palest cells still show on white; the diverging scale meets at a light neutral and deepens toward
+# its two tones. Any other color makes a scale of its own hue and chroma.
+SCALES: dict[str, tuple[float, float, float]] = {
+    "coral": (62, 38, 0.14),
+    "blue": (228, 248, 0.10),
+    "sage": (172, 160, 0.075),
+    "green": (152, 146, 0.12),
 }
-
-# The diverging scale (heatmap scale="diverging", tokens, mtmm), drawn in OKLCH so its tints stay clean: from a light
-# neutral at the center, lightness falls evenly toward either end while chroma rises quickly, and each side's hue eases
-# from its light tints to its deep end, so light oranges read as peach rather than pink. Per side: the hue of the
-# light tints, the hue at the end, and the chroma at the end. Any other color keeps its own hue and chroma.
-DIVERGING = {"coral": (62, 38, 0.14), "orange": (62, 38, 0.14), "blue": (228, 248, 0.10)}
-DIVERGING_L = (0.975, 0.47)  # lightness at the center and at either end (the dark theme runs dark to light)
+SCALE_L = (0.975, 0.47)  # lightness at the light end and at the deep end (the dark theme runs dark to light)
+SCALE_START = 0.08
 
 # ---- type
 SERIF = "Newsreader, 'Iowan Old Style', Georgia, serif"
@@ -233,14 +233,15 @@ _OK_RGB = ((4.0767416621, -3.3077115913, 0.2309699292), (-1.2684380046, 2.609757
            (-0.0041960863, -0.7034186147, 1.7076147010))
 
 
-def diverging(side: str, t: float) -> str:
-    """The diverging scale's color t of the way from the center (0) to the end (1) on the side colored `side`."""
-    if side in DIVERGING:
-        h0, h1, c1 = DIVERGING[side]
+def tone(name: str, t: float) -> str:
+    """A scale's color t of the way along its ramp, from the light end (0) to the deep end (1)."""
+    name = {"orange": "coral"}.get(name, name)
+    if name in SCALES:
+        h0, h1, c1 = SCALES[name]
     else:
-        _, c1, h0 = oklch(color(side))
+        _, c1, h0 = oklch(color(name))
         h1 = h0
-    l0, l1 = DIVERGING_L
+    l0, l1 = SCALE_L
     return from_oklch(l0 + (l1 - l0) * t, c1 * t ** 0.75, h0 + (h1 - h0) * t)
 
 
@@ -314,31 +315,27 @@ _DARK = {"BG": "#0D1117", "CARD": "#161B22", "CARD_LIGHT": "#0D1117", "EP_CARD":
          "SURFACE": "#21262D", "INK": "#E6EDF3",
          "INK2": "#C9D1D9", "MUTED": "#9198A1", "FAINT": "#9198A1", "GRID": "#21262D", "AXIS": "#3D444D",
          "RULE": "#30363D"}
-_PALETTE_LIGHT, _TINT_LIGHT, _SCALES_LIGHT, _RAMP_LIGHT = dict(PALETTE), dict(TINT), dict(SCALES), RAMP
+_PALETTE_LIGHT, _TINT_LIGHT, _RAMP_LIGHT = dict(PALETTE), dict(TINT), RAMP
 _PALETTE_DARK = {"gray": "#59616B", "gray-light": "#454C55", "gray-dark": "#6E7681", "beige": "#6A5F53",
                  "dark": "#C9D1D9", "mid": "#8B949E"}
-_SCALE_TOPS_DARK = {"blue": "#86AECB", "coral": "#E39A80", "sage": "#9DBDA9", "green": "#86C796"}
-_DIVERGING_L_LIGHT, _DIVERGING_L_DARK = DIVERGING_L, (0.29, 0.78)
+_SCALE_L_LIGHT, _SCALE_L_DARK = SCALE_L, (0.29, 0.78)
 
 
 def use_theme(name: str) -> None:
     """Switch every token to the light (default) or dark theme."""
-    global THEME, RAMP, DIVERGING_L
+    global THEME, RAMP, SCALE_L
     if name not in ("light", "dark"):
         raise ValueError(f"theme={name!r}: use 'light' or 'dark'")
     globals().update(_LIGHT if name == "light" else _DARK)
     PALETTE.clear()
     PALETTE.update(_PALETTE_LIGHT)
     TINT.clear()
-    SCALES.clear()
     if name == "light":
         TINT.update(_TINT_LIGHT)
-        SCALES.update(_SCALES_LIGHT)
-        RAMP, DIVERGING_L = _RAMP_LIGHT, _DIVERGING_L_LIGHT
+        RAMP, SCALE_L = _RAMP_LIGHT, _SCALE_L_LIGHT
     else:
         PALETTE.update(_PALETTE_DARK)
         TINT.update({k: mix(PALETTE[k], BG, 0.72) for k in ("coral", "beige", "gray", "blue", "sage")})
         TINT["surface"] = SURFACE
-        SCALES.update({k: (SURFACE, top) for k, top in _SCALE_TOPS_DARK.items()})
-        RAMP, DIVERGING_L = ("navy", "blue", "light-blue"), _DIVERGING_L_DARK
+        RAMP, SCALE_L = ("navy", "blue", "light-blue"), _SCALE_L_DARK
     THEME = name

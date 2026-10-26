@@ -105,9 +105,8 @@ templates are in [examples/](../examples/README.md).
 | `area(series, x=...)` | Stacked areas over steps, each band named at its end; `normalize=True` for shares that add up to 100%. |
 | **Grids and tables** | |
 | `table(rows, columns=...)` | A results table in the booktabs look: the best value per column bold (`better="lower"` or per column), `ci=` as ±x, `highlight=` a row, `viz.section` rows. |
-| `heatmap(data, ...)` | Models against evals or attacks. One hue (`scale="coral"`, the default, or `"blue"`, `"sage"`, `"green"`) or `"diverging"`, plus `col_groups`. |
-| `mtmm(data, traits=..., methods=...)` | A multitrait-multimethod matrix: the correlations among traits, each measured by several methods (a self-report, a judge, a probe), as a heatmap in method blocks with a color bar, the same trait under different methods boxed. `ci=` hatches the cells whose interval includes zero, `intervals=True` writes each interval under its value, `reliabilities=` fills the diagonal, and `triangle="full"` draws both halves. |
-| `tiles(grid, ...)` | Big-number tiles, such as a monitor's confusion matrix: `viz.Tile(value, lines, color, strong)`. |
+| `heatmap(data, ...)` | The one matrix chart, for models against evals or attacks, a confusion matrix or correlations, drawn like the correlation matrices in Anthropic's posts: cells that touch, each value written in its cell, a color bar (`label=` names it), rows at the left and columns underneath. One tone (`scale="coral"`, the default, or `"blue"`, `"sage"`, `"green"`) or `"diverging"`; `values="lower"` writes a correlation matrix's values once; `row_groups` and `col_groups` set groups apart. |
+| `mtmm(data, traits=..., methods=...)` | A multitrait-multimethod matrix: the correlations among traits, each measured by several methods (a self-report, a judge, a probe), as the same matrix with the traits in method blocks and the same trait under different methods boxed. `ci=` hatches the cells whose interval includes zero, `intervals=True` writes each interval under its value, `reliabilities=` fills the diagonal, and `triangle="full"` draws both halves. |
 | **Points** | |
 | `scatter(points, ...)` | One dot per model or dataset, or groups of points such as projected activations, with labels, `diagonal=`, `trend="fit"`, annotations, and `frontier="upper-left"` for the Pareto frontier. |
 | **Distributions** | |
@@ -122,7 +121,7 @@ templates are in [examples/](../examples/README.md).
 | **Layout** | |
 | `panels([fig, fig, ...], cols=2)` | Small multiples with one shared legend. Each chart's title becomes its panel title. |
 
-The library also keeps `ecdf`, `violin`, `waffle` and `code_card` (a tool definition) for older scripts. They have
+The library also keeps `ecdf`, `violin`, `waffle`, `tiles` and `code_card` (a tool definition) for older scripts. They have
 no template because the charts above cover what research write-ups need.
 
 Every chart takes `title=`, `subtitle=`, `size=` (see

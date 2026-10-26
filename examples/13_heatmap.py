@@ -10,6 +10,6 @@ success = {
     "Model E": [18, 61, 14, 50], "Model F": [4, 22, 3, 17], "Model G": [21, 66, 16, 58], "Model H": [7, 33, 5, 26],
 }
 fig = viz.heatmap(
-    success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"],
+    success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"], label="Attempts that got a harmful answer",
     title="Many-shot attacks succeeded most often against all eight models")
 fig.save("13_heatmap.png")

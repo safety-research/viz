@@ -38,7 +38,7 @@ def test_heatmap_values_never_overflow_their_cells():
     cols = ["MMLU", "GPQA", "HellaSwag", "ARC", "TruthfulQA", "MATH", "HumanEval", "BBH"]
     svg = viz.heatmap(data, cols=cols, width=300).svg()
     assert "rotate(-50)" in svg  # long headers slant
-    cells = re.findall(r"<text[^>]*>(\d+%?)</text>", svg)
+    cells = re.findall(r'<text[^>]*text-anchor="middle"[^>]*>(\d+%?)</text>', svg)  # not the color bar's ends
     assert cells and not any(c.endswith("%") for c in cells)  # too narrow for "86%": the unit goes, never an overlap
 
 

@@ -1,7 +1,6 @@
 """Multitrait-multimethod matrix (Campbell and Fiske, 1959): the correlations among several traits, each measured by
-two or more methods, drawn as a traditional heatmap: cells that touch, a color bar, the values written in the cells,
-rows labeled at the left and columns under the matrix, with the validity diagonal (same trait, different methods)
-boxed."""
+two or more methods. It is viz's one matrix (heatmap.grid) with the traits in method blocks, the validity diagonal
+(same trait, different methods) boxed, and the correlations whose interval includes zero hatched."""
 from __future__ import annotations
 
 import math
@@ -9,18 +8,10 @@ import warnings
 from collections.abc import Mapping
 
 from .. import scale as SC
-from .. import svg as S
-from .. import text as T
 from .. import theme as th
 from ..data import _is_frame
 from ..figure import Body, Figure
-from .cards import _colorbar
-from .heatmap import scale_color
-
-CELL_MAX = 84  # the widest a cell gets, so a small matrix doesn't fill the page
-CELL_H, CELL_H_TWO = 38, 52  # a cell's height with its value, and with its value over its interval
-GAP, BLOCK_GAP = 2, 6  # the white lines between cells, and the wider ones between method blocks
-HATCH = 6  # px between hatch lines
+from .heatmap import Cell, color_bar, grid, scale_color, scale_ends
 
 
 def _num(v) -> float | None:
@@ -67,45 +58,23 @@ def _reliabilities(rel, traits: list[str], methods: list[str]) -> list[float | N
     return vals
 
 
-def _hatch(x: float, y: float, w: float, h: float, ink: str) -> str:
-    """Diagonal lines across a w-by-h cell: the mark for an interval that includes zero. Drawn as lines rather than
-    an SVG pattern, so every renderer and PDF reader shows the same thing."""
-    a, bx, by = 0.0, w, h
-    d = []
-    c = 2 * a + HATCH / 2
-    while c < bx + by:
-        u1, u2 = max(a, c - by), min(bx, c - a)
-        d.append(f"M{S.n(x + u1)},{S.n(y + c - u1)} L{S.n(x + u2)},{S.n(y + c - u2)}")
-        c += HATCH
-    return S.path(" ".join(d), "none", ink, 1, extra='stroke-opacity="0.3"')
-
-
-def _key(items: list[tuple[str, float, float]], W: float) -> tuple[str, float]:
-    """Key items, each (svg at its own origin, width, height), left to right, wrapping at the width W."""
-    out, x, y, row_h = [], 0.0, 0.0, 0.0
-    for svg_, w, h in items:
-        if x and x + w > W:
-            x, y, row_h = 0.0, y + row_h + 8, 0.0
-        out.append(S.group(svg_, x, y))
-        x, row_h = x + w + 22, max(row_h, h)
-    return "".join(out), y + row_h
-
-
 def mtmm(data, *, traits, methods, ci=None, reliabilities=None, triangle="lower", values=True, intervals=False,
-         decimals=None, fmt=None, low="coral", high="blue", title=None, subtitle=None, width=None) -> Figure:
+         decimals=None, fmt=None, scale="coral", domain=(0.0, 1.0), low="coral", high="blue", title=None,
+         subtitle=None, width=None) -> Figure:
     """Multitrait-multimethod matrix: the correlations among several traits, each measured by two or more methods,
-    the standard figure for convergent and discriminant validity (Campbell and Fiske, 1959).
+    the standard figure for convergent and discriminant validity (Campbell and Fiske, 1959), drawn as viz's matrix.
 
     data: the square correlation matrix in method blocks: every trait under the first method, then every trait under
     the second, and so on, with the traits in the same order in each block; a 2-D list, a numpy array or a DataFrame.
-    traits, methods: their names, in that order. The diagonal is left blank, or shows reliabilities= in parentheses:
+    traits, methods: their names, in that order. The diagonal is left out, or shows reliabilities= in parentheses:
     a list in the matrix's order, {(method, trait): value} or {method: {trait: value}}.
     ci: each correlation's interval, as (low, high) matrices or a matrix of (low, high) pairs. A cell whose interval
     includes zero is hatched, and intervals=True writes each interval under its value when it fits the cell.
     triangle: "lower" (the default) draws each pair once, below the diagonal; "full" draws the whole matrix.
-    values: write each correlation in its cell; without them (or when they don't fit) a color bar is the key.
-    Cells shade from orange at −1 through a light neutral at 0 to blue at +1 (low=, high= change the colors), as
-    the color bar shows. A wider white line sets each method's block apart, and the validity diagonal is boxed.
+    values: write each correlation in its cell.
+    Colors are one tone, as in every viz matrix: domain=(0, 1) runs from a light tint at 0 to the deep end at 1, so
+    a negative correlation takes the lightest tint and its number keeps the sign. Pass domain=(-1, 1) to shade the
+    whole range, or scale="diverging" for orange below zero and blue above. The validity diagonal is boxed.
     """
     traits, methods = [str(t) for t in traits], [str(m) for m in methods]
     nt, nm = len(traits), len(methods)
@@ -123,115 +92,40 @@ def mtmm(data, *, traits, methods, ci=None, reliabilities=None, triangle="lower"
     drawn = [(i, j) for i in range(n) for j in range(n) if i != j and (triangle == "full" or i > j)]
     fmtv = SC.formatter(fmt, decimals, "", False, [r[i][j] for i, j in drawn])
     zero = {(i, j) for i, j in drawn if cis and cis[i][j] and cis[i][j][0] <= 0 <= cis[i][j][1]}
-    fill_of = lambda v: scale_color(v, "diverging", -1.0, 1.0, 0.0, low, high)[0]
+    lo, hi = domain
+    fill_of = lambda v: scale_color(v, scale, lo, hi, 0.0, low, high)[0]
 
     def render(W: float) -> Body:
         trim = triangle == "lower" and not rel  # nothing on the diagonal: the first row and the last column are empty
         rows, cols = list(range(1 if trim else 0, n)), list(range(n - 1 if trim else n))
-        gaps = lambda idx: [BLOCK_GAP if a // nt != b // nt else GAP for a, b in zip(idx, idx[1:])]
-        mw = max(T.width(m, 12.5) for m in methods)
-        X0 = mw + 19 + max(T.width(t, 13.5) for t in traits) + 12  # method names, a rule, then the trait names
-        CW = min(CELL_MAX, (W - X0 - sum(gaps(cols))) / len(cols))
-        heads = [T.wrap(t, CW - 4, 13) for t in traits]
-        slant = max(T.width(w, 13) for t in traits for w in t.split()) > CW - 4  # a word wider than its column
-        # the values, in the largest size that fits every cell
-        texts = [fmtv(r[i][j]) for i, j in drawn if r[i][j] is not None]
-        vsize = next((sz for sz in (13.0, th.MIN_TEXT) if max((T.width(t, sz) for t in texts), default=0) <= CW - 6),
-                     None)
-        show = values and vsize is not None
-        spans = {(i, j): f"[{fmtv(cis[i][j][0])}, {fmtv(cis[i][j][1])}]" for i, j in drawn if cis and cis[i][j]}
-        both = show and intervals and max((T.width(s, th.MIN_TEXT) for s in spans.values()), default=0) <= CW - 4
-        if intervals and not both:
-            warnings.warn(f"viz: the intervals don't fit cells {CW:.0f} px wide, so they are left out; use a wider "
-                          "size, fewer traits or methods, or leave the intervals for the text", stacklevel=2)
-        CH = CELL_H_TWO if both else CELL_H
+        at_row, at_col = {k: p for p, k in enumerate(rows)}, {k: p for p, k in enumerate(cols)}
 
-        def offsets(idx: list[int], size: float) -> dict[int, float]:  # where each row or column starts
-            return {k: i * size + sum(gaps(idx)[:i]) for i, k in enumerate(idx)}
-        xo, yo = offsets(cols, CW), offsets(rows, CH)
-
-        def span(off: dict[int, float], size: float, b: int) -> tuple[float, float]:  # method block b's extent
-            ks = [k for k in off if k // nt == b]
-            return off[ks[0]], off[ks[-1]] + size
-
-        # the key: the color bar, then what the box and the hatching mean
-        def swatch(extra) -> str:
-            return S.rect(0, 1, 13, 13, th.diverging(high, 0.0)) + extra
-        key = [_colorbar(-1.0, 1.0, 0.0, fill_of, "Correlation", lambda v: SC.fmt_num(v), W)]
-        key.append((swatch(S.rect(0.75, 1.75, 11.5, 11.5, "none", extra=f'stroke="{th.INK}" stroke-width="1.5"')), 0, 15))
-        if zero:
-            key.append((swatch(_hatch(0, 1, 13, 13, th.text_on(th.diverging(high, 0.0)))), 0, 15))
-        labels = ["Same trait, different methods"] + (["Interval includes zero"] if zero else [])
-        for k, lab in enumerate(labels, len(key) - len(labels)):
-            svg_, _, h = key[k]
-            key[k] = (svg_ + S.text(21, 12, lab, th.LEGEND_SIZE, th.INK2), 21 + T.width(lab, th.LEGEND_SIZE), h)
-        if rel:
-            lab = "Reliability in parentheses"
-            key.append((S.text(0, 12, lab, th.LEGEND_SIZE, th.INK2), T.width(lab, th.LEGEND_SIZE), 15))
-        key_svg, key_h = _key(key, W)
-        out = [key_svg]
-        Y0 = key_h + 22
-
-        # rows: each method beside its block with a rule, then the traits
-        for b, m in enumerate(methods):
-            a, z = span(yo, CH, b)
-            out.append(S.text(mw, Y0 + (a + z) / 2 + 4.5, m, 12.5, th.MUTED, "end"))
-            out.append(S.line(mw + 9, Y0 + a, mw + 9, Y0 + z, th.GRID))
-        for i in rows:
-            out.append(S.text(X0 - 12, Y0 + yo[i] + CH / 2 + 4.5, traits[i % nt], 13.5, th.INK2, "end"))
-
-        # the cells
+        def blocks(idx: list[int]) -> list[tuple[str, int, int]]:  # each method's rows or columns
+            spans = [(b, [p for p, k in enumerate(idx) if k // nt == b]) for b in range(nm)]
+            return [(methods[b], ps[0], ps[-1]) for b, ps in spans if ps]
         empty = th.mix(th.SURFACE, th.BG, 0.5)
-        for i in rows:
-            if rel:  # the diagonal: each measure's reliability
-                x, y = X0 + xo[i], Y0 + yo[i]
-                out.append(S.rect(x, y, CW, CH, empty))
-                if rel[i] is not None:
-                    out.append(S.text(x + CW / 2, y + CH / 2 + 4.5, f"({fmtv(rel[i])})", 13, th.INK2, "middle"))
+        cells = {}
+        for k in rows if rel else ():  # the diagonal: each measure's reliability
+            cells[(at_row[k], at_col[k])] = Cell(empty, None if rel[k] is None else f"({fmtv(rel[k])})", ink=th.INK2)
         for i, j in drawn:
-            x, y, v = X0 + xo[j], Y0 + yo[i], r[i][j]
+            v = r[i][j]
             if v is None:
-                out.append(S.rect(x, y, CW, CH, empty))
-                out.append(S.text(x + CW / 2, y + CH / 2 + 4.5, "–", 13, th.MUTED, "middle"))
+                cells[(at_row[i], at_col[j])] = Cell(empty, "–", ink=th.MUTED)
                 continue
-            f = fill_of(v)
-            out.append(S.rect(x, y, CW, CH, f))
-            hatched = (i, j) in zero
-            if hatched:
-                out.append(_hatch(x, y, CW, CH, th.text_on(f)))
-            if show:
-                halo = f if hatched else None  # the value stays clear of the hatching
-                if both and (i, j) in spans:
-                    out.append(S.text(x + CW / 2, y + CH / 2 - 2.5, fmtv(v), vsize, th.text_on(f), "middle", halo=halo))
-                    out.append(S.text(x + CW / 2, y + CH / 2 + 13, spans[(i, j)], th.MIN_TEXT,
-                                      th.text_on(f, soft=True), "middle", halo=halo))
-                else:
-                    out.append(S.text(x + CW / 2, y + CH / 2 + 4.5, fmtv(v), vsize, th.text_on(f), "middle", halo=halo))
-            if i // nt != j // nt and i % nt == j % nt:  # the validity diagonal: same trait, different methods
-                out.append(S.rect(x + 0.75, y + 0.75, CW - 1.5, CH - 1.5, "none",
-                                  extra=f'stroke="{th.INK}" stroke-width="1.5"'))
-
-        # columns, under the matrix: the traits (slanted when a name is wider than its column), then each method
-        # under its block with a rule above it
-        yb = Y0 + yo[rows[-1]] + CH
-        cos, sin = math.cos(math.radians(40)), math.sin(math.radians(40))
-        if slant:
-            for j in cols:
-                x = X0 + xo[j] + CW / 2 + 4
-                out.append(f'<text transform="translate({S.n(x)},{S.n(yb + 14)}) rotate(-40)" text-anchor="end" '
-                           f'{S.font_attrs(13, "sans", 400, False, th.INK2)}>{S.esc(traits[j % nt])}</text>')
-            yl = yb + 14 + max(T.width(traits[j % nt], 13) for j in cols) * sin + 8
-        else:
-            nl = max(len(heads[j % nt]) for j in cols)
-            for j in cols:
-                for k, ln in enumerate(heads[j % nt]):
-                    out.append(S.text(X0 + xo[j] + CW / 2, yb + 18 + k * 16, ln, 13, th.INK2, "middle"))
-            yl = yb + 18 + (nl - 1) * 16 + 10
-        for b, m in enumerate(methods):
-            a, z = span(xo, CW, b)
-            out.append(S.line(X0 + a, yl, X0 + z, yl, th.GRID))
-            out.append(S.text(X0 + (a + z) / 2, yl + 17, m, 12.5, th.MUTED, "middle"))
-        return Body("".join(out), yl + 22)
+            second = f"[{fmtv(cis[i][j][0])}, {fmtv(cis[i][j][1])}]" if intervals and cis[i][j] else None
+            cells[(at_row[i], at_col[j])] = Cell(fill_of(v), fmtv(v) if values else None, second=second,
+                                                 boxed=i // nt != j // nt and i % nt == j % nt, hatched=(i, j) in zero)
+        e0, e1 = scale_ends(scale, lo, hi, 0.0)
+        key = [("box", "Same trait, different methods")] + ([("hatch", "Interval includes zero")] if zero else []) \
+            + ([("text", "Reliability in parentheses")] if rel else [])
+        body = grid(W, [traits[k % nt] for k in rows], [traits[k % nt] for k in cols], cells,
+                    color_bar(e0, e1, fill_of, "Correlation", SC.tick_formatter([e0, e1])),
+                    row_groups=blocks(rows), col_groups=blocks(cols), key=key,
+                    swatch=fill_of(0.0 if scale == "diverging" else lo))
+        if intervals and body.meta["second_left_out"]:
+            warnings.warn("viz: the intervals don't fit these cells, so they are left out; use a wider size, fewer "
+                          "traits or methods, or leave the intervals for the text", stacklevel=2)
+        return body
 
     return Figure(render, title=title, subtitle=subtitle, legend=False, width=width, kind="mtmm")
 

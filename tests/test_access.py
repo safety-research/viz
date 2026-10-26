@@ -77,8 +77,8 @@ def test_muted_shades_and_the_ordered_ramp_stay_apart():
 
 def test_text_on_any_fill_reaches_4_5_to_1():
     fills = [*th.PALETTE.values(), *th.TINT.values()]
-    for lo, hi in th.SCALES.values():  # every step of the heatmap scales
-        fills += [th.mix(lo, hi, k / 20) for k in range(21)]
+    for name in th.SCALES:  # every step of the matrix scales
+        fills += [th.tone(name, k / 20) for k in range(21)]
     for f in fills:
         assert access.contrast(th.text_on(f), f) >= 4.5, f
         assert access.contrast(th.text_on(f, soft=True), f) >= 4.5, f

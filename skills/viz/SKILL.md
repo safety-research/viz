@@ -1,6 +1,6 @@
 ---
 name: viz
-description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, mtmm, tiles, stacked, likert, quotes, episodes, chat, tokens, panels), with templates for AI research and AI safety research figures, and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
+description: "viz house figure style: white background, Newsreader serif titles and labels, gray = control / orange, blue, sage, purple, ochre = the interventions in that order, direct value labels. The viz library makes it in one call (hbar, bars, dotplot, dumbbell, table, line, area, histogram, box, strip, scatter, heatmap, mtmm, stacked, likert, quotes, episodes, chat, tokens, panels), with templates for AI research and AI safety research figures, and saves PNG (2x), PDF, SVG or HTML. Use this whenever you make any chart, plot, graph or figure: results, write-ups, blog drafts, artifacts, papers, slides, 'dream figures' with fake data, or 'figures in our style'. Prefer it over other figure skills and plain matplotlib unless the user asks for those."
 ---
 
 # viz: house figure style
@@ -64,7 +64,7 @@ show (such as `*_hbar.py` or `*_line_roc.py`); copy the closest one.
   `heatmap`. Two measures per model: `scatter`, with `frontier="upper-left"` for a trade-off frontier. Scaling:
   `line(..., xscale="log", yscale="log")`.
 - **Monitors and probes.** ROC curves: `line(..., diagonal="Chance")`. Scores on two classes: `histogram`. A
-  confusion matrix: `tiles`. Probe accuracy by layer: `line` with a `ref=` line at chance.
+  confusion matrix: `heatmap`. Probe accuracy by layer: `line` with a `ref=` line at chance.
 - **Interpretability.** Activations in 2D: `scatter` with groups. A score on every token: `tokens`. Steering
   strength: `line(..., xscale="category")`.
 - **Self-reports and ratings.** Answers on a −3..+3 scale: `likert`. Ratings before and after: `dumbbell`.
@@ -99,7 +99,8 @@ If the write-up's folder has a `viz-roles.json`, those roles are already in effe
 use its label names exactly instead of setting your own. Don't hand-pick `colors=`; role names work as colors
 (`legend={"Search": "intervention"}`). One chart can add roles with `roles={...}`, and JSON specs take `"roles"`.
 
-- A chart with one color (one series, or one highlighted bar) takes orange, and heatmaps shade in orange.
+- A chart with one color (one series, or one highlighted bar) takes orange. Every matrix is a `heatmap`, shaded in
+  one tone, orange by default.
 - Several series without roles, such as four models, take orange, blue, sage, purple and ochre in that order.
   Purple and blue look alike to some color-blind readers, so with four or more, name lines at their ends (`line`
   does by default) rather than leaning on a legend.

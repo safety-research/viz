@@ -81,7 +81,7 @@ How well a monitor, classifier or probe catches a behavior.
 
 <a href="examples/README.md#roc-curves"><img src="docs/gallery/cards/17_line_roc.png" width="49%" alt="ROC curves"></a>
 <a href="examples/README.md#score-distributions"><img src="docs/gallery/cards/18_histogram_scores.png" width="49%" alt="Score distributions"></a>
-<a href="examples/README.md#confusion-matrix"><img src="docs/gallery/cards/19_tiles.png" width="49%" alt="Confusion matrix"></a>
+<a href="examples/README.md#confusion-matrix"><img src="docs/gallery/cards/19_heatmap_confusion.png" width="49%" alt="Confusion matrix"></a>
 <a href="examples/README.md#probe-accuracy-by-layer"><img src="docs/gallery/cards/20_line_layers.png" width="49%" alt="Probe accuracy by layer"></a>
 
 ### Interpretability

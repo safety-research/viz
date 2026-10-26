@@ -38,7 +38,7 @@ from .data import section
 from .figure import Figure, defaults, set_defaults
 from .render import close
 from .spec import from_spec, render_file
-from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES, SIZES, Size, color
+from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALE_START, SCALES, SERIES, SIZES, Size, color, tone
 
 
 def _chart(fn):
@@ -100,7 +100,8 @@ CHARTS = {"hbar": hbar, "bars": bars, "heatmap": heatmap, "tiles": tiles, "waffl
 # wrong); series: the order for several series with no roles; sequential: heatmap scales; diverging: below and
 # above the center of a diverging heatmap.
 PALETTES = {"roles": dict(ROLES), "ordered": list(RAMP), "muted": list(MUTED_SHADES), "outcomes": dict(OUTCOMES),
-            "series": list(SERIES), "sequential": dict(SCALES), "diverging": ("coral", "blue")}
+            "series": list(SERIES), "sequential": {k: (tone(k, SCALE_START), tone(k, 1)) for k in SCALES},
+            "diverging": ("coral", "blue")}
 
 __version__ = "0.1.0"
 __all__ = [

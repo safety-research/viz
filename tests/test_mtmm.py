@@ -6,7 +6,7 @@ import re
 import pytest
 
 import viz as vl
-from viz.charts.mtmm import CELL_H, CELL_H_TWO
+from viz.charts.heatmap import CELL_H, CELL_H_TWO
 
 TRAITS, METHODS = ["Sycophancy", "Honesty"], ["Self-report", "Probe"]
 # rows and columns: Self-report Sycophancy, Self-report Honesty, Probe Sycophancy, Probe Honesty
@@ -75,7 +75,7 @@ def test_values_with_their_intervals_and_the_color_bar_without_values():
     assert ">0.05<" in svg and ">[−0.10, 0.20]<" in svg
     bare = body(vl.mtmm(R, traits=TRAITS, methods=METHODS, values=False))
     assert ">0.60<" not in bare and ">0.60<" in body(vl.mtmm(R, traits=TRAITS, methods=METHODS))
-    assert all(f">{t}<" in bare for t in ("Correlation", "−1", "0", "1"))  # the color bar, with or without values
+    assert all(f">{t}<" in bare for t in ("Correlation", "0", "1"))  # the color bar, with or without values
 
 
 def test_intervals_that_do_not_fit_are_left_out_with_a_warning():

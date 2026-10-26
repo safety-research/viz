@@ -29,7 +29,7 @@ SECTIONS = [
     ("Evaluations", "Many models on many evals, trade-offs and scaling.",
      ["bars_benchmarks", "table", "heatmap", "scatter", "scatter_frontier", "line_log"]),
     ("Monitors and probes", "How well a monitor, classifier or probe catches a behavior.",
-     ["line_roc", "histogram_scores", "tiles", "line_layers"]),
+     ["line_roc", "histogram_scores", "heatmap_confusion", "line_layers"]),
     ("Interpretability", "Inside the model: activations, scores on each token, steering.",
      ["scatter_pca", "tokens", "line_steer"]),
     ("Self-reports and ratings", "What a model says about itself, how judges rate it, and whether the two agree.",

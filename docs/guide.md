@@ -91,8 +91,10 @@ a color does, so a legend can say `{"Search": "intervention"}` and stay in step 
   `"roles"` key. Explicit `colors=` still win. A figure keeps the roles in effect when it was made.
 
 Without roles, several series take orange, blue, sage, purple and ochre, in that order, then the muted shades, and
-a chart with one color, or one highlighted bar, takes orange, so the accent is the same in every figure. Heatmaps
-shade in orange (`coral`) by default; `blue`, `sage`, `green` and `diverging` are the other scales. `viz colors` prints all
+a chart with one color, or one highlighted bar, takes orange, so the accent is the same in every figure. Every
+matrix is one type, `heatmap` (`mtmm` is the same matrix for traits measured several ways), drawn like the correlation
+matrices in Anthropic's posts and shaded in one tone: orange (`coral`) by default, or `blue`, `sage` or `green`;
+`diverging` puts orange below a center and blue above. `viz colors` prints all
 of this, and `viz colors -o colors.png` draws the card below.
 
 ![The color roles as seen with normal vision, protanopia, deuteranopia and tritanopia](colors.png)

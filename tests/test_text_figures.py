@@ -211,18 +211,18 @@ def test_tokens_without_values_and_whitespace_tokens():
 def test_tokens_reuse_the_heatmap_scales():
     data = [("low", -2.0), (" zero", 0.0), (" high", 2.0), (" mid", 1.0)]
     fills = [f for _, _, _, f, _, _ in boxes(viz.tokens(data).render(960).svg)]
-    assert fills[:3] == [th.diverging("coral", 1), th.diverging("blue", 0), th.diverging("blue", 1)]  # coral below 0
+    assert fills[:3] == [th.tone("coral", 1), th.tone("blue", 0), th.tone("blue", 1)]  # coral below 0
     assert fills[3] == scale_color(1.0, "diverging", -2.0, 2.0, 0.0)[0]
     heat = viz.heatmap({"r": [-2.0, 0.0, 1.0, 2.0]}, cols=list("abcd"), scale="diverging", unit="").svg()
     assert all(f'fill="{f}"' in heat for f in fills)  # the same colors the heatmap gives the same values
     flipped = [f for _, _, _, f, _, _ in boxes(viz.tokens(data, low="blue", high="coral").render(960).svg)]
-    assert flipped[0] == th.diverging("blue", 1) and flipped[2] == th.diverging("coral", 1)
+    assert flipped[0] == th.tone("blue", 1) and flipped[2] == th.tone("coral", 1)
     seq = [f for _, _, _, f, _, _ in boxes(viz.tokens(data, scale="sage").render(960).svg)]
-    assert seq[0] == th.SCALES["sage"][0] and seq[2] == th.SCALES["sage"][1]
+    assert seq[0] == th.tone("sage", th.SCALE_START) and seq[2] == th.tone("sage", 1)
     clamped = [f for _, _, _, f, _, _ in boxes(viz.tokens(data, domain=(-1, 1)).render(960).svg)]
-    assert clamped[2] == clamped[3] == th.diverging("blue", 1)  # past the domain: the end color
+    assert clamped[2] == clamped[3] == th.tone("blue", 1)  # past the domain: the end color
     centered = [f for _, _, _, f, _, _ in boxes(viz.tokens(data, center=1.0).render(960).svg)]
-    assert centered[3] == th.diverging("blue", 0)
+    assert centered[3] == th.tone("blue", 0)
 
 
 def test_tokens_color_bar():
@@ -230,8 +230,8 @@ def test_tokens_color_bar():
     body = fig.render(960).svg
     assert texts(body)[:4] == ["Probe score", "−2.8", "0", "2.8"]  # symmetric about 0, as measured
     steps = STEP.findall(body)
-    assert steps[0] == th.diverging("coral", 1) and steps[5] == th.diverging("blue", 0) \
-        and steps[-1] == th.diverging("blue", 1)
+    assert steps[0] == th.tone("coral", 1) and steps[5] == th.tone("blue", 0) \
+        and steps[-1] == th.tone("blue", 1)
     assert texts(viz.tokens(ANSWER, decimals=2).render(960).svg)[:3] == ["−2.80", "0", "2.80"]
     seq = viz.tokens([("a", 0.0), ("b", 4.6)], scale="coral", label="Feature activation").render(960).svg
     assert texts(seq)[:4] == ["Feature activation", "0", "2.3", "4.6"]
@@ -348,7 +348,7 @@ def test_dark_theme_redraws_the_surfaces():
     viz.set_defaults(theme="dark")
     dark = {k: f.svg() for k, f in figures().items()}
     assert th.CARD in dark["chat"] and th.CODE_BG in dark["chat"] and th.CARD not in light["chat"]
-    assert th.diverging("coral", 1) in dark["tokens"]  # the dark theme's scale ends
+    assert th.tone("coral", 1) in dark["tokens"]  # the dark theme's scale ends
     assert all(dark[k] != light[k] for k in light)
 
 

@@ -43,7 +43,7 @@ How well a monitor, classifier or probe catches a behavior.
 
 <a href="#roc-curves"><img src="../docs/gallery/cards/17_line_roc.png" width="49%" alt="ROC curves"></a>
 <a href="#score-distributions"><img src="../docs/gallery/cards/18_histogram_scores.png" width="49%" alt="Score distributions"></a>
-<a href="#confusion-matrix"><img src="../docs/gallery/cards/19_tiles.png" width="49%" alt="Confusion matrix"></a>
+<a href="#confusion-matrix"><img src="../docs/gallery/cards/19_heatmap_confusion.png" width="49%" alt="Confusion matrix"></a>
 <a href="#probe-accuracy-by-layer"><img src="../docs/gallery/cards/20_line_layers.png" width="49%" alt="Probe accuracy by layer"></a>
 
 **Interpretability**
@@ -383,7 +383,7 @@ success = {
     "Model E": [18, 61, 14, 50], "Model F": [4, 22, 3, 17], "Model G": [21, 66, 16, 58], "Model H": [7, 33, 5, 26],
 }
 fig = viz.heatmap(
-    success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"],
+    success, cols=["Role-play", "Many-shot", "Encoding", "Prefill"], label="Attempts that got a harmful answer",
     title="Many-shot attacks succeeded most often against all eight models")
 fig.save("13_heatmap.png")
 ```
@@ -516,20 +516,18 @@ fig.save("18_histogram_scores.png")
 
 What a monitor flagged against what really happened.
 
-![Confusion matrix](../docs/gallery/19_tiles.png)
+![Confusion matrix](../docs/gallery/19_heatmap_confusion.png)
 
-[`19_tiles.py`](19_tiles.py)
+[`19_heatmap_confusion.py`](19_heatmap_confusion.py)
 
 ```python
 import viz
 
 # 200 RL episodes: whether the model hacked the reward, and whether the monitor flagged the episode.
-fig = viz.tiles(
-    [[viz.Tile(41, ["caught"], "blue", True), viz.Tile(12, ["missed"], "coral", True)],
-     [viz.Tile(7, ["false alarms"], "coral"), viz.Tile(140, ["correctly passed"], "blue")]],
-    col_headers=["Flagged", "Not flagged"], row_headers=[("Hacked", "53 episodes"), ("Did not hack", "147 episodes")],
-    title="The monitor caught 41 of 53 hacks with 7 false alarms")
-fig.save("19_tiles.png")
+episodes = {"Hacked": {"Flagged": 41, "Not flagged": 12}, "Did not hack": {"Flagged": 7, "Not flagged": 140}}
+fig = viz.heatmap(episodes, unit="", label="Episodes",
+                  title="The monitor caught 41 of 53 hacks with 7 false alarms")
+fig.save("19_heatmap_confusion.png")
 ```
 
 ### Probe accuracy by layer
