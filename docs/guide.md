@@ -48,7 +48,8 @@ and nothing else on the figure competes with it.
    Notes such as "412 chats" or "352 of 400" go after the value.
 11. **Show intervals** (`ci=`) when the comparison depends on them, and say what they are in the subtitle.
 12. **Mark example data** in the subtitle of any figure made before the real numbers exist.
-13. **No caption at the bottom**, in the figure or under it in a write-up.
+13. **No caption at the bottom**, in the figure or under it in a write-up. A paper is the exception: it captions
+   its figures, so the title and subtitle go in the caption instead (see [Sizes](#sizes)).
 
 Titles, labels, ticks and legends are set in Newsreader, a serif; `viz.set_defaults(font="sans")` switches
 labels, ticks and legends to DM Sans.
@@ -115,6 +116,15 @@ viz.bars(data, size="column")    # one figure
 
 PDFs and SVGs come out at the printed width, so `\includegraphics{fig.pdf}` needs no scaling. For another
 format, make a `viz.Size`: a one-column NeurIPS page (5.5 in) is `viz.Size(width=610, plot=260, title=16, inches=5.5)`.
+
+A paper sets each figure's title in its caption, not in the image. `titles=False` leaves the title and subtitle
+out of the image, and `fig.caption()` gives them as sentences for `\caption{}` (escape each `%` as `\%`). Write the
+title by the rules above all the same: it is the caption's first sentence, and the alt text still starts with it.
+
+```python
+viz.set_defaults(size="column", titles=False)   # every figure in a paper
+viz.bars(data, title="...", titles=False)        # one figure
+```
 
 ## Accessibility
 

@@ -1,11 +1,13 @@
 """Figure: a chart body under its title, plus export.
 
 A left-aligned serif claim title, a muted sans subtitle, the legend on top (or below, legend_position="bottom"),
-then the chart. No caption under the chart: the house style puts everything in the title and subtitle.
+then the chart. No caption under the chart: the house style puts everything in the title and subtitle. A paper
+sets those in its own caption instead: titles=False leaves them out of the image, and fig.caption() gives them.
 """
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -34,6 +36,7 @@ class Defaults:
     checks: str = "warn"  # what saving does with a figure that breaks a house rule: warn, error or off
     font: str = "serif"   # chart labels, ticks and legends: "serif" (Newsreader) or "sans" (DM Sans)
     theme: str = "light"  # "dark" draws for a dark page
+    titles: bool = True   # False leaves the title and subtitle out of the image, for a paper's caption (fig.caption())
 
 
 defaults = Defaults()
@@ -56,6 +59,12 @@ def set_defaults(**kw) -> None:
 
 
 LegendSpec = Mapping[str, str] | Sequence[tuple[str, str]] | bool | None
+
+
+def _sentence(s: str | None) -> str:
+    """s ending in a period, unless it ends in other punctuation already ("" for no text)."""
+    s = (s or "").strip()
+    return s if not s or s.endswith((".", "?", "!")) else s + "."
 
 
 def _legend_items(spec: LegendSpec, body: Body | None) -> list[tuple[str, str]]:
@@ -82,10 +91,14 @@ class Figure:
     meta: dict = field(default_factory=dict)
     roles: dict | None = None  # {label: role} taken when the figure was made (see viz.colors)
     size: str | th.Size | None = None  # screen, slide, paper, column; None follows viz.set_defaults(size=...)
+    titles: bool | None = None  # draw the title and subtitle; None follows viz.set_defaults(titles=...)
 
     # ------------------------------------------------------------------ composition
     def _size(self) -> th.Size:
         return th.size_of(self.size or defaults.size)
+
+    def _titles_drawn(self) -> bool:
+        return defaults.titles if self.titles is None else self.titles
 
     def _width(self) -> float:
         return float(self.width or defaults.width or self._size().width - 2 * th.PAD_X)
@@ -116,21 +129,22 @@ class Figure:
         x0 = th.PAD_X
         y = th.PAD_TOP
         parts: list[str] = []
-        if self.title:
+        title, subtitle = (self.title, self.subtitle) if self._titles_drawn() else (None, None)
+        if title:
             ts = self._size().title
-            lines = T.wrap(self.title, W, ts, "serif", 600)
+            lines = T.wrap(title, W, ts, "serif", 600)
             lh = ts * 1.18
             for i, ln in enumerate(lines):
                 parts.append(S.text(x0, y + T.baseline(ts, "serif") + i * lh, ln, ts,
                                     th.INK, family="serif", weight=600))
             y += ts + (len(lines) - 1) * lh + 4
-        if self.subtitle:
-            lines = T.wrap(self.subtitle, W, th.SUBTITLE_SIZE, "sans")
+        if subtitle:
+            lines = T.wrap(subtitle, W, th.SUBTITLE_SIZE, "sans")
             lh = T.line_height(th.SUBTITLE_SIZE)
             for i, ln in enumerate(lines):
                 parts.append(S.text(x0, y + T.baseline(th.SUBTITLE_SIZE) + i * lh, ln, th.SUBTITLE_SIZE, th.MUTED))
             y += lh * len(lines)
-        if self.title or self.subtitle:
+        if title or subtitle:
             y += th.HEADER_GAP
         if legend and pos == "top":
             svg_, h = legend_block(legend, W, shape=shape)
@@ -158,9 +172,14 @@ class Figure:
 
     def alt_text(self) -> str:
         """The figure in words, for screen readers and for an image's alt attribute: the title, then the data."""
-        title = (self.title or "").strip()
-        parts = [title if title.endswith((".", "?", "!")) or not title else title + ".", self.meta.get("alt") or ""]
+        parts = [_sentence(self.title), self.meta.get("alt") or ""]
         return " ".join(p for p in parts if p)
+
+    def caption(self) -> str:
+        """The title and subtitle as sentences, for a caption set outside the image, such as a paper's \\caption{}
+        when titles=False leaves them out of it. LaTeX needs each % escaped as \\%."""
+        subtitle = re.sub(r"\s*·\s*", ". ", self.subtitle or "")  # "Example data · Error bars ..." reads as two sentences
+        return " ".join(p for p in (_sentence(self.title), _sentence(subtitle)) if p)
 
     def svg(self, embed_fonts: bool = False, background: bool = True) -> str:
         """The whole figure as one SVG document, with its title and alt text for screen readers."""

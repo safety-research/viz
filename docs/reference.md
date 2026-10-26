@@ -56,7 +56,7 @@ uv run make_figs.py
 ```
 
 To make a figure without writing Python, put a JSON spec in a file. Each spec takes the same keys as the chart's
-arguments, plus `"chart"`, `"roles"` and `"out"`, and a list of specs makes several figures:
+arguments, plus `"chart"`, `"roles"`, `"size"`, `"titles"` and `"out"`, and a list of specs makes several figures:
 
 ```json
 {"chart": "hbar", "data": {"Closed book": 59, "With search": 12},
@@ -81,6 +81,10 @@ Every chart returns a `Figure`. `.save()` picks the format from the extension:
 
 `fig.svg()` returns the SVG string, `fig.alt_text()` the figure in words, and `fig.check()` the style rules it
 breaks. In Jupyter a figure displays itself.
+
+For a paper, which captions its figures, `titles=False` on a chart (or `viz.set_defaults(titles=False)` for all of
+them) leaves the title and subtitle out of the image, and `fig.caption()` returns them as sentences for
+`\caption{}`.
 
 ## Charts
 

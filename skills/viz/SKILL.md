@@ -79,6 +79,11 @@ The default size, `screen`, fits posts, web pages and artifacts. For a paper pas
 or `size="column"` and save a `.pdf`; for a talk, `size="slide"` gives a 16:9 slide. One size per write-up:
 `viz.set_defaults(size="paper")`. Titles must fit on one line at the chosen size.
 
+A paper captions its figures, so there the title goes in the caption, not the image:
+`viz.set_defaults(size="paper", titles=False)` leaves the title and subtitle out, and `fig.caption()` gives them as
+sentences for the figure's `\caption{}` (escape each `%` as `\%`). Still write the title by the rules below; it is
+the caption's first sentence.
+
 ## Colors
 
 Name the conditions once and let viz color them: gray for the control, then orange, blue, sage, purple and ochre
@@ -148,7 +153,7 @@ what a word means.
 ## Style rules
 
 - No figure captions at the bottom, in the image or under it in a write-up. What a caption would say goes in
-  the text.
+  the text. A paper is the exception: its captions carry the titles (see Size).
 - Colors keep their meaning across a write-up: set them with `viz.set_roles` (see Colors), and mute what isn't
   the point.
 - Values are percents by default: pass 37 for 37%, and `unit=""` for scores. Show intervals when a claim

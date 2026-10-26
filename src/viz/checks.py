@@ -116,8 +116,9 @@ def _order(fig) -> list[str]:
 
 
 def _title_fits(fig) -> list[str]:
-    """A title should fit on one line at the figure's size: a narrow column takes about half the words of a screen."""
-    if not fig.title:
+    """A title should fit on one line at the figure's size: a narrow column takes about half the words of a screen.
+    A title left for a caption (titles=False) isn't drawn, so it has no line to fit."""
+    if not fig.title or not fig._titles_drawn():
         return []
     from . import text as T
     size = fig._size().title

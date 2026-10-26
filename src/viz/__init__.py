@@ -42,15 +42,17 @@ from .theme import MUTED_SHADES, OUTCOMES, PALETTE, RAMP, SCALES, SERIES, SIZES,
 
 def _chart(fn):
     """Every chart takes roles={"baseline": ..., "intervention": [...]} on top of viz.set_roles, and keeps the roles
-    in effect when it was made, so a figure's colors don't depend on when it is saved."""
+    in effect when it was made, so a figure's colors don't depend on when it is saved. size= and titles= (False
+    leaves the title and subtitle for a caption) override viz.set_defaults for this one figure."""
     @functools.wraps(fn)
-    def chart(*args, roles=None, size=None, **kw):
+    def chart(*args, roles=None, size=None, titles=None, **kw):
         kw.pop("frame", None)  # there is one frame now; older scripts may still pass frame="blog"
         snap = _colors.snapshot(roles)
         with _colors.using(snap), _colors.recording() as log:
             fig = fn(*args, **kw)
         fig.roles = snap
         fig.size = size
+        fig.titles = titles
         fig.meta["colors_made"] = log
         fig.meta.setdefault("alt", _alt.describe(fn.__name__, args, kw))
         fig.meta["order"] = _checks.order_facts(fn.__name__, args, kw)
