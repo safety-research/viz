@@ -7,13 +7,16 @@ from __future__ import annotations
 
 import atexit
 import base64
+import hashlib
 import io
+import math
 import re
 import subprocess
 import sys
 import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 from pathlib import Path
 
 from .text import FONT_DIR
@@ -119,6 +122,10 @@ class Renderer:
 
     def pdf(self, svg: str, path: Path) -> bytes:
         pg, w, h = self._load(svg, 1)
+        styles = pg.evaluate(_STYLES_JS)  # static fonts and traced halos keep Type 3 fonts out of the PDF (see below)
+        faces, families, fonts = static_faces(styles)
+        pg.evaluate(_USE_FACES_JS, [faces, families])
+        pg.evaluate(_OUTLINE_JS, outline_paths(pg.evaluate(_STROKED_JS), styles, fonts))
         data = pg.pdf(width=f"{w}px", height=f"{h}px", print_background=True,
                       margin={"top": "0", "right": "0", "bottom": "0", "left": "0"}, page_ranges="1")
         Path(path).write_bytes(data)
@@ -208,8 +215,6 @@ def _chars(svg: str) -> str:
 
 def font_face_css(svg: str) -> str:
     """@font-face rules with the used glyphs subset and inlined, so the SVG renders the same anywhere."""
-    from fontTools import subset
-    from fontTools.ttLib import TTFont
     text = _chars(svg)
     used = []
     if "DM Sans" in svg:
@@ -224,17 +229,183 @@ def font_face_css(svg: str) -> str:
         used.append(FACES[4])
     out = []
     for fam, f, st, wt in used:
-        font = TTFont(str(FONT_DIR / f))
-        opts = subset.Options()
-        opts.layout_features = ["*"]
-        opts.name_IDs = ["*"]
-        opts.notdef_outline = True
-        sub = subset.Subsetter(opts)
-        sub.populate(text=text)
-        sub.subset(font)
-        buf = io.BytesIO()
-        font.save(buf)
-        b64 = base64.b64encode(buf.getvalue()).decode()
+        b64 = base64.b64encode(_cut(f, text)).decode()
         out.append(f'@font-face{{font-family:"{fam}";src:url(data:font/ttf;base64,{b64}) format("truetype");'
                    f"font-style:{st};font-weight:{wt}}}")
     return "".join(out)
+
+
+@lru_cache(maxsize=32)
+def _cut(file: str, chars: str) -> bytes:
+    """A vendored font cut down to these characters, with every glyph its layout features reach from them."""
+    from fontTools import subset
+    from fontTools.ttLib import TTFont
+    font = TTFont(str(FONT_DIR / file), lazy=True)
+    opts = subset.Options()
+    opts.layout_features = ["*"]
+    opts.name_IDs = ["*"]
+    opts.notdef_outline = True
+    sub = subset.Subsetter(opts)
+    sub.populate(text=chars)
+    sub.subset(font)
+    buf = io.BytesIO()
+    font.save(buf)
+    return buf.getvalue()
+
+
+# ---------------------------------------------------------------------- PDF without Type 3 fonts
+# Chromium writes a variable font into a PDF as Type 3 fonts, which many venues' checks reject. So each text style a
+# PDF draws (family, weight, italic, size) gets a static TrueType instance of the vendored font at that weight and
+# optical size (Chromium sets the optical size to the font size), which Chromium embeds as TrueType. Stroked text,
+# the halo behind a label, comes out as Type 3 whatever the font, so its stroke is traced as a path instead.
+
+_FILES = {(fam, st == "italic"): f for fam, f, st, _ in FACES} | {("JetBrains Mono", True): "JetBrainsMono.ttf"}
+
+# Marks every element that holds text with the index of its style, and returns the styles with their characters.
+_STYLES_JS = """() => {
+    const styles = [], index = new Map(), skip = new Set(['title', 'desc', 'style', 'script']);
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+        const el = n.parentElement;
+        if (!n.data.length || !el || skip.has(el.localName)) continue;
+        const cs = getComputedStyle(el);
+        const key = [cs.fontFamily, cs.fontWeight, cs.fontStyle, cs.fontSize].join('|');
+        if (!index.has(key)) {
+            index.set(key, styles.length);
+            styles.push({family: cs.fontFamily, weight: cs.fontWeight, style: cs.fontStyle, size: cs.fontSize, text: ''});
+        }
+        styles[index.get(key)].text += n.data;
+        el.setAttribute('data-viz-style', index.get(key));
+    }
+    return styles;
+}"""
+
+# Swaps the previous figure's static fonts for this one's and points each marked element at its own.
+_USE_FACES_JS = """async ([faces, families]) => {
+    for (const f of window.vizFaces || []) document.fonts.delete(f);
+    window.vizFaces = [];
+    for (const {family, data, weight, style} of faces) {
+        const face = new FontFace(family, Uint8Array.from(atob(data), c => c.charCodeAt(0)), {weight, style});
+        document.fonts.add(await face.load());
+        window.vizFaces.push(face);
+    }
+    for (const el of document.querySelectorAll('[data-viz-style]')) {
+        const family = families[el.getAttribute('data-viz-style')];
+        if (family) el.style.fontFamily = `"${family}"`;
+    }
+    await document.fonts.ready;
+}"""
+
+# Each stroked <text>: its characters as [style index, character, x, y, rotation]. A text whose characters can't be
+# matched to positions (text mixed with tspans, unusual white space) keeps its stroke.
+_STROKED_JS = r"""() => {
+    const out = [];
+    for (const t of document.querySelectorAll('text')) {
+        const cs = getComputedStyle(t);
+        if (cs.stroke === 'none' || !(parseFloat(cs.strokeWidth) > 0)) continue;
+        const kids = [...t.children];
+        const parts = kids.length ? kids : [t];
+        const own = [...t.childNodes].some(n => n.nodeType === Node.TEXT_NODE && n.data.trim());
+        if (kids.length && (own || kids.some(k => k.localName !== 'tspan' || k.children.length))) continue;
+        const chars = [];
+        let ok = true;
+        for (const el of parts) {
+            const raw = [...el.childNodes].map(n => n.nodeType === Node.TEXT_NODE ? n.data : '').join('');
+            let s = getComputedStyle(el).whiteSpace.startsWith('pre') ? raw.replace(/[\t\n\r]/g, ' ') : raw.replace(/\s+/g, ' ');
+            const n = el.getNumberOfChars();
+            if (s.length !== n) s = s.trim();
+            if (s.length !== n) { ok = false; break; }
+            for (let i = 0; i < n; i++) {
+                if (s[i] === ' ') continue;
+                const p = el.getStartPositionOfChar(i);
+                chars.push([+el.getAttribute('data-viz-style'), s[i], p.x, p.y, el.getRotationOfChar(i)]);
+            }
+        }
+        if (!ok) continue;
+        t.setAttribute('data-viz-stroke', out.length);
+        out.push(chars);
+    }
+    return out;
+}"""
+
+# Draws each marked text's stroke as a path (under the text for paint-order: stroke) and takes the stroke off the text.
+_OUTLINE_JS = """(paths) => {
+    for (const t of document.querySelectorAll('[data-viz-stroke]')) {
+        const cs = getComputedStyle(t);
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const attrs = {d: paths[+t.getAttribute('data-viz-stroke')], transform: t.getAttribute('transform'),
+                       fill: 'none', stroke: cs.stroke, 'stroke-width': cs.strokeWidth, 'stroke-opacity': cs.strokeOpacity,
+                       'stroke-linejoin': cs.strokeLinejoin, 'stroke-miterlimit': cs.strokeMiterlimit};
+        for (const [k, v] of Object.entries(attrs)) if (v) p.setAttribute(k, v);
+        if (cs.paintOrder.startsWith('stroke')) t.before(p); else t.after(p);
+        t.style.stroke = 'none';
+    }
+}"""
+
+
+@lru_cache(maxsize=256)
+def _static(file: str, chars: str, wght: float, opsz: float) -> bytes:
+    """A static instance of the cut font at this weight and optical size, each clamped to the font's range."""
+    from fontTools.ttLib import TTFont
+    from fontTools.varLib import instancer
+    font = TTFont(io.BytesIO(_cut(file, chars)))
+    want = {"wght": wght, "opsz": opsz}
+    loc = {a.axisTag: min(max(want.get(a.axisTag, a.defaultValue), a.minValue), a.maxValue) for a in font["fvar"].axes}
+    instancer.instantiateVariableFont(font, loc, inplace=True)
+    buf = io.BytesIO()
+    font.save(buf)
+    return buf.getvalue()
+
+
+def static_faces(styles: list[dict]) -> tuple[list[dict], dict[str, str], dict[int, bytes]]:
+    """For the text styles _STYLES_JS found: FontFace sources of their static fonts, the family each style index
+    takes, and each style's font file. A style in a font viz doesn't bundle keeps its own font."""
+    picked, chars = {}, {}
+    for i, s in enumerate(styles):
+        fam = s["family"].split(",")[0].strip().strip("'\"")
+        f = _FILES.get((fam, s["style"] != "normal"))
+        if f:
+            picked[i] = f
+            chars[f] = chars.get(f, " ") + s["text"]
+    chars = {f: "".join(sorted(set(t))) for f, t in chars.items()}  # one cut per font file, shared by its styles
+    faces: dict[str, dict] = {}
+    families, fonts = {}, {}
+    for i, f in picked.items():
+        s = styles[i]
+        data = _static(f, chars[f], float(s["weight"]), float(s["size"].removesuffix("px")))
+        style = "italic" if "Italic" in f else "normal"  # JetBrains Mono has no italic: Chromium slants it, as on screen
+        family = f"viz-{hashlib.sha1(data).hexdigest()[:12]}-{s['weight']}-{style}"
+        faces.setdefault(family, {"family": family, "data": base64.b64encode(data).decode(), "weight": s["weight"],
+                                  "style": style})
+        families[str(i)] = family
+        fonts[i] = data
+    return list(faces.values()), families, fonts
+
+
+def outline_paths(stroked: list[list], styles: list[dict], fonts: dict[int, bytes]) -> list[str]:
+    """SVG path data that traces each stroked text's glyphs where Chromium placed them, from the same fonts."""
+    from fontTools.pens.recordingPen import DecomposingRecordingPen
+    from fontTools.pens.svgPathPen import SVGPathPen
+    from fontTools.pens.transformPen import TransformPen
+    from fontTools.ttLib import TTFont
+    loaded: dict[int, tuple] = {}
+    out = []
+    for chars in stroked:
+        pen = SVGPathPen(None, ntos=lambda v: f"{v:.2f}".rstrip("0").rstrip("."))
+        for i, ch, x, y, rot in chars:
+            if i not in fonts:
+                continue
+            if i not in loaded:
+                font = TTFont(io.BytesIO(fonts[i]))
+                loaded[i] = (font.getGlyphSet(), font.getBestCmap(), font["head"].unitsPerEm)
+            glyphs, cmap, upm = loaded[i]
+            name = cmap.get(ord(ch))
+            if name is None:
+                continue
+            k = float(styles[i]["size"].removesuffix("px")) / upm
+            c, s = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+            rec = DecomposingRecordingPen(glyphs)
+            glyphs[name].draw(rec)
+            rec.replay(TransformPen(pen, (k * c, k * s, k * s, -k * c, x, y)))  # font units, y up -> SVG px, y down
+        out.append(pen.getCommands())
+    return out

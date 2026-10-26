@@ -75,7 +75,7 @@ Every chart returns a `Figure`. `.save()` picks the format from the extension:
 | Extension | What you get |
 |---|---|
 | `.png` | 2x raster (2016 px wide), rendered by headless Chromium. For web pages, chat and slides. |
-| `.pdf` | Vector PDF with the fonts embedded. For papers. |
+| `.pdf` | Vector PDF with the fonts embedded as TrueType, never as the Type 3 fonts that venues' PDF checks reject. For papers. |
 | `.svg` | One SVG with the used glyphs embedded. It renders the same anywhere and opens in Figma or Illustrator. |
 | `.html` | A standalone page. `fig.html(standalone=False)` gives a `<figure>` to paste into a page. |
 
@@ -157,5 +157,7 @@ viz --theme dark ...                any command in the dark theme
 
 Python builds one SVG per figure. Text is measured with the bundled font files: Newsreader, DM Sans and
 JetBrains Mono, all under the OFL, in `src/viz/fonts`. Labels, wrapping and margins are computed before anything
-is drawn. One headless Chromium, started on first use and reused, turns the SVG into PNG or PDF in about 0.1 s
-per figure. Run the tests with `uv run pytest`.
+is drawn. One headless Chromium, started on first use and reused, turns the SVG into a PNG in about 0.1 s per
+figure. A PDF takes about half a second more: Chromium writes variable fonts and outlined text as Type 3 fonts, so
+for a PDF viz gives it a static TrueType copy of each font at every weight and size the figure uses, and draws the
+white halos behind labels as paths. Run the tests with `uv run pytest`.

@@ -148,6 +148,14 @@ def test_exports(tmp_path):
     assert f.png(scale=1)[:4] == b"\x89PNG"
 
 
+@pytest.mark.parametrize("name", ["04_dotplot", "14_scatter", "30_episodes"])
+def test_pdfs_embed_truetype_fonts_not_type3(name, tmp_path):
+    """Venues reject Type 3 fonts, which is how Chromium writes variable fonts and stroked text (the halos behind
+    labels). These figures have halos, a rotated axis label, italic serif and mono text."""
+    data = figures()[name].save(tmp_path / "f.pdf").read_bytes()
+    assert b"/Type3" not in data and b"/CIDFontType2" in data
+
+
 def test_unknown_color_message():
     with pytest.raises(ValueError, match="unknown color"):
         vl.hbar({"a": 1}, color="chartreuse").svg()
