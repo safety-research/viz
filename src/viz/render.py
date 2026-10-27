@@ -155,6 +155,9 @@ def _call(method: str, args: tuple):
     global _worker
     if _worker is None:
         _worker = Renderer()
+        # atexit runs last in, first out: registered after Renderer() made its temporary directory, close() runs
+        # before the weakref exit hook that would otherwise remove the directory, with a ResourceWarning.
+        atexit.register(close)
     return getattr(_worker, method)(*args)
 
 
@@ -163,7 +166,6 @@ def _submit(method: str, *args):
     with _lock:
         if _executor is None:
             _executor = ThreadPoolExecutor(1, thread_name_prefix="viz-render")
-            atexit.register(close)
     return _executor.submit(_call, method, args).result()
 
 
@@ -183,6 +185,9 @@ def close() -> None:
                 _worker = None
     try:
         ex.submit(stop).result(timeout=20)
+    except RuntimeError:  # at exit concurrent.futures has already joined the worker thread, before any atexit hook,
+        if _worker is not None:  # so remove the temporary directory from here; Playwright belongs to the dead thread
+            _worker._dir.cleanup()
     except Exception:  # best effort at interpreter exit; the browser dies with the process anyway
         pass
     ex.shutdown(wait=False)
