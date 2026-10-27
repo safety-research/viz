@@ -240,16 +240,16 @@ def _cut(file: str, chars: str) -> bytes:
     """A vendored font cut down to these characters, with every glyph its layout features reach from them."""
     from fontTools import subset
     from fontTools.ttLib import TTFont
-    font = TTFont(str(FONT_DIR / file), lazy=True)
     opts = subset.Options()
     opts.layout_features = ["*"]
     opts.name_IDs = ["*"]
     opts.notdef_outline = True
     sub = subset.Subsetter(opts)
     sub.populate(text=chars)
-    sub.subset(font)
     buf = io.BytesIO()
-    font.save(buf)
+    with TTFont(str(FONT_DIR / file), lazy=True) as font:  # lazy=True holds the file open to read tables on demand
+        sub.subset(font)
+        font.save(buf)
     return buf.getvalue()
 
 
