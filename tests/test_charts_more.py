@@ -273,3 +273,14 @@ def test_text_follows_the_house_rules():
 def test_panels_align_vertical_charts():
     fig = vl.panels([vl.box({"A long group label that wraps": [1, 2, 3]}, unit=""), vl.strip({"B": [1.0, 2.0]})])
     assert fig.svg().startswith("<svg")
+
+
+def test_panels_share_each_panels_own_legend():
+    # a panel's own legend joins the shared one, each label once (#4: drawing it raised ModuleNotFoundError)
+    a = vl.bars({"A": 1, "B": 2}, legend={"Control": "gray", "Treatment": "orange"})
+    b = vl.bars({"A": 3, "B": 4}, legend=[("Treatment", "orange"), ("Search", "blue")])
+    fig = vl.panels([a, b])
+    svg = fig.svg()
+    assert ">Control<" in svg and ">Treatment<" in svg and ">Search<" in svg
+    assert fig.body(960).legend == [("Control", th.color("gray")), ("Treatment", th.color("orange")),
+                                    ("Search", th.color("blue"))]

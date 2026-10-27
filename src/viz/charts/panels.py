@@ -4,7 +4,7 @@ from __future__ import annotations
 from .. import svg as S
 from .. import text as T
 from .. import theme as th
-from ..figure import Body, Figure
+from ..figure import Body, Figure, _legend_items
 
 
 def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_gap: float | None = None,
@@ -77,7 +77,6 @@ def panels(figs: list[Figure], *, cols: int = 2, gap: float | None = None, row_g
         for f, (_, _, body) in zip(figs, cells):
             items = body.legend or []
             if f.legend not in (None, True, False):
-                from .figure import _legend_items
                 items = _legend_items(f.legend, body)
             for lab, col in items:
                 if lab not in seen:
