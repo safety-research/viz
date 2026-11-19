@@ -49,6 +49,47 @@ def test_hbar_inputs_and_options():
         vl.hbar({"a": [1, 2], "b": [1]}).svg()
 
 
+def _group_x(svg: str, label: str) -> float:
+    """x of the top-level group that holds this text (the legend's, for a series name)."""
+    return float(re.search(r'<g transform="translate\(([\d.]+),[\d.]+\)">(?:(?!<g ).)*?>' + re.escape(label) + "<", svg).group(1))
+
+
+def test_hbar_legend_starts_where_the_bars_start():
+    data = {"Small model": [62, 48], "Large model": [83, 64]}
+    names = ["No hint", "Strong hint"]
+    f = vl.hbar(data, series=names, title="Hints helped both sizes")
+    svg = f.svg()
+    bars_left = f.body(f._width()).meta["key_x"]
+    first_gridline = float(re.search(r'<line x1="([\d.]+)"', svg).group(1))
+    assert bars_left == pytest.approx(first_gridline, abs=0.01) and bars_left > 100
+    assert _group_x(svg, "No hint") == pytest.approx(24 + bars_left, abs=0.01)  # 24: the figure's left padding
+    assert re.search(r'<text[^>]*\bx="24"[^>]*>Hints helped', svg)  # the title stays at the left edge
+    below = vl.hbar(data, series=names, legend_position="bottom").svg()
+    assert _group_x(below, "No hint") == pytest.approx(24 + bars_left, abs=0.01)
+    vl.set_defaults(theme="dark")
+    try:
+        assert _group_x(vl.hbar(data, series=names).svg(), "No hint") == pytest.approx(24 + bars_left, abs=0.01)
+    finally:
+        vl.set_defaults(theme="light")
+
+
+def test_hbar_legend_stays_left_when_it_would_not_fit_beside_the_labels():
+    data = {"Small model": [62, 48, 31], "Large model": [83, 64, 40]}
+    wraps = ["No hint at all in the prompt given to the model", "A weak hint placed in the system prompt only",
+             "A strong hint repeated in every single user turn"]  # one row at full width, two from the bars
+    assert _group_x(vl.hbar(data, series=wraps).svg(), wraps[0]) == 24
+    too_wide = ["No hint " + "x" * 150, "Weak hint", "Strong hint"]  # one entry wider than the plot
+    assert _group_x(vl.hbar(data, series=too_wide).svg(), too_wide[0]) == 24
+
+
+def test_only_hbar_moves_its_legend():
+    data = {"Small model": [62, 48], "Large model": [83, 64]}
+    names = ["No hint", "Strong hint"]
+    assert _group_x(vl.bars(data, series=names).svg(), "No hint") == 24
+    grid = vl.panels([vl.hbar(data, series=names, title="a"), vl.hbar(data, series=names, title="b")])
+    assert _group_x(grid.svg(), "No hint") == 24
+
+
 def test_long_labels_wrap_and_long_titles_wrap():
     label = "A very long label that would otherwise eat the whole chart and leave no room for the bars at all"
     svg = vl.hbar({label: 40, "short": 10}, title="T " * 80).svg()

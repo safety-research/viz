@@ -206,7 +206,8 @@ def hbar(data, *, series=None, color=None, colors=None, highlight=None, accent="
         out += labels_svg
         height = bottom + (30 if axis else 6)
         legend_items = [(nm, c) for nm, c in zip(names, cols)] if ns > 1 and names else None
-        return Body("".join(out), height, legend_items)
+        # key_x: where the bars start, so the legend lines up with them and not with the label column
+        return Body("".join(out), height, legend_items, meta={"key_x": L})
 
     return Figure(render, title=title, subtitle=subtitle, legend=legend,
                   legend_position=legend_position, width=width, kind="hbar")
