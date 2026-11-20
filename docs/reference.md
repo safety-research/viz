@@ -34,6 +34,12 @@ It brings the library, the templates and these docs: `viz path` prints where the
 PNG or PDF downloads the headless Chromium that renders them, once per Python environment; `viz setup` does it
 ahead of time. To update, run the install again with `--reinstall`.
 
+Where that download can't run (a machine that only allows approved binaries, say), point viz at a browser that is
+already installed: `VIZ_BROWSER_CHANNEL=chrome` (or `msedge`, `chromium`: any channel Playwright knows) or
+`VIZ_BROWSER_PATH=/path/to/chrome`, which wins when both are set. With either one, nothing is downloaded and
+`viz setup` does nothing. An installed browser updates on its own schedule, so text edges can differ by a pixel
+from one version to the next.
+
 To work on viz itself, clone the repo and install the clone in place: `uv tool install --editable .` makes
 the command follow your edits, and a symlink (`ln -s "$PWD/skills/viz" ~/.claude/skills/viz`) does the same
 for the skill. `uv run pytest` runs the tests.
