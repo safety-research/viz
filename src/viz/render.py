@@ -10,6 +10,7 @@ import base64
 import hashlib
 import io
 import math
+import os
 import re
 import subprocess
 import sys
@@ -55,14 +56,10 @@ class Renderer:
         from playwright.sync_api import sync_playwright
         self._pw = sync_playwright().start()
         try:
-            self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
-        except Exception as e:  # first use in this environment: its Playwright has not downloaded a browser yet
-            if "Executable doesn't exist" not in str(e):
-                self._pw.stop()
-                raise
-            print("viz: installing headless Chromium for this Python environment (one time)", file=sys.stderr)
-            install_browser()
-            self._browser = self._pw.chromium.launch(args=["--no-sandbox"])
+            self._browser = _launch(self._pw)
+        except Exception:
+            self._pw.stop()
+            raise
         self._pages: dict[float, object] = {}
         self._dir = tempfile.TemporaryDirectory(prefix="viz-")
 
@@ -139,8 +136,40 @@ class Renderer:
             self._dir.cleanup()
 
 
+def _browser_override() -> dict:
+    """The browser the environment names in place of Playwright's download (issue #12): VIZ_BROWSER_PATH, an
+    executable, or VIZ_BROWSER_CHANNEL, an installed browser Playwright knows (chrome, msedge, chromium). The path
+    wins when both are set."""
+    if path := os.environ.get("VIZ_BROWSER_PATH"):
+        return {"executable_path": path}
+    if channel := os.environ.get("VIZ_BROWSER_CHANNEL"):
+        return {"channel": channel}
+    return {}
+
+
+def _launch(pw):
+    """Start the browser: the one the environment names, else Playwright's headless Chromium, downloaded on first
+    use. A named browser is never replaced by the download: if it fails to start, the error is raised."""
+    args = ["--no-sandbox"]
+    if override := _browser_override():
+        return pw.chromium.launch(args=args, **override)
+    try:
+        return pw.chromium.launch(args=args)
+    except Exception as e:  # first use in this environment: its Playwright has not downloaded a browser yet
+        if "Executable doesn't exist" not in str(e):
+            raise
+        print("viz: installing headless Chromium for this Python environment (one time)", file=sys.stderr)
+        install_browser()
+        return pw.chromium.launch(args=args)
+
+
 def install_browser() -> None:
-    """Download the headless Chromium that this environment's Playwright drives (once per Playwright version)."""
+    """Download the headless Chromium that this environment's Playwright drives (once per Playwright version).
+    Does nothing when VIZ_BROWSER_PATH or VIZ_BROWSER_CHANNEL names an installed browser."""
+    if override := _browser_override():
+        print(f"viz: rendering with {next(iter(override.values()))} (VIZ_BROWSER_PATH / VIZ_BROWSER_CHANNEL), "
+              "nothing to install", file=sys.stderr)
+        return
     subprocess.run([sys.executable, "-m", "playwright", "install", "chromium-headless-shell"], check=True)
 
 
