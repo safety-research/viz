@@ -100,7 +100,7 @@ templates are in [examples/](../examples/README.md).
 | Function | Use it for |
 |---|---|
 | **Bars and dots** | |
-| `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `viz.section("heading")` rows, `runs=` dots. |
+| `hbar(data, ...)` | Rates by condition or model. One series or grouped (`series=[...]`), `notes`, `ci`, a `ref` line, `viz.section("heading")` rows, `runs=` dots. The legend of grouped bars starts where the bars start (at the left edge when it would not fit there). |
 | `bars(data, ...)` | Vertical bars: the baseline next to the intervention per model, value on top, whiskers, a dashed `ref` line. `runs={label: [v, ...]}` draws each run or seed as a dot over its bar. |
 | `dotplot(data, ...)` | Effects with intervals on one axis (a forest plot): a dot per row, `ci`, a `ref` line, `series` offsets, `notes`. |
 | `dumbbell(data, ...)` | Before and after per model, such as judge ratings before and after training. |

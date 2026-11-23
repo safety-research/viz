@@ -1,7 +1,7 @@
 """Figure: a chart body under its title, plus export.
 
 A left-aligned serif claim title, a muted sans subtitle, the legend on top (or below, legend_position="bottom"),
-then the chart. No caption under the chart: the house style puts everything in the title and subtitle. A paper
+then the chart. The legend starts at the left edge, or at the plot's left edge when the chart reports one (hbar). No caption under the chart: the house style puts everything in the title and subtitle. A paper
 sets those in its own caption instead: titles=False leaves them out of the image, and fig.caption() gives them.
 """
 from __future__ import annotations
@@ -147,15 +147,15 @@ class Figure:
         if title or subtitle:
             y += th.HEADER_GAP
         if legend and pos == "top":
-            svg_, h = legend_block(legend, W, shape=shape)
-            parts.append(S.group(svg_, x0, y))
+            svg_, h, kx = _placed_legend(legend, W, shape, body)
+            parts.append(S.group(svg_, x0 + kx, y))
             y += h + th.LEGEND_GAP
         parts.append(S.group(body.svg, x0, y))
         y += body.height
         if legend and pos == "bottom":
-            svg_, h = legend_block(legend, W, shape=shape, center=False)
+            svg_, h, kx = _placed_legend(legend, W, shape, body)
             y += 10
-            parts.append(S.group(svg_, x0, y))
+            parts.append(S.group(svg_, x0 + kx, y))
             y += h
         y += th.PAD_BOTTOM
         total_w = W + 2 * th.PAD_X
@@ -252,13 +252,34 @@ class Figure:
 
 # ---------------------------------------------------------------------- shared blocks
 
+_KEY_SWATCH, _KEY_GAP = 12, 8  # a legend entry: its swatch, then the gap before its label
+
+
+def _entry_widths(items: list[tuple[str, str]]) -> list[float]:
+    return [_KEY_SWATCH + _KEY_GAP + T.width(lab, th.LEGEND_SIZE, "sans") for lab, _ in items]
+
+
+def _placed_legend(items: list[tuple[str, str]], width: float, shape: str, body: Body) -> tuple[str, float, float]:
+    """The legend and where it starts: (svg, height, x offset from the figure's left padding).
+
+    A chart whose plot starts right of a label column (hbar) reports that x as meta["key_x"], and its legend
+    starts there, in line with the bars. It stays at the left edge, as for every other chart, when starting
+    at the plot would cost it a row or push an entry past the figure's right edge."""
+    flush, h = legend_block(items, width, shape=shape)
+    kx = float(body.meta.get("key_x") or 0.0)
+    if kx <= 0 or max(_entry_widths(items)) > width - kx:
+        return flush, h, 0.0
+    inset, hi = legend_block(items, width - kx, shape=shape)
+    return (inset, hi, kx) if hi <= h else (flush, h, 0.0)
+
+
 def legend_block(items: list[tuple[str, str]], width: float, shape: str = "square",
                  center: bool = False) -> tuple[str, float]:
     """Legend rows in the label font, with rounded swatches."""
-    fam, size, sw, gap_in, gap_out, rx, row_gap = "sans", th.LEGEND_SIZE, 12, 8, 22, 3, 8
+    fam, size, sw, gap_in, gap_out, rx, row_gap = "sans", th.LEGEND_SIZE, _KEY_SWATCH, _KEY_GAP, 22, 3, 8
     lh = T.line_height(size, fam)
     row_h = max(lh, sw)
-    widths = [sw + gap_in + T.width(lab, size, fam) for lab, _ in items]
+    widths = _entry_widths(items)
     rows: list[list[int]] = [[]]
     cur = 0.0
     for i, w in enumerate(widths):
